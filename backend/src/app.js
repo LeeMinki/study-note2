@@ -1,5 +1,7 @@
+const path = require("path");
 const express = require("express");
 const notesRoutes = require("./routes/notesRoutes");
+const imageRoutes = require("./routes/imageRoutes");
 const { createErrorResponse } = require("./utils/responseEnvelope");
 
 function createApp() {
@@ -29,6 +31,10 @@ function createApp() {
   });
 
   app.use("/api/notes", notesRoutes);
+  app.use("/api/images", imageRoutes);
+
+  // 업로드된 이미지 정적 파일 서빙
+  app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
   app.use((error, _request, response, _next) => {
     response.status(500).json(createErrorResponse(error.message || "Internal server error."));
