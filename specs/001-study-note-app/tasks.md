@@ -24,11 +24,11 @@
 
 **Purpose**: Create the monorepo skeleton and establish dependency / execution checkpoints before feature work.
 
-- [ ] T001 Create the monorepo source directories in `backend/` and `frontend/` according to `specs/001-study-note-app/plan.md`
-- [ ] T002 Create placeholder runtime entry files in `backend/src/app.js` and `frontend/src/App.jsx`
-- [ ] T003 Create the initial persistence file in `backend/data.json` with an empty notes collection
-- [ ] T004 Record dependency approval checkpoints in `specs/001-study-note-app/quickstart.md`, `README.md`, or implementation comments before any install commands are run
-- [ ] T005 Record the manual startup expectations and approval-first dependency policy in `specs/001-study-note-app/quickstart.md` if implementation details change during setup
+- [X] T001 Create the monorepo source directories in `backend/` and `frontend/` according to `specs/001-study-note-app/plan.md`
+- [X] T002 Create placeholder runtime entry files in `backend/src/app.js` and `frontend/src/App.jsx`
+- [X] T003 Create the initial persistence file in `backend/data.json` with an empty notes collection
+- [X] T004 Record dependency approval checkpoints in `specs/001-study-note-app/quickstart.md`, `README.md`, or implementation comments before any install commands are run
+- [X] T005 Record the manual startup expectations and approval-first dependency policy in `specs/001-study-note-app/quickstart.md` if implementation details change during setup
 
 ---
 
@@ -38,17 +38,17 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Implement the API envelope helper in `backend/src/utils/responseEnvelope.js`
-- [ ] T007 Implement tag normalization logic in `backend/src/utils/normalizeTags.js`
-- [ ] T008 Implement canonical date utilities in `backend/src/utils/dateFormat.js` for sorting and `YYYY. MM. DD. HH:mm` formatting support
-- [ ] T009 Implement the note model mapper in `backend/src/models/note.js`
-- [ ] T010 Implement safe JSON file read/write helpers with write-then-replace behavior in `backend/src/repositories/fileNoteRepository.js`
-- [ ] T011 Implement backend note service methods for create/list/update/delete/filter/search in `backend/src/services/notesService.js`
-- [ ] T012 Implement note request handlers in `backend/src/controllers/notesController.js`
-- [ ] T013 Implement REST routes for `/api/notes` and `/api/notes/:noteId` in `backend/src/routes/notesRoutes.js`
-- [ ] T014 Wire the Express app and notes routes in `backend/src/app.js`
-- [ ] T015 Validate that backend list responses are sorted by `createdAt` descending and always return `{ success, data, error }` in `backend/src/services/notesService.js`
-- [ ] T016 Add a dependency approval checkpoint for React, Express, Axios, and any Markdown renderer in `specs/001-study-note-app/tasks.md` notes or implementation comments before package installation occurs
+- [X] T006 Implement the API envelope helper in `backend/src/utils/responseEnvelope.js`
+- [X] T007 Implement tag normalization logic in `backend/src/utils/normalizeTags.js`
+- [X] T008 Implement canonical date utilities in `backend/src/utils/dateFormat.js` for sorting and `YYYY. MM. DD. HH:mm` formatting support
+- [X] T009 Implement the note model mapper in `backend/src/models/note.js`
+- [X] T010 Implement safe JSON file read/write helpers with write-then-replace behavior in `backend/src/repositories/fileNoteRepository.js`
+- [X] T011 Implement backend note service methods for create/list/update/delete/filter/search in `backend/src/services/notesService.js`
+- [X] T012 Implement note request handlers in `backend/src/controllers/notesController.js`
+- [X] T013 Implement REST routes for `/api/notes` and `/api/notes/:noteId` in `backend/src/routes/notesRoutes.js`
+- [X] T014 Wire the Express app and notes routes in `backend/src/app.js`
+- [X] T015 Validate that backend list responses are sorted by `createdAt` descending and always return `{ success, data, error }` in `backend/src/services/notesService.js`
+- [X] T016 Add a dependency approval checkpoint for React, Express, Axios, and any Markdown renderer in `specs/001-study-note-app/tasks.md` notes or implementation comments before package installation occurs
 
 **Checkpoint**: Backend API contract, file persistence safety, and shared normalization logic are ready for frontend integration.
 
@@ -62,17 +62,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T017 [US1] Implement the Axios note API client for create/list/update/delete in `frontend/src/services/notesApi.js`
-- [ ] T018 [P] [US1] Implement keyboard save detection for Windows and macOS in `frontend/src/hooks/useKeyboardSave.js`
-- [ ] T019 [P] [US1] Implement note timestamp formatting in `frontend/src/utils/formatDisplayDate.js`
-- [ ] T020 [P] [US1] Implement note preview extraction in `frontend/src/utils/previewText.js`
-- [ ] T021 [US1] Implement the note creation form in `frontend/src/components/NoteComposer.jsx`
-- [ ] T022 [US1] Implement the note card with inline edit/delete controls in `frontend/src/components/NoteCard.jsx`
-- [ ] T023 [US1] Implement the note list container in `frontend/src/components/NoteList.jsx`
-- [ ] T024 [US1] Implement page-local note state, CRUD orchestration, and backend loading in `frontend/src/App.jsx`
-- [ ] T025 [US1] Add first-release Markdown rendered read mode in `frontend/src/components/NoteCard.jsx` after confirming existing dependencies or obtaining approval for any new renderer
-- [ ] T026 [US1] Render the minimal working UI shell and essential layout styles in `frontend/src/styles/app.css`
-- [ ] T027 [US1] Verify list cards show title, formatted time, tags, preview text, inline edit state, and rendered Markdown in `frontend/src/components/NoteCard.jsx`
+- [X] T017 [US1] Implement the Axios note API client for create/list/update/delete in `frontend/src/services/notesApi.js`
+- [X] T018 [P] [US1] Implement keyboard save detection for Windows and macOS in `frontend/src/hooks/useKeyboardSave.js`
+- [X] T019 [P] [US1] Implement note timestamp formatting in `frontend/src/utils/formatDisplayDate.js`
+- [X] T020 [P] [US1] Implement note preview extraction in `frontend/src/utils/previewText.js`
+- [X] T021 [US1] Implement the note creation form in `frontend/src/components/NoteComposer.jsx`
+- [X] T022 [US1] Implement the note card with inline edit/delete controls in `frontend/src/components/NoteCard.jsx`
+- [X] T023 [US1] Implement the note list container in `frontend/src/components/NoteList.jsx`
+- [X] T024 [US1] Implement page-local note state, CRUD orchestration, and backend loading in `frontend/src/App.jsx`
+- [X] T025 [US1] Add first-release Markdown rendered read mode in `frontend/src/components/NoteCard.jsx` after confirming existing dependencies or obtaining approval for any new renderer
+- [X] T026 [US1] Render the minimal working UI shell and essential layout styles in `frontend/src/styles/app.css`
+- [X] T027 [US1] Verify list cards show title, formatted time, tags, preview text, inline edit state, and rendered Markdown in `frontend/src/components/NoteCard.jsx`
 
 **Checkpoint**: User Story 1 is a working MVP with backend-backed CRUD and first-release Markdown rendering before advanced filtering or rendering polish.
 
@@ -86,10 +86,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T028 [US2] Refine backend list ordering guarantees in `backend/src/services/notesService.js` for stable `createdAt` descending results
-- [ ] T029 [US2] Ensure note preview generation handles empty content and Markdown-heavy content in `frontend/src/utils/previewText.js`
-- [ ] T030 [US2] Refine note list rendering for recent-note scanning in `frontend/src/components/NoteList.jsx`
-- [ ] T031 [US2] Keep the initial visual styling minimal and readability-focused in `frontend/src/styles/app.css` without delaying functionality
+- [X] T028 [US2] Refine backend list ordering guarantees in `backend/src/services/notesService.js` for stable `createdAt` descending results
+- [X] T029 [US2] Ensure note preview generation handles empty content and Markdown-heavy content in `frontend/src/utils/previewText.js`
+- [X] T030 [US2] Refine note list rendering for recent-note scanning in `frontend/src/components/NoteList.jsx`
+- [X] T031 [US2] Keep the initial visual styling minimal and readability-focused in `frontend/src/styles/app.css` without delaying functionality
 
 **Checkpoint**: User Stories 1 and 2 together provide a usable recent-note browsing experience without relying on advanced filtering.
 
@@ -103,12 +103,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Implement combined `search` and `tag` query handling in `backend/src/services/notesService.js`
-- [ ] T033 [US3] Expose backend query parameters through `frontend/src/services/notesApi.js`
-- [ ] T034 [P] [US3] Implement the top search bar in `frontend/src/components/SearchBar.jsx`
-- [ ] T035 [P] [US3] Implement clickable tag filter UI in `frontend/src/components/TagFilterBar.jsx`
-- [ ] T036 [US3] Integrate search text, active tag, and combined backend fetch logic in `frontend/src/App.jsx`
-- [ ] T037 [US3] Add empty-state handling for no notes and no matching results in `frontend/src/components/NoteList.jsx`
+- [X] T032 [US3] Implement combined `search` and `tag` query handling in `backend/src/services/notesService.js`
+- [X] T033 [US3] Expose backend query parameters through `frontend/src/services/notesApi.js`
+- [X] T034 [P] [US3] Implement the top search bar in `frontend/src/components/SearchBar.jsx`
+- [X] T035 [P] [US3] Implement clickable tag filter UI in `frontend/src/components/TagFilterBar.jsx`
+- [X] T036 [US3] Integrate search text, active tag, and combined backend fetch logic in `frontend/src/App.jsx`
+- [X] T037 [US3] Add empty-state handling for no notes and no matching results in `frontend/src/components/NoteList.jsx`
 
 **Checkpoint**: All user stories are independently functional, and search plus tag filtering work together.
 
@@ -118,10 +118,10 @@
 
 **Purpose**: Finish implementation safeguards and hold explicit checkpoints for optional dependency-based enhancement.
 
-- [ ] T038 Add a manual checkpoint in `specs/001-study-note-app/quickstart.md` to stop and request approval before installing any Markdown rendering dependency
-- [ ] T039 Improve Markdown rendering fidelity or fallback behavior in `frontend/src/components/NoteCard.jsx` only after dependency approval is granted
-- [ ] T040 Re-check backend/frontend separation and response envelope compliance against `specs/001-study-note-app/plan.md`
-- [ ] T041 Run the manual verification flow in `specs/001-study-note-app/quickstart.md` and update any mismatched docs in `README.md` or `specs/001-study-note-app/quickstart.md`
+- [X] T038 Add a manual checkpoint in `specs/001-study-note-app/quickstart.md` to stop and request approval before installing any Markdown rendering dependency
+- [X] T039 Improve Markdown rendering fidelity or fallback behavior in `frontend/src/components/NoteCard.jsx` only after dependency approval is granted
+- [X] T040 Re-check backend/frontend separation and response envelope compliance against `specs/001-study-note-app/plan.md`
+- [X] T041 Run the manual verification flow in `specs/001-study-note-app/quickstart.md` and update any mismatched docs in `README.md` or `specs/001-study-note-app/quickstart.md`
 
 ---
 

@@ -24,6 +24,7 @@ backend/    # Express API + data.json persistence
   "notes": []
 }
 ```
+4. Create the monorepo directories and placeholder entry files before any package installation so the implementation order stays reviewable.
 
 ## Run Backend
 
