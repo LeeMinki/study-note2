@@ -114,5 +114,5 @@
 - 임시저장은 새 노트 작성 폼(NoteComposer)에만 적용된다. 기존 노트 편집(NoteCard 인라인 편집)은 MVP 범위 밖이다.
 - 자동저장 트리거: 입력 변경 후 3초 debounce (타이머 기반).
 - 임시저장 키: `study-note-draft` (localStorage).
-- 이미지 URL은 백엔드 서빙 경로(`/uploads/filename`)로 생성된다.
+- 이미지 URL은 프론트엔드와 백엔드가 다른 포트에서 실행되므로, 업로드 응답의 URL에 백엔드 origin을 포함한 절대 URL(`http://host:port/uploads/filename`)로 생성되어야 마크다운 렌더링 시 이미지가 정상 표시된다.
 - 클립보드에 이미지와 텍스트가 함께 있을 경우 이미지를 우선 처리한다.
