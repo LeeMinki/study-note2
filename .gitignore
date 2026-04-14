@@ -1,4 +1,5 @@
 .codex/mcp-env.sh
+.mcp.json
 node_modules/
 dist/
 build/
