@@ -27,7 +27,7 @@
 - [ ] T001 Create the monorepo source directories in `backend/` and `frontend/` according to `specs/001-study-note-app/plan.md`
 - [ ] T002 Create placeholder runtime entry files in `backend/src/app.js` and `frontend/src/App.jsx`
 - [ ] T003 Create the initial persistence file in `backend/data.json` with an empty notes collection
-- [ ] T004 Create dependency approval checkpoints in `backend/package.json` and `frontend/package.json` comments or TODO notes before any install commands are run
+- [ ] T004 Record dependency approval checkpoints in `specs/001-study-note-app/quickstart.md`, `README.md`, or implementation comments before any install commands are run
 - [ ] T005 Record the manual startup expectations and approval-first dependency policy in `specs/001-study-note-app/quickstart.md` if implementation details change during setup
 
 ---
@@ -70,10 +70,11 @@
 - [ ] T022 [US1] Implement the note card with inline edit/delete controls in `frontend/src/components/NoteCard.jsx`
 - [ ] T023 [US1] Implement the note list container in `frontend/src/components/NoteList.jsx`
 - [ ] T024 [US1] Implement page-local note state, CRUD orchestration, and backend loading in `frontend/src/App.jsx`
-- [ ] T025 [US1] Render the minimal working UI shell and essential layout styles in `frontend/src/styles/app.css`
-- [ ] T026 [US1] Verify list cards show title, formatted time, tags, preview text, and inline edit state in `frontend/src/components/NoteCard.jsx`
+- [ ] T025 [US1] Add first-release Markdown rendered read mode in `frontend/src/components/NoteCard.jsx` after confirming existing dependencies or obtaining approval for any new renderer
+- [ ] T026 [US1] Render the minimal working UI shell and essential layout styles in `frontend/src/styles/app.css`
+- [ ] T027 [US1] Verify list cards show title, formatted time, tags, preview text, inline edit state, and rendered Markdown in `frontend/src/components/NoteCard.jsx`
 
-**Checkpoint**: User Story 1 is a working MVP with backend-backed CRUD before advanced filtering or Markdown rendering polish.
+**Checkpoint**: User Story 1 is a working MVP with backend-backed CRUD and first-release Markdown rendering before advanced filtering or rendering polish.
 
 ---
 
@@ -85,10 +86,10 @@
 
 ### Implementation for User Story 2
 
-- [ ] T027 [US2] Refine backend list ordering guarantees in `backend/src/services/notesService.js` for stable `createdAt` descending results
-- [ ] T028 [US2] Ensure note preview generation handles empty content and Markdown-heavy content in `frontend/src/utils/previewText.js`
-- [ ] T029 [US2] Refine note list rendering for recent-note scanning in `frontend/src/components/NoteList.jsx`
-- [ ] T030 [US2] Keep the initial visual styling minimal and readability-focused in `frontend/src/styles/app.css` without delaying functionality
+- [ ] T028 [US2] Refine backend list ordering guarantees in `backend/src/services/notesService.js` for stable `createdAt` descending results
+- [ ] T029 [US2] Ensure note preview generation handles empty content and Markdown-heavy content in `frontend/src/utils/previewText.js`
+- [ ] T030 [US2] Refine note list rendering for recent-note scanning in `frontend/src/components/NoteList.jsx`
+- [ ] T031 [US2] Keep the initial visual styling minimal and readability-focused in `frontend/src/styles/app.css` without delaying functionality
 
 **Checkpoint**: User Stories 1 and 2 together provide a usable recent-note browsing experience without relying on advanced filtering.
 
@@ -102,12 +103,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Implement combined `search` and `tag` query handling in `backend/src/services/notesService.js`
-- [ ] T032 [US3] Expose backend query parameters through `frontend/src/services/notesApi.js`
-- [ ] T033 [P] [US3] Implement the top search bar in `frontend/src/components/SearchBar.jsx`
-- [ ] T034 [P] [US3] Implement clickable tag filter UI in `frontend/src/components/TagFilterBar.jsx`
-- [ ] T035 [US3] Integrate search text, active tag, and combined backend fetch logic in `frontend/src/App.jsx`
-- [ ] T036 [US3] Add empty-state handling for no notes and no matching results in `frontend/src/components/NoteList.jsx`
+- [ ] T032 [US3] Implement combined `search` and `tag` query handling in `backend/src/services/notesService.js`
+- [ ] T033 [US3] Expose backend query parameters through `frontend/src/services/notesApi.js`
+- [ ] T034 [P] [US3] Implement the top search bar in `frontend/src/components/SearchBar.jsx`
+- [ ] T035 [P] [US3] Implement clickable tag filter UI in `frontend/src/components/TagFilterBar.jsx`
+- [ ] T036 [US3] Integrate search text, active tag, and combined backend fetch logic in `frontend/src/App.jsx`
+- [ ] T037 [US3] Add empty-state handling for no notes and no matching results in `frontend/src/components/NoteList.jsx`
 
 **Checkpoint**: All user stories are independently functional, and search plus tag filtering work together.
 
@@ -117,10 +118,10 @@
 
 **Purpose**: Finish implementation safeguards and hold explicit checkpoints for optional dependency-based enhancement.
 
-- [ ] T037 Add a manual checkpoint in `specs/001-study-note-app/quickstart.md` to stop and request approval before installing any Markdown rendering dependency
-- [ ] T038 Add Markdown rendered read-mode support in `frontend/src/components/NoteCard.jsx` only after dependency approval is granted
-- [ ] T039 Re-check backend/frontend separation and response envelope compliance against `specs/001-study-note-app/plan.md`
-- [ ] T040 Run the manual verification flow in `specs/001-study-note-app/quickstart.md` and update any mismatched docs in `README.md` or `specs/001-study-note-app/quickstart.md`
+- [ ] T038 Add a manual checkpoint in `specs/001-study-note-app/quickstart.md` to stop and request approval before installing any Markdown rendering dependency
+- [ ] T039 Improve Markdown rendering fidelity or fallback behavior in `frontend/src/components/NoteCard.jsx` only after dependency approval is granted
+- [ ] T040 Re-check backend/frontend separation and response envelope compliance against `specs/001-study-note-app/plan.md`
+- [ ] T041 Run the manual verification flow in `specs/001-study-note-app/quickstart.md` and update any mismatched docs in `README.md` or `specs/001-study-note-app/quickstart.md`
 
 ---
 
@@ -153,7 +154,7 @@
 
 - `T006`–`T009` can partially proceed in parallel because they touch separate backend utility/model files
 - `T017`–`T020` can proceed in parallel once backend foundations are ready
-- `T033` and `T034` can proceed in parallel during User Story 3
+- `T034` and `T035` can proceed in parallel during User Story 3
 
 ---
 
@@ -175,7 +176,7 @@ Task: "T020 Implement note preview extraction in frontend/src/utils/previewText.
 1. Complete Phase 1: Setup
 2. Complete Phase 2: Foundational backend API and safe persistence
 3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Confirm create/edit/delete, inline save, latest ordering, and essential card data work end-to-end
+4. **STOP and VALIDATE**: Confirm create/edit/delete, inline save, latest ordering, essential card data, and rendered Markdown work end-to-end
 
 ### Incremental Delivery
 
@@ -183,7 +184,7 @@ Task: "T020 Implement note preview extraction in frontend/src/utils/previewText.
 2. Minimal CRUD UI second
 3. Recent-note scanning improvements third
 4. Search and tag filter composition fourth
-5. Markdown rendering enhancement only after dependency approval checkpoint
+5. Markdown rendering quality enhancement only after dependency approval checkpoint
 
 ### Parallel Team Strategy
 
@@ -201,5 +202,5 @@ Task: "T020 Implement note preview extraction in frontend/src/utils/previewText.
 - JSON file read/write safety is included as a foundational task
 - `Ctrl/Cmd + Enter` save handling is explicitly included
 - Time formatting, latest-first sorting, tag parsing, tag filtering, and combined search/filter logic are all covered
-- Dependency approval checkpoints are included before Markdown rendering enhancement
+- Dependency approval checkpoints are included before any new renderer installation and before Markdown rendering quality enhancement
 - Minimal working behavior is scheduled before styling and polish

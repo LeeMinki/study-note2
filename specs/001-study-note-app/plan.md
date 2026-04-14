@@ -8,7 +8,7 @@
 Study Note는 개발 및 학습 내용을 빠르게 기록하고 다시 찾기 위한 단일 사용자 웹 애플리케이션이다.
 구현은 `frontend/` React SPA와 `backend/` Node.js + Express API로 엄격히 분리하고,
 모든 저장/조회는 `backend/data.json`을 통해 backend가 담당한다. 단계별 구현은
-1) core CRUD, 2) 태그 필터링/검색, 3) Markdown 렌더링 보강 순서로 진행한다.
+1) Markdown 렌더링을 포함한 core CRUD, 2) 태그 필터링/검색, 3) Markdown 렌더링 품질 보강 순서로 진행한다.
 
 ## Technical Context
 
@@ -100,7 +100,7 @@ frontend/
 
 - Confirm the minimal backend layering that still keeps file I/O isolated behind a repository helper.
 - Confirm the frontend state strategy for immediate filtering/search without unnecessary global state.
-- Confirm the Markdown rollout plan that starts with raw Markdown capture and adds rendered display as a later enhancement without breaking API contracts.
+- Confirm the Markdown rollout plan that includes rendered display in the first release and reserves later enhancement for richer rendering quality without breaking API contracts.
 - Confirm local JSON persistence conventions that keep future database replacement straightforward.
 
 ### Phase 1: Design
@@ -113,18 +113,18 @@ frontend/
 ### Phase 2: Incremental Implementation Strategy
 
 1. **Core CRUD**
-   Create/list/update/delete notes, persist to `backend/data.json`, render note cards with title/time/tags/preview, and support inline save with `Ctrl/Cmd + Enter`.
+   Create/list/update/delete notes, persist to `backend/data.json`, render note cards with title/time/tags/preview and rendered Markdown read view, and support inline save with `Ctrl/Cmd + Enter`.
 2. **Filtering and Search**
    Add tag click filtering, title/content search, and combined filter application with immediate frontend feedback.
 3. **Markdown Rendering Enhancement**
-   Preserve Markdown input from day one, then add rendered read view in note cards after confirming dependency needs and obtaining approval if external packages are required.
+   Keep Markdown rendering in the first release, then improve rendering fidelity and fallback behavior after confirming dependency needs and obtaining approval if external packages are required.
 
 ## Post-Design Constitution Check
 
 - Pass: Contracts preserve the response envelope across all CRUD and query endpoints.
 - Pass: The design keeps data access exclusively in backend repository/service layers and uses only HTTP from frontend to backend.
 - Pass: The implementation sequence preserves simple data flow and inline editing inside note cards.
-- Pass: Dependency handling is explicit: React, Express, Axios, and any Markdown renderer remain planning inputs only until user approval is granted for installation.
+- Pass: Dependency handling is explicit: React, Express, Axios, and any Markdown renderer remain planning inputs only until user approval is granted for installation, while first-release Markdown rendering remains a required outcome.
 
 ## Complexity Tracking
 
