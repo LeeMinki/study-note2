@@ -232,6 +232,25 @@ button {
   text-align: center;
 }
 
+/* 임시저장 복원 배너 */
+.draftBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(229, 171, 84, 0.18);
+  color: #5a3e10;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.draftBannerActions {
+  display: flex;
+  gap: 6px;
+}
+
 /* 넓은 레이아웃: NoteComposer 전체 너비, NoteList 아래 배치 */
 .contentGrid--wide {
   grid-template-columns: 1fr;

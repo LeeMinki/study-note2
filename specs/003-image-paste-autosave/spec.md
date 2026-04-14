@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-image-paste-autosave`
 **Created**: 2026-04-14
-**Status**: Draft
+**Status**: Clarified
 **Input**: Jira SP-18 — "글 내용에 사진을 넣고 싶음. 사진 ctrl+c/v 누르면 알아서 마크다운 링크가 들어가는 기능. 저장하면 렌더링된 곳에서 사진이 보임. 글 내용이 길어지다보면 임시저장이 꼭 필요함."
 
 ## User Scenarios & Testing *(mandatory)*
@@ -85,7 +85,7 @@
 
 - **CA-001**: 이미지 파일 업로드 및 저장은 `/backend`에서 처리한다. 프론트엔드는 HTTP API를 통해서만 업로드 요청을 전송하며 파일 시스템에 직접 접근하지 않는다.
 - **CA-002**: 이미지 업로드 엔드포인트 `POST /api/images` 신규 추가. 응답은 `{ success: boolean, data: { url: string }, error: string | null }` 형식. 업로드된 이미지는 백엔드 로컬 디렉토리(`/uploads`)에 저장.
-- **CA-003**: 이미지 업로드에 `multer` 패키지가 필요하며 **사용자 승인 필요**. 프론트엔드는 기존 fetch API로 충분하여 신규 의존성 불필요. 마크다운 렌더러의 이미지 지원은 기존 렌더러 확장으로 처리.
+- **CA-003**: 이미지 업로드에 `multer` 패키지 사용 — **승인 완료**. 프론트엔드는 기존 fetch API로 충분하여 신규 의존성 불필요. 마크다운 렌더러의 이미지 지원은 기존 렌더러 확장으로 처리.
 - **CA-004**: 이미지 붙여넣기는 content textarea의 paste 이벤트 핸들러로 인라인 처리. 별도 모달 없음. 임시저장 복원 안내는 NoteComposer 내 인라인 배너로 표시.
 - **CA-005**: 이미지 메타데이터(파일명, URL, 크기)는 백엔드 JSON 파일 또는 별도 uploads 디렉토리 인덱스에 저장. 임시저장 데이터는 localStorage에만 저장.
 
