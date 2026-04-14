@@ -103,6 +103,10 @@ npm run dev
 
 자세한 예상 실행 절차와 수동 검증 순서는 [`quickstart.md`](specs/001-study-note-app/quickstart.md)를 참고하면 된다.
 
+현재 저장소에는 기본 모노레포 디렉터리와 placeholder 엔트리 파일만 준비되어 있다.
+React, Express, Axios, Markdown 렌더링 관련 패키지가 실제로 필요해지는 시점에는
+설치를 진행하기 전에 반드시 사용자 승인을 먼저 요청한다.
+
 ## 의존성 정책
 
 - 새로운 패키지가 필요하면 자동 설치하지 않는다.
