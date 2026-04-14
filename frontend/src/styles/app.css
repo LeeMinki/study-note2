@@ -124,6 +124,13 @@ button {
   padding: 12px 14px;
 }
 
+.textInput:focus,
+.textArea:focus,
+.searchInput:focus {
+  outline: 2px solid rgba(156, 79, 25, 0.2);
+  border-color: rgba(156, 79, 25, 0.45);
+}
+
 .textArea {
   resize: vertical;
 }
@@ -240,7 +247,7 @@ button {
 }
 
 .authPanel {
-  width: min(400px, 100%);
+  width: min(440px, 100%);
   display: grid;
   gap: 16px;
 }

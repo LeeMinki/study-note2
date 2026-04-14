@@ -26,12 +26,12 @@ export default function useAuth() {
     setAuthError("");
   }, []);
 
-  const register = useCallback(async (email, password) => {
+  const register = useCallback(async (registerInput) => {
     setIsAuthLoading(true);
     setAuthError("");
 
     try {
-      const json = await registerUser({ email, password });
+      const json = await registerUser(registerInput);
 
       if (!json.success) {
         setAuthError(json.error || "회원가입에 실패했습니다.");

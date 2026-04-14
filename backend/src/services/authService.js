@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { createUser, validateUserInput } = require("../models/user");
+const { createUser, toPublicUser, validateUserInput } = require("../models/user");
 const { findUserByEmail, saveUser } = require("../repositories/fileUserRepository");
 
 // JWT_SECRET 미설정 시 개발용 fallback (프로덕션에서는 환경변수 필수)
@@ -21,7 +21,12 @@ function verifyToken(token) {
 }
 
 async function register(input) {
-  const { email, password } = validateUserInput(input);
+  const {
+    email,
+    password,
+    name,
+    displayName,
+  } = validateUserInput(input);
 
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
@@ -29,14 +34,19 @@ async function register(input) {
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const user = createUser(email, passwordHash);
+  const user = createUser({
+    email,
+    passwordHash,
+    name,
+    displayName,
+  });
   await saveUser(user);
 
   const token = createToken(user);
 
   return {
     token,
-    user: { id: user.id, email: user.email },
+    user: toPublicUser(user),
   };
 }
 
@@ -60,7 +70,7 @@ async function login(input) {
 
   return {
     token,
-    user: { id: user.id, email: user.email },
+    user: toPublicUser(user),
   };
 }
 
