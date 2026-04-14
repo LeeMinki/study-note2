@@ -1,10 +1,21 @@
 import axios from "axios";
 
+const TOKEN_KEY = "study-note-token";
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001",
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+// 모든 요청에 저장된 JWT 토큰을 Authorization 헤더로 자동 첨부한다
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 function unwrapResponse(response) {

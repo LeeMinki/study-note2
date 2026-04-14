@@ -3,6 +3,7 @@ import NoteComposer from "./components/NoteComposer";
 import NoteList from "./components/NoteList";
 import SearchBar from "./components/SearchBar";
 import TagFilterBar from "./components/TagFilterBar";
+import AuthForm from "./components/AuthForm";
 import {
   createNote,
   deleteNote,
@@ -10,6 +11,7 @@ import {
   updateNote,
 } from "./services/notesApi";
 import useLayoutPreference from "./hooks/useLayoutPreference";
+import useAuth from "./hooks/useAuth";
 
 export default function App() {
   const [notes, setNotes] = useState([]);
@@ -20,6 +22,7 @@ export default function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { layoutMode, setLayout, toggleLayout } = useLayoutPreference();
+  const { isAuthenticated, authError, isAuthLoading, login, register, logout } = useAuth();
 
   async function loadNotes(nextFilters = { searchText, activeTag }) {
     setIsLoading(true);
@@ -102,6 +105,18 @@ export default function App() {
     setActiveTag("");
   }
 
+  // 인증 전: 로그인/회원가입 화면 표시
+  if (!isAuthenticated) {
+    return (
+      <AuthForm
+        onLogin={login}
+        onRegister={register}
+        errorMessage={authError}
+        isLoading={isAuthLoading}
+      />
+    );
+  }
+
   return (
     <main className="appShell">
       <section className="hero">
@@ -115,6 +130,11 @@ export default function App() {
         <div className="heroControls">
           <SearchBar value={searchText} onChange={setSearchText} />
           <TagFilterBar activeTag={activeTag} onClear={handleClearFilters} />
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button className="ghostButton" type="button" onClick={logout}>
+              로그아웃
+            </button>
+          </div>
         </div>
       </section>
 

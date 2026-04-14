@@ -23,7 +23,7 @@ function getStatusCode(error) {
 
 async function listNotesHandler(request, response) {
   try {
-    const notes = await getNotes(request.query);
+    const notes = await getNotes(request.query, request.user.userId);
     response.status(200).json(createSuccessResponse(notes));
   } catch (error) {
     response.status(getStatusCode(error)).json(createErrorResponse(error.message));
@@ -32,7 +32,7 @@ async function listNotesHandler(request, response) {
 
 async function createNoteHandler(request, response) {
   try {
-    const note = await createNoteRecord(request.body);
+    const note = await createNoteRecord(request.body, request.user.userId);
     response.status(201).json(createSuccessResponse(note));
   } catch (error) {
     response.status(getStatusCode(error)).json(createErrorResponse(error.message));
@@ -41,7 +41,7 @@ async function createNoteHandler(request, response) {
 
 async function updateNoteHandler(request, response) {
   try {
-    const note = await updateNoteRecord(request.params.noteId, request.body);
+    const note = await updateNoteRecord(request.params.noteId, request.body, request.user.userId);
     response.status(200).json(createSuccessResponse(note));
   } catch (error) {
     response.status(getStatusCode(error)).json(createErrorResponse(error.message));
@@ -50,7 +50,7 @@ async function updateNoteHandler(request, response) {
 
 async function deleteNoteHandler(request, response) {
   try {
-    const result = await deleteNoteRecord(request.params.noteId);
+    const result = await deleteNoteRecord(request.params.noteId, request.user.userId);
     response.status(200).json(createSuccessResponse(result));
   } catch (error) {
     response.status(getStatusCode(error)).json(createErrorResponse(error.message));

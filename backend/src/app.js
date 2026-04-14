@@ -2,6 +2,8 @@ const path = require("path");
 const express = require("express");
 const notesRoutes = require("./routes/notesRoutes");
 const imageRoutes = require("./routes/imageRoutes");
+const authRoutes = require("./routes/authRoutes");
+const { requireAuth } = require("./middleware/authMiddleware");
 const { createErrorResponse } = require("./utils/responseEnvelope");
 
 function createApp() {
@@ -10,7 +12,8 @@ function createApp() {
   app.use((request, response, next) => {
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    // Authorization 헤더 허용 추가
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
     if (request.method === "OPTIONS") {
       response.status(204).end();
@@ -30,8 +33,12 @@ function createApp() {
     });
   });
 
-  app.use("/api/notes", notesRoutes);
-  app.use("/api/images", imageRoutes);
+  // 인증 라우트 (인증 불필요)
+  app.use("/api/auth", authRoutes);
+
+  // 노트/이미지 라우트 (JWT 인증 필요)
+  app.use("/api/notes", requireAuth, notesRoutes);
+  app.use("/api/images", requireAuth, imageRoutes);
 
   // 업로드된 이미지 정적 파일 서빙
   app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
