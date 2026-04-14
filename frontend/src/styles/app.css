@@ -91,6 +91,13 @@ button {
   top: 16px;
 }
 
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
 .sectionHeading h2,
 .noteCard h3,
 .emptyState h3 {
@@ -223,6 +230,47 @@ button {
 
 .emptyState {
   text-align: center;
+}
+
+/* 넓은 레이아웃: NoteComposer 전체 너비, NoteList 아래 배치 */
+.contentGrid--wide {
+  grid-template-columns: 1fr;
+}
+
+/* 좁은 레이아웃: NoteComposer 고정 좁은 너비 */
+.contentGrid--narrow {
+  grid-template-columns: minmax(280px, 280px) minmax(0, 1fr);
+}
+
+/* 넓은 모드에서 sticky 해제 */
+.composerPanel--wide {
+  position: static;
+}
+
+/* 레이아웃 토글 버튼 */
+.layoutToggleButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  background: rgba(116, 87, 57, 0.10);
+  color: #4f4030;
+  white-space: nowrap;
+}
+
+.layoutToggleButton:hover {
+  background: rgba(116, 87, 57, 0.18);
+}
+
+.layoutToggleButton--active {
+  color: #fff7ea;
+  background: #7f4b13;
+}
+
+/* 레이아웃 선택 버튼 그룹 (US3) */
+.layoutSelector {
+  display: flex;
+  gap: 4px;
 }
 
 @media (max-width: 880px) {

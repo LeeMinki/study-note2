@@ -14,3 +14,10 @@ When working on new changes:
 - Do not install new dependencies without explicit user approval
 - Keep comments and commit messages in Korean
 - Keep identifiers in English
+
+## Active Technologies
+- JavaScript (ES2022), React 18 + React (frontend) / Express.js (backend) — 기존 의존성 전용 (002-expand-note-layout)
+- 브라우저 localStorage (`study-note-layout` 키, 값: `default` | `wide`) (002-expand-note-layout)
+
+## Recent Changes
+- 002-expand-note-layout: Added JavaScript (ES2022), React 18 + React (frontend) / Express.js (backend) — 기존 의존성 전용
