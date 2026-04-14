@@ -232,6 +232,53 @@ button {
   text-align: center;
 }
 
+/* 인증 폼 레이아웃 */
+.authFormWrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+}
+
+.authPanel {
+  width: min(400px, 100%);
+  display: grid;
+  gap: 16px;
+}
+
+.authTabBar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(74, 49, 22, 0.12);
+  padding-bottom: 12px;
+}
+
+.authTabButton {
+  border: 0;
+  background: transparent;
+  padding: 6px 16px;
+  border-radius: 999px;
+  color: #6a5c4a;
+  font-weight: 500;
+}
+
+.authTabButton--active {
+  background: rgba(116, 87, 57, 0.12);
+  color: #4f4030;
+}
+
+.authForm {
+  display: grid;
+  gap: 12px;
+}
+
+.authLabel {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #5e5548;
+  font-weight: 500;
+}
+
 /* 임시저장 복원 배너 */
 .draftBanner {
   display: flex;

@@ -27,11 +27,12 @@ function validateNoteInput(input) {
   };
 }
 
-function createNote(input, now = createTimestamp()) {
+function createNote(input, userId, now = createTimestamp()) {
   const sanitizedInput = validateNoteInput(input);
 
   return {
     id: createNoteId(),
+    userId: typeof userId === "string" ? userId : null,
     title: sanitizedInput.title,
     content: sanitizedInput.content,
     tags: sanitizedInput.tags,
