@@ -7,7 +7,14 @@ const initialFormState = {
   tags: "",
 };
 
-export default function NoteComposer({ onCreate, disabled }) {
+// 레이아웃 모드별 레이블 및 다음 모드 정의
+const LAYOUT_LABELS = {
+  narrow: "좁게",
+  default: "기본",
+  wide: "넓게",
+};
+
+export default function NoteComposer({ onCreate, disabled, layoutMode = "default", onToggleLayout, onSetLayout }) {
   const [formState, setFormState] = useState(initialFormState);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -32,10 +39,29 @@ export default function NoteComposer({ onCreate, disabled }) {
   }
 
   return (
-    <section className="panel composerPanel">
+    <section className={`panel composerPanel${layoutMode === "wide" ? " composerPanel--wide" : ""}`}>
       <div className="sectionHeading">
-        <h2>Quick Note</h2>
-        <p>Write fast. Save with Ctrl/Cmd + Enter.</p>
+        <div>
+          <h2>Quick Note</h2>
+          <p>Write fast. Save with Ctrl/Cmd + Enter.</p>
+        </div>
+        {/* 레이아웃 선택 버튼 그룹 (US3: 3단계) */}
+        {onSetLayout ? (
+          <div className="layoutSelector" role="group" aria-label="레이아웃 선택">
+            {["narrow", "default", "wide"].map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                className={`layoutToggleButton${layoutMode === mode ? " layoutToggleButton--active" : ""}`}
+                onClick={() => onSetLayout(mode)}
+                aria-pressed={layoutMode === mode}
+                aria-label={`${LAYOUT_LABELS[mode]} 레이아웃`}
+              >
+                {LAYOUT_LABELS[mode]}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
       <input
         className="textInput"

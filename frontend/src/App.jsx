@@ -9,6 +9,7 @@ import {
   fetchNotes,
   updateNote,
 } from "./services/notesApi";
+import useLayoutPreference from "./hooks/useLayoutPreference";
 
 export default function App() {
   const [notes, setNotes] = useState([]);
@@ -18,6 +19,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { layoutMode, setLayout, toggleLayout } = useLayoutPreference();
 
   async function loadNotes(nextFilters = { searchText, activeTag }) {
     setIsLoading(true);
@@ -118,8 +120,14 @@ export default function App() {
 
       {errorMessage ? <p className="errorBanner">{errorMessage}</p> : null}
 
-      <div className="contentGrid">
-        <NoteComposer onCreate={handleCreate} disabled={isSaving} />
+      <div className={`contentGrid${layoutMode === "wide" ? " contentGrid--wide" : ""}${layoutMode === "narrow" ? " contentGrid--narrow" : ""}`}>
+        <NoteComposer
+          onCreate={handleCreate}
+          disabled={isSaving}
+          layoutMode={layoutMode}
+          onToggleLayout={toggleLayout}
+          onSetLayout={setLayout}
+        />
         <NoteList
           notes={notes}
           hasAnyNotes={hasAnyNotes}
