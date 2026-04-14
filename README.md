@@ -89,15 +89,21 @@ frontend/
 아직 실제 애플리케이션 런타임 코드는 들어오지 않았기 때문에 지금 당장 `npm run dev`로 앱을 띄우는 단계는 아니다.
 대신 구현 전 준비 문서를 바탕으로 다음 작업을 진행하는 저장소 상태다.
 
-실제 구현이 시작되면 실행 흐름은 아래를 기준으로 한다.
+실제 구현이 시작되면 fresh clone 직후에는 각 앱 디렉터리에서 먼저 의존성을 설치해야 한다.
+`node_modules`는 저장소에 포함되지 않으므로, 설치 없이 바로 `npm run dev`를 실행하면
+`Cannot find module 'express'`, `vite: not found` 같은 오류가 발생한다.
+
+실행 흐름은 아래 순서를 기준으로 한다.
 
 ```bash
 cd backend
+npm install
 npm run dev
 ```
 
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
 

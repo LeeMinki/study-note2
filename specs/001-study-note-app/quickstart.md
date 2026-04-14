@@ -25,6 +25,7 @@ backend/    # Express API + data.json persistence
 }
 ```
 4. Create the monorepo directories and placeholder entry files before any package installation so the implementation order stays reviewable.
+5. After a fresh clone, run `npm install` inside both `backend/` and `frontend/` before `npm run dev`. The repository does not commit `node_modules/`.
 
 ## Run Backend
 
@@ -40,6 +41,7 @@ Example command shape after dependencies are approved and configured:
 
 ```bash
 cd backend
+npm install
 npm run dev
 ```
 
@@ -56,6 +58,7 @@ Example command shape after dependencies are approved and configured:
 
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
 
@@ -84,6 +87,7 @@ npm run dev
 ## Notes
 
 - Do not install dependencies automatically.
+- After cloning the repository, `npm install` is required in both app directories before any `npm run dev` command.
 - If a Markdown renderer is needed, stop and request explicit approval first.
 - Use documentation or source-code comments for approval checkpoints; do not rely on JSON comments in `package.json`.
 - Keep frontend and backend processes independent throughout local development.
