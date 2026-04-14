@@ -1,6 +1,16 @@
 {
   "notes": [
     {
+      "id": "note_1776162103184_czn2dr4v",
+      "title": "ㅁㄴㅇㄹ",
+      "content": "이미지 테스트\n\n![image](http://localhost:3001/uploads/1776162099518-image.png)",
+      "tags": [
+        "제발"
+      ],
+      "createdAt": "2026-04-14T10:21:43.184Z",
+      "updatedAt": "2026-04-14T10:21:43.184Z"
+    },
+    {
       "id": "note_1776140025568_nv2p8b7d",
       "title": "흠...",
       "content": "## 디자인 와이러누\n\n와 와이러누 이게 더 좋은건가??",

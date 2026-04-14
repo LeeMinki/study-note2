@@ -1,11 +1,11 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 
 // 회원가입 후 { token, user } 반환
-export async function registerUser({ email, password }) {
+export async function registerUser({ name, displayName, email, password }) {
   const response = await fetch(`${API_BASE}/api/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ name, displayName, email, password }),
   });
 
   return response.json();
