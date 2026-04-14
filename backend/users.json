@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "id": "user_1776183671488_982f9rqs",
+      "email": "test@test.com",
+      "passwordHash": "$2b$10$JgXpPItFQ2DOXZxBPVU1fOfzt0y/r2JmTsWTxGH.9fCwC2NXyMUpm",
+      "provider": "local",
+      "createdAt": "2026-04-14T16:21:11.488Z"
+    }
+  ]
+}
