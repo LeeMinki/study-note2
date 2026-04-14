@@ -74,7 +74,7 @@ npm run dev
 3. Enter search text and confirm title/content matches update immediately.
 4. Apply both tag filter and search together and confirm combined narrowing.
 
-### Phase 3: Markdown Rendering Enhancement
+### Phase 3: Markdown Rendering
 
 1. Confirm stored Markdown source still round-trips through create and update flows.
 2. Confirm rendered display is visible in read mode.
@@ -84,4 +84,5 @@ npm run dev
 
 - Do not install dependencies automatically.
 - If a Markdown renderer is needed, stop and request explicit approval first.
+- Use documentation or source-code comments for approval checkpoints; do not rely on JSON comments in `package.json`.
 - Keep frontend and backend processes independent throughout local development.
