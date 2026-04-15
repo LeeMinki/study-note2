@@ -1,23 +1,56 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+const TOKEN_KEY = "study-note-token";
+
+async function requestAuth(path, { method = "GET", body, includeAuth = false } = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (includeAuth) {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  const response = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const json = await response.json();
+
+  return {
+    status: response.status,
+    json,
+  };
+}
 
 // 회원가입 후 { token, user } 반환
 export async function registerUser({ name, displayName, email, password }) {
-  const response = await fetch(`${API_BASE}/api/auth/register`, {
+  return requestAuth("/api/auth/register", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, displayName, email, password }),
+    body: { name, displayName, email, password },
   });
-
-  return response.json();
 }
 
 // 로그인 후 { token, user } 반환
 export async function loginUser({ email, password }) {
-  const response = await fetch(`${API_BASE}/api/auth/login`, {
+  return requestAuth("/api/auth/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: { email, password },
   });
+}
 
-  return response.json();
+export async function fetchCurrentUser() {
+  return requestAuth("/api/auth/me", { includeAuth: true });
+}
+
+export async function updateCurrentUser(profileInput) {
+  return requestAuth("/api/auth/me", {
+    method: "PATCH",
+    includeAuth: true,
+    body: profileInput,
+  });
 }

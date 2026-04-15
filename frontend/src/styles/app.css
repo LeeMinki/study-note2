@@ -156,7 +156,9 @@ button {
 .cardActions,
 .composerActions,
 .tagList,
-.tagFilterBar {
+.tagFilterBar,
+.heroActionRow,
+.profileHeroActions {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -231,12 +233,21 @@ button {
   color: #8f2424;
 }
 
+.successText {
+  margin: 0;
+  color: #1c6b3c;
+}
+
 .errorBanner {
   margin: 0 0 18px;
 }
 
 .emptyState {
   text-align: center;
+}
+
+.heroActionRow {
+  justify-content: flex-end;
 }
 
 /* 인증 폼 레이아웃 */
@@ -284,6 +295,56 @@ button {
   font-size: 0.9rem;
   color: #5e5548;
   font-weight: 500;
+}
+
+.profileShell,
+.profileGrid,
+.profileSummary,
+.profileEditor {
+  display: grid;
+  gap: 18px;
+}
+
+.profileGrid {
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.profileHero {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.profileSummary h2,
+.profileEditor h2 {
+  margin: 0;
+}
+
+.profileFacts {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.profileFacts div {
+  display: grid;
+  gap: 4px;
+}
+
+.profileFacts dt {
+  color: #8d4c16;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profileFacts dd {
+  margin: 0;
+  color: #2e261d;
+  font-size: 1rem;
 }
 
 /* 임시저장 복원 배너 */
@@ -347,11 +408,16 @@ button {
 }
 
 @media (max-width: 880px) {
-  .contentGrid {
+  .contentGrid,
+  .profileGrid {
     grid-template-columns: 1fr;
   }
 
   .composerPanel {
     position: static;
+  }
+
+  .profileHero {
+    display: grid;
   }
 }
