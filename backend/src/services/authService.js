@@ -1,7 +1,17 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { createUser, toPublicUser, validateUserInput } = require("../models/user");
-const { findUserByEmail, saveUser } = require("../repositories/fileUserRepository");
+const {
+  createUser,
+  toPublicUser,
+  validateRequiredProfileField,
+  validateUserInput,
+} = require("../models/user");
+const {
+  findUserByEmail,
+  findUserById,
+  saveUser,
+  updateUser,
+} = require("../repositories/fileUserRepository");
 
 // JWT_SECRET 미설정 시 개발용 fallback (프로덕션에서는 환경변수 필수)
 const JWT_SECRET = process.env.JWT_SECRET || "study-note-dev-secret-change-in-production";
@@ -74,8 +84,38 @@ async function login(input) {
   };
 }
 
+async function getCurrentUser(userId) {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  return toPublicUser(user);
+}
+
+async function updateCurrentUser(userId, input) {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  const nextUser = {
+    ...user,
+    name: validateRequiredProfileField(input.name, "이름"),
+    displayName: validateRequiredProfileField(input.displayName, "표시 이름"),
+  };
+
+  await updateUser(nextUser);
+
+  return toPublicUser(nextUser);
+}
+
 module.exports = {
   register,
   login,
+  getCurrentUser,
+  updateCurrentUser,
   verifyToken,
 };

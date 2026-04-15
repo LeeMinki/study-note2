@@ -4,6 +4,7 @@ import NoteList from "./components/NoteList";
 import SearchBar from "./components/SearchBar";
 import TagFilterBar from "./components/TagFilterBar";
 import AuthForm from "./components/AuthForm";
+import ProfileView from "./components/ProfileView";
 import {
   createNote,
   deleteNote,
@@ -21,8 +22,19 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [currentView, setCurrentView] = useState("notes");
   const { layoutMode, setLayout, toggleLayout } = useLayoutPreference();
-  const { isAuthenticated, authError, isAuthLoading, login, register, logout } = useAuth();
+  const {
+    isAuthenticated,
+    currentUser,
+    authError,
+    isAuthLoading,
+    isProfileSaving,
+    login,
+    register,
+    logout,
+    updateProfile,
+  } = useAuth();
 
   async function loadNotes(nextFilters = { searchText, activeTag }) {
     setIsLoading(true);
@@ -105,6 +117,12 @@ export default function App() {
     setActiveTag("");
   }
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setCurrentView("notes");
+    }
+  }, [isAuthenticated]);
+
   // 인증 전: 로그인/회원가입 화면 표시
   if (!isAuthenticated) {
     return (
@@ -113,6 +131,20 @@ export default function App() {
         onRegister={register}
         errorMessage={authError}
         isLoading={isAuthLoading}
+      />
+    );
+  }
+
+  if (currentView === "profile") {
+    return (
+      <ProfileView
+        currentUser={currentUser}
+        isLoading={isAuthLoading}
+        isSaving={isProfileSaving}
+        errorMessage={authError}
+        onBack={() => setCurrentView("notes")}
+        onLogout={logout}
+        onSave={updateProfile}
       />
     );
   }
@@ -130,7 +162,10 @@ export default function App() {
         <div className="heroControls">
           <SearchBar value={searchText} onChange={setSearchText} />
           <TagFilterBar activeTag={activeTag} onClear={handleClearFilters} />
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <div className="heroActionRow">
+            <button className="ghostButton" type="button" onClick={() => setCurrentView("profile")}>
+              {currentUser?.displayName ? `${currentUser.displayName} 프로필` : "프로필"}
+            </button>
             <button className="ghostButton" type="button" onClick={logout}>
               로그아웃
             </button>

@@ -49,8 +49,22 @@ async function saveUser(user) {
   return user;
 }
 
+async function updateUser(nextUser) {
+  const document = await readUsersDocument();
+  const targetIndex = document.users.findIndex((user) => user.id === nextUser.id);
+
+  if (targetIndex === -1) {
+    throw new Error("User not found.");
+  }
+
+  document.users[targetIndex] = nextUser;
+  await writeUsersDocument(document);
+  return nextUser;
+}
+
 module.exports = {
   findUserByEmail,
   findUserById,
   saveUser,
+  updateUser,
 };
