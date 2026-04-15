@@ -1,23 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading }) {
   const [mode, setMode] = useState("login"); // "login" | "register"
-  const [name, setName] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: "",
+  });
+  const [registerForm, setRegisterForm] = useState({
+    name: "",
+    displayName: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+  });
   const [localError, setLocalError] = useState("");
+
+  useEffect(() => {
+    setLocalError("");
+
+    if (mode === "login") {
+      setRegisterForm({
+        name: "",
+        displayName: "",
+        email: "",
+        password: "",
+        passwordConfirm: "",
+      });
+      return;
+    }
+
+    setLoginForm({
+      email: "",
+      password: "",
+    });
+  }, [mode]);
 
   async function handleSubmit(event) {
     event.preventDefault();
 
     if (mode === "login") {
       setLocalError("");
-      await onLogin(email, password);
+      await onLogin(loginForm.email, loginForm.password);
     } else {
-      const normalizedName = name.trim();
-      const normalizedDisplayName = displayName.trim();
+      const normalizedName = registerForm.name.trim();
+      const normalizedDisplayName = registerForm.displayName.trim();
 
       if (!normalizedName) {
         setLocalError("이름을 입력해주세요.");
@@ -29,12 +55,12 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
         return;
       }
 
-      if (!passwordConfirm) {
+      if (!registerForm.passwordConfirm) {
         setLocalError("비밀번호 확인을 입력해주세요.");
         return;
       }
 
-      if (password !== passwordConfirm) {
+      if (registerForm.password !== registerForm.passwordConfirm) {
         setLocalError("비밀번호 확인이 일치하지 않습니다.");
         return;
       }
@@ -43,8 +69,8 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
       await onRegister({
         name: normalizedName,
         displayName: normalizedDisplayName,
-        email,
-        password,
+        email: registerForm.email,
+        password: registerForm.password,
       });
     }
   }
@@ -90,8 +116,8 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
                   <input
                     className="textInput"
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={registerForm.name}
+                    onChange={(e) => setRegisterForm((current) => ({ ...current, name: e.target.value }))}
                     placeholder="홍길동"
                     required
                     disabled={isLoading}
@@ -104,8 +130,8 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
                   <input
                     className="textInput"
                     type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    value={registerForm.displayName}
+                    onChange={(e) => setRegisterForm((current) => ({ ...current, displayName: e.target.value }))}
                     placeholder="길동"
                     required
                     disabled={isLoading}
@@ -120,8 +146,15 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
               <input
                 className="textInput"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={mode === "login" ? loginForm.email : registerForm.email}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (mode === "login") {
+                    setLoginForm((current) => ({ ...current, email: value }));
+                    return;
+                  }
+                  setRegisterForm((current) => ({ ...current, email: value }));
+                }}
                 placeholder="name@example.com"
                 required
                 disabled={isLoading}
@@ -134,8 +167,15 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
               <input
                 className="textInput"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={mode === "login" ? loginForm.password : registerForm.password}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (mode === "login") {
+                    setLoginForm((current) => ({ ...current, password: value }));
+                    return;
+                  }
+                  setRegisterForm((current) => ({ ...current, password: value }));
+                }}
                 placeholder="6자 이상"
                 minLength={6}
                 required
@@ -150,8 +190,8 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
                 <input
                   className="textInput"
                   type="password"
-                  value={passwordConfirm}
-                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  value={registerForm.passwordConfirm}
+                  onChange={(e) => setRegisterForm((current) => ({ ...current, passwordConfirm: e.target.value }))}
                   placeholder="비밀번호를 다시 입력"
                   minLength={6}
                   required

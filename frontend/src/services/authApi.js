@@ -54,3 +54,11 @@ export async function updateCurrentUser(profileInput) {
     body: profileInput,
   });
 }
+
+export async function updateCurrentUserPassword(passwordInput) {
+  return requestAuth("/api/auth/me/password", {
+    method: "PATCH",
+    includeAuth: true,
+    body: passwordInput,
+  });
+}

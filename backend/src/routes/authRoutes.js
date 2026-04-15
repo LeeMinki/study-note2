@@ -4,6 +4,7 @@ const {
   loginHandler,
   currentUserHandler,
   updateCurrentUserHandler,
+  updateCurrentUserPasswordHandler,
 } = require("../controllers/authController");
 const { requireAuth } = require("../middleware/authMiddleware");
 
@@ -13,5 +14,6 @@ router.post("/register", registerHandler);
 router.post("/login", loginHandler);
 router.get("/me", requireAuth, currentUserHandler);
 router.patch("/me", requireAuth, updateCurrentUserHandler);
+router.patch("/me/password", requireAuth, updateCurrentUserPasswordHandler);
 
 module.exports = router;
