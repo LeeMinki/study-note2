@@ -112,10 +112,45 @@ async function updateCurrentUser(userId, input) {
   return toPublicUser(nextUser);
 }
 
+async function updateCurrentUserPassword(userId, input) {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  const currentPassword = typeof input.currentPassword === "string" ? input.currentPassword : "";
+  const newPassword = typeof input.newPassword === "string" ? input.newPassword : "";
+
+  if (!currentPassword) {
+    throw new Error("현재 비밀번호를 입력해주세요.");
+  }
+
+  if (newPassword.length < 6) {
+    throw new Error("새 비밀번호는 6자 이상이어야 합니다.");
+  }
+
+  const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
+
+  if (!isValid) {
+    throw new Error("현재 비밀번호가 올바르지 않습니다.");
+  }
+
+  const nextUser = {
+    ...user,
+    passwordHash: await bcrypt.hash(newPassword, SALT_ROUNDS),
+  };
+
+  await updateUser(nextUser);
+
+  return { updated: true };
+}
+
 module.exports = {
   register,
   login,
   getCurrentUser,
   updateCurrentUser,
+  updateCurrentUserPassword,
   verifyToken,
 };

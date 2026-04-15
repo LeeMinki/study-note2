@@ -4,6 +4,7 @@ import {
   registerUser,
   loginUser,
   updateCurrentUser,
+  updateCurrentUserPassword,
 } from "../services/authApi";
 
 const TOKEN_KEY = "study-note-token";
@@ -19,6 +20,7 @@ export default function useAuth() {
   const [authError, setAuthError] = useState("");
   const [isAuthLoading, setIsAuthLoading] = useState(Boolean(loadStoredToken()));
   const [isProfileSaving, setIsProfileSaving] = useState(false);
+  const [isPasswordSaving, setIsPasswordSaving] = useState(false);
 
   const isAuthenticated = Boolean(token);
 
@@ -163,6 +165,35 @@ export default function useAuth() {
     }
   }, [clearSession]);
 
+  const updatePassword = useCallback(async (passwordInput) => {
+    setIsPasswordSaving(true);
+    setAuthError("");
+
+    try {
+      const { status, json } = await updateCurrentUserPassword(passwordInput);
+
+      if (!json.success) {
+        if (status === 401) {
+          clearSession();
+          setAuthError("다시 로그인해주세요.");
+          return { success: false, error: "다시 로그인해주세요." };
+        }
+
+        const nextError = json.error || "비밀번호 변경에 실패했습니다.";
+        setAuthError(nextError);
+        return { success: false, error: nextError };
+      }
+
+      return { success: true, data: json.data };
+    } catch {
+      const nextError = "서버 연결에 실패했습니다.";
+      setAuthError(nextError);
+      return { success: false, error: nextError };
+    } finally {
+      setIsPasswordSaving(false);
+    }
+  }, [clearSession]);
+
   return {
     isAuthenticated,
     token,
@@ -170,9 +201,11 @@ export default function useAuth() {
     authError,
     isAuthLoading,
     isProfileSaving,
+    isPasswordSaving,
     login,
     register,
     logout,
     updateProfile,
+    updatePassword,
   };
 }

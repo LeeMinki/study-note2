@@ -30,10 +30,12 @@ export default function App() {
     authError,
     isAuthLoading,
     isProfileSaving,
+    isPasswordSaving,
     login,
     register,
     logout,
     updateProfile,
+    updatePassword,
   } = useAuth();
 
   async function loadNotes(nextFilters = { searchText, activeTag }) {
@@ -141,10 +143,12 @@ export default function App() {
         currentUser={currentUser}
         isLoading={isAuthLoading}
         isSaving={isProfileSaving}
+        isPasswordSaving={isPasswordSaving}
         errorMessage={authError}
         onBack={() => setCurrentView("notes")}
         onLogout={logout}
         onSave={updateProfile}
+        onPasswordSave={updatePassword}
       />
     );
   }
