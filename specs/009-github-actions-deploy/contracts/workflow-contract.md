@@ -59,6 +59,11 @@
 - `AWS_REGION`
 - `AWS_DEPLOY_ROLE_ARN`
 
+**Variable handling**:
+
+- If the triggering commit does not contain `[skip deploy]`, missing `AWS_REGION` or `AWS_DEPLOY_ROLE_ARN` must fail the workflow explicitly before image publish.
+- `[skip deploy]` commits are the only expected skip path for deployment recursion prevention.
+
 **Image repositories**:
 
 - `study-note-backend`
@@ -77,6 +82,11 @@
 9. Render manifests after update.
 10. Commit and push GitOps state with `[skip deploy]`.
 11. Leave final reconciliation to Argo CD.
+
+**Branch protection note**:
+
+- The GitOps update commit is pushed by `github-actions[bot]`.
+- If branch protection blocks that push, the deployment run must fail at the GitOps commit step and operators must either allow the bot push for this path or apply the same image tag update through the documented manual recovery flow.
 
 **Forbidden actions**:
 
