@@ -10,10 +10,28 @@ permissions:
   id-token: write
 
 jobs:
+  check-env:
+    name: Check required variables
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.check.outputs.deploy }}
+    steps:
+      - name: Verify AWS variables are set
+        id: check
+        run: |
+          if [[ -z "${{ vars.AWS_REGION }}" || -z "${{ vars.AWS_DEPLOY_ROLE_ARN }}" ]]; then
+            echo "배포 건너뜀: AWS_REGION 또는 AWS_DEPLOY_ROLE_ARN 저장소 변수가 설정되지 않았습니다."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
   deploy:
     name: Publish images and update GitOps state
     runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.head_commit.message, '[skip deploy]') && vars.AWS_REGION != '' && vars.AWS_DEPLOY_ROLE_ARN != '' }}
+    needs: check-env
+    if: ${{ !contains(github.event.head_commit.message, '[skip deploy]') && needs.check-env.outputs.deploy == 'true' }}
+    timeout-minutes: 25
     env:
       AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_DEPLOY_ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
@@ -103,7 +121,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add infra/kubernetes/study-note/overlays/mvp/kustomization.yaml
-          git commit -m "chore: update mvp image tags [skip deploy]" || exit 0
+          git commit -m "chore: mvp 이미지 태그 갱신 [skip deploy]" || exit 0
           git push
 
       - name: Reconciliation note

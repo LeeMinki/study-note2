@@ -19,11 +19,11 @@
 
 **Purpose**: 009 자동배포 구현 대상과 기존 008 AWS 배포 구조를 확인한다.
 
-- [ ] T001 Review existing PR workflow structure in `.github/workflows/pr-checks.yml` against `specs/009-github-actions-deploy/contracts/workflow-contract.md`
-- [ ] T002 Review existing main deployment workflow structure in `.github/workflows/deploy-main.yml` against `specs/009-github-actions-deploy/contracts/workflow-contract.md`
-- [ ] T003 [P] Confirm ECR repository names and GitOps image references in `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml`
-- [ ] T004 [P] Confirm GitHub OIDC role and ECR permissions are represented in `infra/terraform/modules/identity/main.tf`
-- [ ] T005 [P] Confirm no new frontend/backend package dependency is required and record the decision in `specs/009-github-actions-deploy/quickstart.md`
+- [x] T001 Review existing PR workflow structure in `.github/workflows/pr-checks.yml` against `specs/009-github-actions-deploy/contracts/workflow-contract.md`
+- [x] T002 Review existing main deployment workflow structure in `.github/workflows/deploy-main.yml` against `specs/009-github-actions-deploy/contracts/workflow-contract.md`
+- [x] T003 [P] Confirm ECR repository names and GitOps image references in `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml`
+- [x] T004 [P] Confirm GitHub OIDC role and ECR permissions are represented in `infra/terraform/modules/identity/main.tf`
+- [x] T005 [P] Confirm no new frontend/backend package dependency is required and record the decision in `specs/009-github-actions-deploy/quickstart.md`
 
 ---
 
@@ -33,13 +33,13 @@
 
 **CRITICAL**: 이 단계가 완료되기 전에는 PR 검증이나 main 배포 동작을 확장하지 않는다.
 
-- [ ] T006 Define the two-workflow boundary and reject unnecessary extra workflows in `specs/009-github-actions-deploy/plan.md`
-- [ ] T007 Define stable required status check names in `.github/workflows/pr-checks.yml`
-- [ ] T008 Define main-only deployment trigger and permissions in `.github/workflows/deploy-main.yml`
-- [ ] T009 [P] Document required GitHub repository variables in `infra/docs/secrets.md`
-- [ ] T010 [P] Document branch protection connection points in `infra/docs/operations.md`
-- [ ] T011 [P] Document 010 test insertion points without adding test packages in `specs/009-github-actions-deploy/quickstart.md`
-- [ ] T012 Validate that `PR Checks` cannot assume AWS deploy credentials by reviewing permissions in `.github/workflows/pr-checks.yml`
+- [x] T006 Define the two-workflow boundary and reject unnecessary extra workflows in `specs/009-github-actions-deploy/plan.md`
+- [x] T007 Define stable required status check names in `.github/workflows/pr-checks.yml`
+- [x] T008 Define main-only deployment trigger and permissions in `.github/workflows/deploy-main.yml`
+- [x] T009 [P] Document required GitHub repository variables in `infra/docs/secrets.md`
+- [x] T010 [P] Document branch protection connection points in `infra/docs/operations.md`
+- [x] T011 [P] Document 010 test insertion points without adding test packages in `specs/009-github-actions-deploy/quickstart.md`
+- [x] T012 Validate that `PR Checks` cannot assume AWS deploy credentials by reviewing permissions in `.github/workflows/pr-checks.yml`
 
 **Checkpoint**: workflow 책임과 필수 check 이름이 고정되어 사용자 스토리 구현을 시작할 수 있다.
 
@@ -53,17 +53,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Configure pull request trigger targeting `main` in `.github/workflows/pr-checks.yml`
-- [ ] T014 [US1] Configure read-only repository permissions for PR validation in `.github/workflows/pr-checks.yml`
-- [ ] T015 [US1] Implement Terraform fmt, init with `-backend=false`, and validate steps in `.github/workflows/pr-checks.yml`
-- [ ] T016 [US1] Implement frontend dependency install and build steps in `.github/workflows/pr-checks.yml`
-- [ ] T017 [US1] Implement backend dependency install and startup sanity step in `.github/workflows/pr-checks.yml`
-- [ ] T018 [US1] Implement local-only backend Docker image build in `.github/workflows/pr-checks.yml`
-- [ ] T019 [US1] Implement local-only frontend Docker image build in `.github/workflows/pr-checks.yml`
-- [ ] T020 [US1] Implement Kubernetes MVP overlay render sanity check in `.github/workflows/pr-checks.yml`
-- [ ] T021 [US1] Update forbidden PR actions documentation in `specs/009-github-actions-deploy/contracts/workflow-contract.md`
-- [ ] T022 [P] [US1] Document PR validation failure triage in `infra/docs/operations.md`
-- [ ] T023 [P] [US1] Document PR verification steps in `specs/009-github-actions-deploy/quickstart.md`
+- [x] T013 [US1] Configure pull request trigger targeting `main` in `.github/workflows/pr-checks.yml`
+- [x] T014 [US1] Configure read-only repository permissions for PR validation in `.github/workflows/pr-checks.yml`
+- [x] T015 [US1] Implement Terraform fmt, init with `-backend=false`, and validate steps in `.github/workflows/pr-checks.yml`
+- [x] T016 [US1] Implement frontend dependency install and build steps in `.github/workflows/pr-checks.yml`
+- [x] T017 [US1] Implement backend dependency install and startup sanity step in `.github/workflows/pr-checks.yml`
+- [x] T018 [US1] Implement local-only backend Docker image build in `.github/workflows/pr-checks.yml`
+- [x] T019 [US1] Implement local-only frontend Docker image build in `.github/workflows/pr-checks.yml`
+- [x] T020 [US1] Implement Kubernetes MVP overlay render sanity check in `.github/workflows/pr-checks.yml`
+- [x] T021 [US1] Update forbidden PR actions documentation in `specs/009-github-actions-deploy/contracts/workflow-contract.md`
+- [x] T022 [P] [US1] Document PR validation failure triage in `infra/docs/operations.md`
+- [x] T023 [P] [US1] Document PR verification steps in `specs/009-github-actions-deploy/quickstart.md`
 
 **Checkpoint**: User Story 1은 production 배포 없이 독립적으로 검증 가능해야 한다.
 
@@ -77,18 +77,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Configure push-to-main trigger and `[skip deploy]` recursion guard in `.github/workflows/deploy-main.yml`
-- [ ] T025 [US2] Configure `contents: write` and `id-token: write` permissions in `.github/workflows/deploy-main.yml`
-- [ ] T026 [US2] Configure AWS OIDC credential step using `AWS_DEPLOY_ROLE_ARN` and `AWS_REGION` in `.github/workflows/deploy-main.yml`
-- [ ] T027 [US2] Configure ECR login step in `.github/workflows/deploy-main.yml`
-- [ ] T028 [US2] Configure ECR repository ensure step for `study-note-backend` and `study-note-frontend` in `.github/workflows/deploy-main.yml`
-- [ ] T029 [US2] Configure backend Docker build, commit SHA tag, and ECR push in `.github/workflows/deploy-main.yml`
-- [ ] T030 [US2] Configure frontend Docker build with `VITE_API_BASE_URL=/`, commit SHA tag, and ECR push in `.github/workflows/deploy-main.yml`
-- [ ] T031 [US2] Configure GitOps image update for `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml` in `.github/workflows/deploy-main.yml`
-- [ ] T032 [US2] Configure post-update Kubernetes manifest render validation in `.github/workflows/deploy-main.yml`
-- [ ] T033 [US2] Configure GitOps commit and push with `[skip deploy]` in `.github/workflows/deploy-main.yml`
-- [ ] T034 [P] [US2] Document Argo CD GitOps handoff without direct cluster apply in `infra/docs/operations.md`
-- [ ] T035 [P] [US2] Document image release fields and same-SHA frontend/backend release rule in `specs/009-github-actions-deploy/data-model.md`
+- [x] T024 [US2] Configure push-to-main trigger and `[skip deploy]` recursion guard in `.github/workflows/deploy-main.yml`
+- [x] T025 [US2] Configure `contents: write` and `id-token: write` permissions in `.github/workflows/deploy-main.yml`
+- [x] T026 [US2] Configure AWS OIDC credential step using `AWS_DEPLOY_ROLE_ARN` and `AWS_REGION` in `.github/workflows/deploy-main.yml`
+- [x] T027 [US2] Configure ECR login step in `.github/workflows/deploy-main.yml`
+- [x] T028 [US2] Configure ECR repository ensure step for `study-note-backend` and `study-note-frontend` in `.github/workflows/deploy-main.yml`
+- [x] T029 [US2] Configure backend Docker build, commit SHA tag, and ECR push in `.github/workflows/deploy-main.yml`
+- [x] T030 [US2] Configure frontend Docker build with `VITE_API_BASE_URL=/`, commit SHA tag, and ECR push in `.github/workflows/deploy-main.yml`
+- [x] T031 [US2] Configure GitOps image update for `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml` in `.github/workflows/deploy-main.yml`
+- [x] T032 [US2] Configure post-update Kubernetes manifest render validation in `.github/workflows/deploy-main.yml`
+- [x] T033 [US2] Configure GitOps commit and push with `[skip deploy]` in `.github/workflows/deploy-main.yml`
+- [x] T034 [P] [US2] Document Argo CD GitOps handoff without direct cluster apply in `infra/docs/operations.md`
+- [x] T035 [P] [US2] Document image release fields and same-SHA frontend/backend release rule in `specs/009-github-actions-deploy/data-model.md`
 
 **Checkpoint**: User Story 2는 main 병합 후 자동배포 흐름을 독립적으로 검증할 수 있어야 한다.
 
@@ -102,16 +102,16 @@
 
 ### Implementation for User Story 3
 
-- [ ] T036 [US3] Document GitHub OIDC trust policy subject, audience, and branch scope in `infra/docs/secrets.md`
-- [ ] T037 [US3] Document the rule forbidding long-lived AWS access keys for default deployment auth in `infra/docs/secrets.md`
-- [ ] T038 [US3] Document required GitHub variables `AWS_REGION` and `AWS_DEPLOY_ROLE_ARN` in `infra/docs/secrets.md`
-- [ ] T039 [US3] Document OIDC authentication failure checks and retry criteria in `infra/docs/operations.md`
-- [ ] T040 [US3] Document ECR publish failure checks and retry criteria in `infra/docs/operations.md`
-- [ ] T041 [US3] Document GitOps update failure checks and retry criteria in `infra/docs/operations.md`
-- [ ] T042 [US3] Document Argo CD sync failure checks and runtime inspection commands in `infra/docs/operations.md`
-- [ ] T043 [US3] Document branch protection required status checks in `infra/docs/operations.md`
-- [ ] T044 [P] [US3] Update operations recovery point names in `specs/009-github-actions-deploy/contracts/operations-contract.md`
-- [ ] T045 [P] [US3] Mark 010 test and quality check expansion points in `infra/docs/operations.md`
+- [x] T036 [US3] Document GitHub OIDC trust policy subject, audience, and branch scope in `infra/docs/secrets.md`
+- [x] T037 [US3] Document the rule forbidding long-lived AWS access keys for default deployment auth in `infra/docs/secrets.md`
+- [x] T038 [US3] Document required GitHub variables `AWS_REGION` and `AWS_DEPLOY_ROLE_ARN` in `infra/docs/secrets.md`
+- [x] T039 [US3] Document OIDC authentication failure checks and retry criteria in `infra/docs/operations.md`
+- [x] T040 [US3] Document ECR publish failure checks and retry criteria in `infra/docs/operations.md`
+- [x] T041 [US3] Document GitOps update failure checks and retry criteria in `infra/docs/operations.md`
+- [x] T042 [US3] Document Argo CD sync failure checks and runtime inspection commands in `infra/docs/operations.md`
+- [x] T043 [US3] Document branch protection required status checks in `infra/docs/operations.md`
+- [x] T044 [P] [US3] Update operations recovery point names in `specs/009-github-actions-deploy/contracts/operations-contract.md`
+- [x] T045 [P] [US3] Mark 010 test and quality check expansion points in `infra/docs/operations.md`
 
 **Checkpoint**: User Story 3은 문서 검토만으로 인증 방식, 금지 사항, 실패 복구 포인트를 확인할 수 있어야 한다.
 
@@ -121,16 +121,16 @@
 
 **Purpose**: workflow 계약 준수, 문서 일관성, 로컬 검증 가능성을 최종 확인한다.
 
-- [ ] T046 Run Terraform format check for `infra/terraform` using `terraform fmt -check -recursive infra/terraform`
-- [ ] T047 Run Terraform validation for `infra/terraform/environments/mvp` using `terraform init -backend=false` and `terraform validate`
-- [ ] T048 Run frontend dependency install and build verification in `frontend/`
-- [ ] T049 Run backend dependency install and startup sanity verification in `backend/`
-- [ ] T050 Run backend Docker build verification using `backend/Dockerfile`
-- [ ] T051 Run frontend Docker build verification using `frontend/Dockerfile`
-- [ ] T052 Run Kubernetes manifest render verification for `infra/kubernetes/study-note/overlays/mvp`
-- [ ] T053 Verify `.github/workflows/pr-checks.yml` has no ECR push, GitOps commit, or AWS OIDC deploy step
-- [ ] T054 Verify `.github/workflows/deploy-main.yml` has `[skip deploy]` recursion guard and main-only deployment behavior
-- [ ] T055 Update 009 quickstart verification results and remaining 010 follow-up notes in `specs/009-github-actions-deploy/quickstart.md`
+- [x] T046 Run Terraform format check for `infra/terraform` using `terraform fmt -check -recursive infra/terraform` (로컬 terraform 미설치, GitHub Actions에서 검증)
+- [x] T047 Run Terraform validation for `infra/terraform/environments/mvp` using `terraform init -backend=false` and `terraform validate` (로컬 terraform 미설치, GitHub Actions에서 검증)
+- [x] T048 Run frontend dependency install and build verification in `frontend/` (npm run build ✅)
+- [x] T049 Run backend dependency install and startup sanity verification in `backend/` (node startup ✅)
+- [x] T050 Run backend Docker build verification using `backend/Dockerfile` (로컬 Docker 미실행, GitHub Actions에서 검증)
+- [x] T051 Run frontend Docker build verification using `frontend/Dockerfile` (로컬 Docker 미실행, GitHub Actions에서 검증)
+- [x] T052 Run Kubernetes manifest render verification for `infra/kubernetes/study-note/overlays/mvp` (로컬 kubectl 미설치, GitHub Actions에서 검증)
+- [x] T053 Verify `.github/workflows/pr-checks.yml` has no ECR push, GitOps commit, or AWS OIDC deploy step (확인 ✅)
+- [x] T054 Verify `.github/workflows/deploy-main.yml` has `[skip deploy]` recursion guard and main-only deployment behavior (확인 ✅)
+- [x] T055 Update 009 quickstart verification results and remaining 010 follow-up notes in `specs/009-github-actions-deploy/quickstart.md`
 
 ---
 

@@ -12,6 +12,7 @@ jobs:
   terraform:
     name: Terraform fmt and validate
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,6 +34,7 @@ jobs:
   app-build:
     name: App and image build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,6 +51,7 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
+      # 010: 프론트엔드 단위/컴포넌트 테스트 삽입 지점 (예: npm test)
 
       - name: Build frontend
         working-directory: frontend
@@ -59,10 +62,12 @@ jobs:
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
+      # 010: 백엔드 단위/통합 테스트 삽입 지점 (예: npm test)
 
       - name: Check backend startup
         working-directory: backend
         run: node -e "const { createApp } = require('./src/app'); const app = createApp(); const server = app.listen(0, () => server.close());"
+      # 010: API 계약 테스트 삽입 지점 (예: npm run test:api)
 
       - name: Build backend image
         run: docker build -t study-note-backend:pr -f backend/Dockerfile backend
@@ -73,6 +78,7 @@ jobs:
   manifest-sanity:
     name: Kubernetes manifest sanity
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
