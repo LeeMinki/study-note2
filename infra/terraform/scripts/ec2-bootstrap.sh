@@ -57,6 +57,16 @@ wait_for_k3s() {
   exit 1
 }
 
+configure_coredns_upstream() {
+  export KUBECONFIG="$KUBECONFIG_PATH"
+
+  kubectl get configmap coredns -n kube-system -o yaml \
+    | sed 's#forward \. /etc/resolv.conf#forward . 169.254.169.253#' \
+    | kubectl apply -f -
+  kubectl rollout restart deployment/coredns -n kube-system
+  kubectl rollout status deployment/coredns -n kube-system --timeout=180s
+}
+
 install_argocd_core() {
   export KUBECONFIG="$KUBECONFIG_PATH"
 
@@ -68,6 +78,22 @@ install_argocd_core() {
   fi
 
   kubectl apply --server-side -n argocd -f "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/core-install.yaml"
+  kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=180s
+}
+
+ensure_argocd_secret_key() {
+  export KUBECONFIG="$KUBECONFIG_PATH"
+
+  if kubectl get secret argocd-secret -n argocd -o jsonpath='{.data.server\.secretkey}' | grep -q .; then
+    echo "[study-note] Argo CD server secret key already exists"
+    return
+  fi
+
+  local secret_key
+  secret_key="$(head -c 32 /dev/urandom | base64)"
+  kubectl patch secret argocd-secret -n argocd --type merge \
+    -p "{\"stringData\":{\"server.secretkey\":\"${secret_key}\"}}"
+  kubectl rollout restart statefulset/argocd-application-controller -n argocd
   kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=180s
 }
 
@@ -106,7 +132,9 @@ install_base_packages
 prepare_host_paths
 install_k3s
 wait_for_k3s
+configure_coredns_upstream
 install_argocd_core
+ensure_argocd_secret_key
 create_ecr_pull_secret
 install_argocd_application
 
