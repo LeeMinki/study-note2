@@ -71,6 +71,22 @@ install_argocd_core() {
   kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=180s
 }
 
+ensure_argocd_secret_key() {
+  export KUBECONFIG="$KUBECONFIG_PATH"
+
+  if kubectl get secret argocd-secret -n argocd -o jsonpath='{.data.server\.secretkey}' | grep -q .; then
+    echo "[study-note] Argo CD server secret key already exists"
+    return
+  fi
+
+  local secret_key
+  secret_key="$(head -c 32 /dev/urandom | base64)"
+  kubectl patch secret argocd-secret -n argocd --type merge \
+    -p "{\"stringData\":{\"server.secretkey\":\"${secret_key}\"}}"
+  kubectl rollout restart statefulset/argocd-application-controller -n argocd
+  kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=180s
+}
+
 create_ecr_pull_secret() {
   export KUBECONFIG="$KUBECONFIG_PATH"
 
@@ -107,6 +123,7 @@ prepare_host_paths
 install_k3s
 wait_for_k3s
 install_argocd_core
+ensure_argocd_secret_key
 create_ecr_pull_secret
 install_argocd_application
 
