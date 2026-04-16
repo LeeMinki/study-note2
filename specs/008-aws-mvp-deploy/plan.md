@@ -117,11 +117,11 @@ infra/
 Research decisions are recorded in [research.md](/home/hyerin/speckit/study-note2/specs/008-aws-mvp-deploy/research.md). Key outcomes:
 
 - Use a single-region VPC with one public subnet and one EC2 instance for the MVP baseline.
-- Prefer Argo CD core-first evaluation to reduce footprint, while documenting full UI mode as an upgrade path if operational need appears.
+- Use Argo CD core as the default MVP implementation to reduce footprint, while documenting full UI mode only as a later upgrade path if operational need appears.
 - Use one public ingress endpoint for the app; keep domain/HTTPS optional and compare them rather than requiring them immediately.
 - Split GitHub Actions into PR validation and main deployment workflows, with deployment only after merge.
 - Prefer GitHub Actions OIDC for AWS authentication.
-- Compare GHCR and Amazon ECR for image storage, with ECR favored for AWS-local simplicity and GHCR retained as a lower-friction alternative if cost and permissions are acceptable.
+- Use Amazon ECR as the default image registry for the MVP because it fits AWS-local IAM and OIDC flow best; keep GHCR as a documented alternative only.
 
 ## Phase 1 Design Output
 
@@ -156,16 +156,17 @@ Design notes:
 - Root stack wires `network`, `compute`, and `identity` modules only.
 - Avoid NAT gateway, private subnets, load balancers, managed databases, or autoscaling groups for MVP cost control.
 - User data references `ec2-bootstrap.sh` via template rendering so bootstrap stays readable and testable.
-- State backend can start local for first bootstrap if AWS backend is not yet prepared; migrating remote state is deferred and documented.
+- Terraform state is local-only for `008` to avoid adding extra AWS resources and setup complexity in the MVP.
+- Because local state has no shared locking, `008` assumes a single operator workflow and explicitly forbids concurrent Terraform execution.
+- Remote state and locking are deferred to a follow-up spec.
 
 ### k3s / Argo CD Installation Strategy
 
 - Bootstrap runs on first EC2 startup and is safe to re-run manually.
 - k3s is installed in single-node server mode with default embedded datastore to minimize cost and operational surface.
 - Host directories for backend JSON data and uploads are created before app deployment.
-- Argo CD is installed after k3s health is confirmed.
-- Default evaluation path is Argo CD core-oriented setup to reduce resource use.
-  If operators need a browser UI during MVP validation, full Argo CD installation remains an allowed alternative documented in research.
+- Argo CD core is installed after k3s health is confirmed.
+- Full Argo CD UI mode is out of the implementation baseline for `008` and remains documented only as a later operational upgrade.
 - Argo CD watches the repository path for Study Note manifests and reconciles app state inside the same cluster.
 
 ### App Deployment Structure
@@ -227,11 +228,11 @@ Design notes:
 - Purpose: publish images, update deployable state, and let Argo CD reconcile
 - Jobs:
   - Authenticate to AWS using GitHub OIDC
-  - Authenticate to chosen image registry
-  - Build and publish frontend/backend images
+  - Authenticate to Amazon ECR
+  - Build and publish frontend/backend images to ECR
   - Update deployable image tags or manifest references in the GitOps path
   - Validate manifest consistency after tag update
-  - Rely on Argo CD reconciliation for in-cluster rollout
+  - Verify Argo CD reconciliation status after manifest update
 
 Protected branch design:
 
