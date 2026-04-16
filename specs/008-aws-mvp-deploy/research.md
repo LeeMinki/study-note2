@@ -67,9 +67,10 @@
 
 ## Decision 9: Prefer Amazon ECR, compare with GHCR
 
-- **Decision**: Compare Amazon ECR and GitHub Container Registry, with ECR as the leading option for AWS-local deployment and GHCR as a viable fallback if simplicity wins.
-- **Rationale**: ECR keeps artifact hosting within AWS IAM boundaries and simplifies runtime pulls from EC2/k3s. GHCR can be simpler if the team wants fewer AWS resources, but introduces another permission surface.
+- **Decision**: Use Amazon ECR as the default MVP image registry. Keep GitHub Container Registry as a documented follow-up alternative, not an implementation branch in `008`.
+- **Rationale**: ECR keeps artifact hosting within AWS IAM boundaries, fits GitHub Actions OIDC-based AWS authentication, and avoids splitting the MVP deployment path across two registry permission models.
 - **Alternatives considered**:
+  - GitHub Container Registry: simple for GitHub-centric projects, but introduces another runtime pull and permission surface for this AWS-first MVP.
   - Docker Hub: broad familiarity, but rate limits and external dependency risk make it less attractive for private automated deployment.
   - Self-hosted registry on the same EC2: lowest raw cost, but unacceptable operational coupling for the MVP.
 

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: study-note-mvp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/LeeMinki/study-note2.git
+    targetRevision: main
+    path: infra/kubernetes/study-note/overlays/mvp
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: study-note
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

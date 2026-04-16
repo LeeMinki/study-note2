@@ -1,0 +1,87 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform fmt and validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive infra/terraform
+
+      - name: Terraform init
+        working-directory: infra/terraform/environments/mvp
+        run: terraform init -backend=false
+
+      - name: Terraform validate
+        working-directory: infra/terraform/environments/mvp
+        run: terraform validate
+
+  app-build:
+    name: App and image build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: /
+        run: npm run build
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Check backend startup
+        working-directory: backend
+        run: node -e "const { createApp } = require('./src/app'); const app = createApp(); const server = app.listen(0, () => server.close());"
+
+      - name: Build backend image
+        run: docker build -t study-note-backend:pr -f backend/Dockerfile backend
+
+      - name: Build frontend image
+        run: docker build -t study-note-frontend:pr -f frontend/Dockerfile frontend
+
+  manifest-sanity:
+    name: Kubernetes manifest sanity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Render kustomize overlay
+        run: kubectl kustomize infra/kubernetes/study-note/overlays/mvp > /tmp/study-note-mvp.yaml
+
+      - name: Verify rendered manifests are not empty
+        run: test -s /tmp/study-note-mvp.yaml
