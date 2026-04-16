@@ -3,13 +3,14 @@ const path = require("node:path");
 
 const dataFilePath = path.resolve(__dirname, "../../users.json");
 const tempFilePath = `${dataFilePath}.tmp`;
+const emptyUsersDocument = { users: [] };
 
 async function ensureUsersFile() {
   try {
     await fs.access(dataFilePath);
   } catch {
     await fs.mkdir(path.dirname(dataFilePath), { recursive: true });
-    await fs.writeFile(dataFilePath, JSON.stringify({ users: [] }, null, 2));
+    await writeUsersDocument(emptyUsersDocument);
   }
 }
 
@@ -17,6 +18,12 @@ async function readUsersDocument() {
   await ensureUsersFile();
 
   const rawContent = await fs.readFile(dataFilePath, "utf8");
+  if (!rawContent.trim()) {
+    // hostPath가 빈 파일만 만든 경우 첫 요청에서 안전하게 초기화한다.
+    await writeUsersDocument(emptyUsersDocument);
+    return { ...emptyUsersDocument, users: [...emptyUsersDocument.users] };
+  }
+
   const parsed = JSON.parse(rawContent);
 
   if (!parsed || !Array.isArray(parsed.users)) {

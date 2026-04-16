@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+import { buildApiUrl } from "./apiBase";
+
 const TOKEN_KEY = "study-note-token";
 
 async function requestAuth(path, { method = "GET", body, includeAuth = false } = {}) {
@@ -13,7 +14,7 @@ async function requestAuth(path, { method = "GET", body, includeAuth = false } =
     }
   }
 
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(buildApiUrl(path), {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,

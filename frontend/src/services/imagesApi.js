@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+import { buildApiUrl } from "./apiBase";
 
 // 이미지 파일을 서버에 업로드하고 절대 URL을 반환한다.
 // 프론트엔드와 백엔드가 다른 포트에서 실행되므로 상대 URL은 이미지를 로드할 수 없다.
@@ -6,7 +6,7 @@ export async function uploadImage(file) {
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await fetch(`${API_BASE}/api/images`, {
+  const response = await fetch(buildApiUrl("/api/images"), {
     method: "POST",
     body: formData,
   });
@@ -15,7 +15,7 @@ export async function uploadImage(file) {
 
   // 백엔드가 반환한 상대 URL을 절대 URL로 변환한다
   if (json.success && json.data?.url) {
-    json.data.url = `${API_BASE}${json.data.url}`;
+    json.data.url = buildApiUrl(json.data.url);
   }
 
   return json;
