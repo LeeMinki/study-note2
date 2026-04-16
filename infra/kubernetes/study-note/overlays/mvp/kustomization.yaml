@@ -6,7 +6,7 @@ resources:
 images:
   - name: 000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-backend
     newName: 107015853205.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-backend
-    newTag: c5d9e41923eb61235c39173c90c0722878551b6e
+    newTag: c2c0cd6aa6e856e9cca1735ae442c355718e3812
   - name: 000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-frontend
     newName: 107015853205.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-frontend
-    newTag: c5d9e41923eb61235c39173c90c0722878551b6e
+    newTag: c2c0cd6aa6e856e9cca1735ae442c355718e3812
