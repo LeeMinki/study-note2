@@ -105,6 +105,7 @@ Research decisions are recorded in [research.md](/home/hyerin/speckit/study-note
 - `deploy-main.yml` is the only main deployment workflow.
 - PR workflow must never request AWS write permissions, publish images, mutate GitOps state, or touch the production cluster.
 - Main workflow performs AWS OIDC authentication, ECR login, image build/push, GitOps image tag update, manifest render validation, and commit with `[skip deploy]` to avoid recursion.
+- Main workflow must fail fast when required GitHub variables are missing. A skipped deployment is allowed only for the intentional `[skip deploy]` recursion guard.
 
 ### PR 검증 Workflow 역할
 
@@ -115,6 +116,8 @@ Required status checks:
 | `Terraform fmt and validate` | Terraform formatting, provider init without backend, validation | None |
 | `App and image build` | frontend build, backend startup sanity, frontend/backend Docker image build | None |
 | `Kubernetes manifest sanity` | render MVP overlay and ensure manifest output exists | None |
+
+009 does not add new lint packages. For this MVP, the "static or equivalent checks" requirement is satisfied by existing no-new-dependency checks: Terraform formatting/validation, frontend production build, backend startup sanity, local Docker image builds, and Kubernetes manifest render sanity. If repository-native lint scripts are added later, 010 may insert them before build steps.
 
 010 test insertion points:
 
@@ -137,6 +140,10 @@ Main merge deployment sequence:
 8. Render manifests to verify updated GitOps state.
 9. Commit updated image tags with `[skip deploy]`.
 10. Let Argo CD core reconcile the GitOps path from main.
+
+ECR repository ownership is pragmatic for the MVP: Terraform defines IAM permissions and the intended repository names, while the main deployment workflow may create the two repositories if they are missing. If stricter IaC ownership is required later, repository resources should move into Terraform in a follow-up spec.
+
+Branch protection must account for the GitOps update commit. The `github-actions[bot]` push to `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml` either needs to be allowed by repository rules, or operators must use the documented manual recovery path when branch protection blocks the push.
 
 ### OIDC용 AWS IAM Role 및 Trust Policy 개요
 

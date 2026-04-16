@@ -131,6 +131,13 @@
 - [x] T053 Verify `.github/workflows/pr-checks.yml` has no ECR push, GitOps commit, or AWS OIDC deploy step (확인 ✅)
 - [x] T054 Verify `.github/workflows/deploy-main.yml` has `[skip deploy]` recursion guard and main-only deployment behavior (확인 ✅)
 - [x] T055 Update 009 quickstart verification results and remaining 010 follow-up notes in `specs/009-github-actions-deploy/quickstart.md`
+- [x] T056 Add explicit failure for missing `AWS_REGION` or `AWS_DEPLOY_ROLE_ARN` in `.github/workflows/deploy-main.yml`
+- [x] T057 Document no-new-dependency static check interpretation in `specs/009-github-actions-deploy/plan.md`
+- [x] T058 Document branch protection impact on GitOps bot commits in `infra/docs/operations.md`
+- [x] T059 Document ECR repository ownership boundary in `infra/docs/operations.md`
+- [x] T060 Update deployment workflow variable and branch protection contract in `specs/009-github-actions-deploy/contracts/workflow-contract.md`
+- [x] T061 Fix GitOps image update parsing for `- name:` entries in `.github/workflows/deploy-main.yml`
+- [x] T062 Pin current MVP overlay to the latest pushed ECR images in `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml`
 
 ---
 

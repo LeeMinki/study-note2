@@ -26,13 +26,14 @@
 
 1. Merge a PR into `main` after checks pass.
 2. Confirm `Deploy Main` starts on GitHub Actions.
-3. Confirm AWS credential configuration succeeds through OIDC.
-4. Confirm ECR login succeeds.
-5. Confirm backend and frontend images are pushed with the merge commit SHA.
-6. Confirm the MVP GitOps overlay is updated with the new image references.
-7. Confirm the workflow commits the GitOps update with `[skip deploy]`.
-8. Confirm Argo CD reconciles the updated GitOps path.
-9. Confirm the public endpoint shows the latest version.
+3. Confirm `Check required variables` succeeds. If `AWS_REGION` or `AWS_DEPLOY_ROLE_ARN` is missing, the workflow must fail explicitly.
+4. Confirm AWS credential configuration succeeds through OIDC.
+5. Confirm ECR login succeeds.
+6. Confirm backend and frontend images are pushed with the merge commit SHA.
+7. Confirm the MVP GitOps overlay is updated with the new image references.
+8. Confirm the workflow commits the GitOps update with `[skip deploy]`.
+9. Confirm Argo CD reconciles the updated GitOps path.
+10. Confirm the public endpoint shows the latest version.
 
 ## Required Status Checks
 
@@ -54,6 +55,7 @@ Do not require `Deploy Main` as a PR status check because it runs after merge.
 
 ### Main deploy fails before image push
 
+- Check `Check required variables` first.
 - Check `AWS_REGION` and `AWS_DEPLOY_ROLE_ARN`.
 - Check the AWS IAM OIDC trust policy.
 - Check ECR login and repository permissions.
@@ -63,6 +65,7 @@ Do not require `Deploy Main` as a PR status check because it runs after merge.
 - Check the GitOps overlay update step.
 - Check manifest render output.
 - Check whether the `[skip deploy]` commit was created.
+- If the commit step fails, check whether branch protection blocks `github-actions[bot]` from pushing the GitOps update.
 
 ### App does not update after workflow success
 

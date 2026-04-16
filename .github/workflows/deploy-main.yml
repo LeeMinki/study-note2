@@ -13,24 +13,20 @@ jobs:
   check-env:
     name: Check required variables
     runs-on: ubuntu-latest
-    outputs:
-      deploy: ${{ steps.check.outputs.deploy }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip deploy]') }}
     steps:
       - name: Verify AWS variables are set
-        id: check
         run: |
           if [[ -z "${{ vars.AWS_REGION }}" || -z "${{ vars.AWS_DEPLOY_ROLE_ARN }}" ]]; then
-            echo "배포 건너뜀: AWS_REGION 또는 AWS_DEPLOY_ROLE_ARN 저장소 변수가 설정되지 않았습니다."
-            echo "deploy=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "deploy=true" >> "$GITHUB_OUTPUT"
+            echo "배포 실패: AWS_REGION 또는 AWS_DEPLOY_ROLE_ARN 저장소 변수가 설정되지 않았습니다."
+            exit 1
           fi
 
   deploy:
     name: Publish images and update GitOps state
     runs-on: ubuntu-latest
     needs: check-env
-    if: ${{ !contains(github.event.head_commit.message, '[skip deploy]') && needs.check-env.outputs.deploy == 'true' }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip deploy]') }}
     timeout-minutes: 25
     env:
       AWS_REGION: ${{ vars.AWS_REGION }}
@@ -88,9 +84,9 @@ jobs:
 
           for line in lines:
               stripped = line.strip()
-              if stripped.startswith("name: ") and "study-note-backend" in stripped:
+              if (stripped.startswith("name: ") or stripped.startswith("- name: ")) and "study-note-backend" in stripped:
                   current_image = "backend"
-              elif stripped.startswith("name: ") and "study-note-frontend" in stripped:
+              elif (stripped.startswith("name: ") or stripped.startswith("- name: ")) and "study-note-frontend" in stripped:
                   current_image = "frontend"
 
               if stripped.startswith("newName: ") and current_image == "backend":
