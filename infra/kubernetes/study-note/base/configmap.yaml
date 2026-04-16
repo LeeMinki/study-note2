@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: study-note-config
+  namespace: study-note
+data:
+  NODE_ENV: production
+  PORT: "3001"

@@ -13,3 +13,15 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+.terraform.lock.hcl
+.kube/
+kubeconfig*
+*.secret.yaml
+secrets/
+*.key
+*.crt
