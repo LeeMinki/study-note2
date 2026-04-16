@@ -17,6 +17,20 @@ function applyInlineMarkdown(value) {
 }
 
 function renderBlock(block) {
+  if (block.startsWith("```") && block.endsWith("```")) {
+    if (!block.includes("\n")) {
+      return `<pre><code>${block.slice(3, -3).trim()}</code></pre>`;
+    }
+
+    const lines = block.split("\n");
+    const firstLine = lines[0];
+    const language = firstLine.slice(3).trim();
+    const code = lines.slice(1, -1).join("\n");
+    const languageClass = language ? ` class="language-${language}"` : "";
+
+    return `<pre><code${languageClass}>${code}</code></pre>`;
+  }
+
   const lines = block.split("\n");
 
   if (lines.every((line) => /^[-*]\s+/.test(line))) {
