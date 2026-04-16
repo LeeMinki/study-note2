@@ -25,8 +25,12 @@ install_base_packages() {
 
 prepare_host_paths() {
   mkdir -p "$DATA_ROOT/backend/uploads"
-  touch "$DATA_ROOT/backend/data.json"
-  touch "$DATA_ROOT/backend/users.json"
+  if [ ! -s "$DATA_ROOT/backend/data.json" ]; then
+    printf '{"notes":[]}\n' > "$DATA_ROOT/backend/data.json"
+  fi
+  if [ ! -s "$DATA_ROOT/backend/users.json" ]; then
+    printf '{"users":[]}\n' > "$DATA_ROOT/backend/users.json"
+  fi
   chmod 750 "$DATA_ROOT" "$DATA_ROOT/backend" "$DATA_ROOT/backend/uploads"
   chmod 640 "$DATA_ROOT/backend/data.json" "$DATA_ROOT/backend/users.json"
 }
