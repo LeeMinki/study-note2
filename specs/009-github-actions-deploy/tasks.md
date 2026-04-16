@@ -138,6 +138,10 @@
 - [x] T060 Update deployment workflow variable and branch protection contract in `specs/009-github-actions-deploy/contracts/workflow-contract.md`
 - [x] T061 Fix GitOps image update parsing for `- name:` entries in `.github/workflows/deploy-main.yml`
 - [x] T062 Pin current MVP overlay to the latest pushed ECR images in `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml`
+- [x] T063 Add default Argo CD AppProject for core runtime compatibility in `infra/kubernetes/argocd/applications/study-note-mvp.yaml`
+- [x] T064 Ensure Argo CD `argocd-secret` `server.secretkey` is created during EC2 bootstrap in `infra/terraform/scripts/ec2-bootstrap.sh`
+- [x] T065 Configure k3s CoreDNS upstream to AWS VPC resolver for Argo CD GitHub DNS resolution in `infra/terraform/scripts/ec2-bootstrap.sh`
+- [x] T066 Verify deployed endpoint and API health after runtime fixes in `specs/009-github-actions-deploy/quickstart.md`
 
 ---
 

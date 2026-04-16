@@ -174,6 +174,9 @@ Use the 008 identity module baseline:
 ### Argo CD Sync 방식
 
 - Argo CD Application remains `infra/kubernetes/argocd/applications/study-note-mvp.yaml`.
+- Argo CD core runtime must include the `default` AppProject because the Application references it.
+- Argo CD core runtime must have `argocd-secret` `server.secretkey`; bootstrap creates it when missing.
+- k3s CoreDNS must resolve GitHub reliably; bootstrap points CoreDNS upstream to the AWS VPC resolver `169.254.169.253`.
 - The Application watches `infra/kubernetes/study-note/overlays/mvp`.
 - The main workflow updates image references in the GitOps overlay.
 - Argo CD sync is triggered by repository state change, not by direct Argo CD API calls.
@@ -197,6 +200,8 @@ Use the 008 identity module baseline:
   - Confirm `[skip deploy]` commit is produced only when content changes.
 - Argo CD sync/runtime failure:
   - Confirm Argo CD Application exists.
+  - Confirm default AppProject and `argocd-secret` `server.secretkey` exist.
+  - Confirm Argo CD repo-server can resolve `github.com` through k3s CoreDNS.
   - Confirm k3s namespace, ECR pull secret, and image tags exist.
   - Confirm pod image pull and readiness status on the EC2 k3s cluster.
 

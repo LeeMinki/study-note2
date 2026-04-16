@@ -33,6 +33,12 @@ infra/
 
 specs/
   001-study-note-app/
+  002-expand-note-layout/
+  003-image-paste-autosave/
+  004-auth-login/
+  005-signup-validation-and-fields/
+  006-account-profile-ui/
+  007-auth-form-reset-and-password-profile/
   008-aws-mvp-deploy/
   009-github-actions-deploy/
 ```
@@ -78,12 +84,15 @@ kubectl kustomize infra/kubernetes/study-note/overlays/mvp
 - Main merge workflows may publish images to ECR and update GitOps state.
 - AWS access should use GitHub OIDC, not long-lived AWS access keys.
 - Argo CD should reconcile from GitOps manifests; avoid direct cluster mutation from deployment workflows unless explicitly planned.
+- Current MVP endpoint is `http://3.38.149.233` on EC2 `i-00e45b6e3c8a1308d` in `ap-northeast-2`.
+- Argo CD core runtime needs the default AppProject, `argocd-secret` `server.secretkey`, and CoreDNS upstream resolution to GitHub.
 - Terraform state, tfvars, MCP config, and local credentials must never be committed.
 
 ## Recent Changes
 
-- 009-github-actions-deploy: Defined automatic deployment plan, PR/main workflow contracts, OIDC/ECR/GitOps operations contract, and 010 test insertion points.
-- 008-aws-mvp-deploy: Added AWS MVP deployment design with Terraform, single EC2 k3s, Argo CD core, ECR integration, and runtime operations docs.
+- 009-github-actions-deploy: Implemented PR checks, main deployment workflow, OIDC/ECR/GitOps handoff, runtime GitOps image tag fixes, and Argo CD core recovery notes.
+- 008-aws-mvp-deploy: Applied AWS MVP deployment with Terraform, single EC2 k3s, Argo CD core, ECR integration, and runtime operations docs.
+- 002-007: Added layout, image paste/autosave, authentication, profile, and password-management increments on top of the Study Note baseline.
 - 001-study-note-app: Established the Study Note frontend/backend monorepo application baseline.
 
 <!-- MANUAL ADDITIONS START -->

@@ -1,7 +1,9 @@
 # Spec Kit 에이전트 전환 가이드 (Codex ↔ Claude Code)
 
 이 문서는 Spec Kit 기반 프로젝트에서 **Claude Code**와 **Codex** 사이를 전환하는 절차를 설명합니다.
-기존 `.specify/specs/*` 산출물은 전환 후에도 그대로 유지됩니다.
+기존 `specs/*` 산출물은 전환 후에도 그대로 유지됩니다.
+
+현재 저장소의 활성 Spec Kit 통합은 Codex입니다. `.specify/integration.json`과 `.specify/init-options.json`은 Codex를 가리키는 상태가 정상입니다.
 
 ## 핵심 원칙
 
@@ -19,7 +21,7 @@
 
 - 명령은 **프로젝트 루트**에서 실행합니다.
 - 전환 전에 현재 작업 내용을 커밋합니다.
-- `.specify/specs/*` 산출물은 Git에 보존되어 있어야 합니다.
+- `specs/*` 산출물은 Git에 보존되어 있어야 합니다.
 
 ---
 
@@ -153,7 +155,7 @@ find .claude -maxdepth 4 -type f | sort
 
 | 항목 | 설명 |
 |------|------|
-| `.specify/specs/*` | 스펙·플랜·태스크 산출물 |
+| `specs/*` | 스펙·플랜·태스크 산출물 |
 | 애플리케이션 소스 코드 | 구현 파일 전체 |
 | Git 히스토리 | 커밋 이력 |
 

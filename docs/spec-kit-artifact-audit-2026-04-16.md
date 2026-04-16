@@ -39,3 +39,22 @@
 
 - `001-study-note-app`만 `contracts/openapi.yaml`이 유지되고, 이후 feature에는 별도 contracts 산출물이 없다.
 - 이번 작업 범위는 사용자가 직접 지적한 `research/data-model/quickstart` 복구와 코드-문서 정합성 보정에 집중했다.
+
+## 008/009 배포 문서 추가 점검
+
+### 확인된 불일치
+
+- `README.md`에는 `009-github-actions-deploy` 섹션이 없어서 현재 자동배포 구현 상태가 드러나지 않았다.
+- `README.md`, `infra/docs/operations.md`, `specs/008-aws-mvp-deploy/quickstart.md` 일부 문구가 실제 AWS 적용 전 상태로 남아 있었다.
+- `CLAUDE.md`는 산출물 위치를 `.specify/specs/**`로 안내했지만 실제 저장소는 `specs/**`를 사용한다.
+- `docs/agent-switching-guide.md`도 같은 경로 오기를 포함하고 있었다.
+- `infra/docs/secrets.md`는 k3s ECR pull secret과 `Deploy Main` 변수 누락 실패 동작을 최신 구현대로 설명하지 않았다.
+- `009` 산출물은 실제 런타임 복구로 추가된 default AppProject, `server.secretkey`, CoreDNS upstream 보강 사항을 충분히 반영하지 않았다.
+
+### 반영 조치
+
+- README에 `009-github-actions-deploy` 현황과 현재 공인 엔드포인트를 추가했다.
+- AGENTS/CLAUDE/agent-switching 문서를 Codex 활성 통합과 실제 `specs/**` 경로 기준으로 맞췄다.
+- 운영/시크릿 문서를 현재 배포된 EC2, Argo CD, ECR pull secret, OIDC 동작 기준으로 보정했다.
+- 008/009 quickstart와 009 plan/tasks에 런타임 검증 결과와 Argo CD core 복구 항목을 반영했다.
+- `.specify/init-options.json`과 `.specify/integration.json`을 Codex 통합 기준으로 정리했다.

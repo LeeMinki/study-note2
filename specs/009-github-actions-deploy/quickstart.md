@@ -10,6 +10,17 @@
   - `AWS_DEPLOY_ROLE_ARN`
 - No long-lived AWS access key is stored as the default deployment credential.
 
+## Current Runtime Verification
+
+2026-04-16 기준 009 자동배포와 런타임 보강은 적용되어 있다.
+
+- PR #25: GitOps image tag update parsing fix and current ECR image pin
+- PR #26: Argo CD core default AppProject, `server.secretkey`, and CoreDNS runtime initialization fixes
+- `Deploy Main`: main 병합 후 ECR image publish와 `[skip deploy]` GitOps commit 생성 확인
+- Public endpoint: `http://3.38.149.233`
+- API health: `http://3.38.149.233/api/health`
+- Argo CD Application: `study-note-mvp` `Synced/Healthy`
+
 ## PR Verification Flow
 
 1. Create a branch from `main`.
@@ -72,6 +83,10 @@ Do not require `Deploy Main` as a PR status check because it runs after merge.
 - Check Argo CD Application status.
 - Check k3s pods in the `study-note` namespace.
 - Check image pull errors and the `ecr-registry` pull secret.
+- Check whether `kustomization.yaml` image entries use the supported `- name:` structure.
+- Check whether the `default` AppProject exists in the `argocd` namespace.
+- Check whether `argocd-secret` contains `server.secretkey`.
+- Check whether Argo CD repo-server can resolve `github.com`; if not, inspect k3s CoreDNS upstream `169.254.169.253`.
 
 ## 010 Test Placeholder
 
