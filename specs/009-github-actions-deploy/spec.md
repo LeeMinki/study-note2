@@ -78,7 +78,7 @@
 ### Functional Requirements
 
 - **FR-001**: 시스템은 PR 생성 또는 업데이트 시 운영 배포 없이 기본 검증을 자동 실행해야 한다.
-- **FR-002**: PR 검증은 lint 또는 그에 준하는 정적 점검, 애플리케이션 빌드 가능성, 컨테이너 이미지 생성 가능성, 배포 명세와 YAML 기본 유효성을 확인해야 한다.
+- **FR-002**: PR 검증은 빌드 컴파일러 수준의 정적 점검(TypeScript 컴파일 등 빌드 오류 검출 포함), 애플리케이션 빌드 가능성, 컨테이너 이미지 생성 가능성, 배포 명세와 YAML 기본 유효성을 확인해야 한다. 별도 lint 도구는 010에서 결정한다.
 - **FR-003**: PR 검증 결과는 GitHub PR 화면에서 성공, 실패, 진행 중 상태로 확인 가능해야 한다.
 - **FR-004**: 시스템은 branch protection의 required status checks로 연결할 수 있도록 `PR Checks` 흐름과 `Terraform fmt and validate`, `App and image build`, `Kubernetes manifest sanity` check 이름을 명확히 제공해야 한다.
 - **FR-005**: 시스템은 main 브랜치 병합 후에만 최신 애플리케이션 버전을 빌드하고 이미지 저장소에 게시해야 한다.
