@@ -10,7 +10,7 @@
 - **Alternatives considered**: 백엔드 preferences API — 기기 간 동기화 가능하나 새 엔드포인트/모델/저장소 추가 필요. 현재 스코프 대비 과도.
 
 ### 레이아웃 전환 메커니즘
-- **Decision**: CSS class 토글 (`.contentGrid--wide`)
+- **Decision**: CSS class 토글 (`.contentGrid--narrow`, `.contentGrid--wide`)
 - **Rationale**: JavaScript 연산 없이 즉각적 전환. CSS 미디어쿼리와 자연스럽게 통합. 기존 `@media (max-width: 880px)` 패턴과 일관성 유지.
 - **Alternatives considered**: CSS-in-JS inline style — 동일하게 동작하나 기존 코드 스타일과 불일치.
 
@@ -23,3 +23,8 @@
 - **Decision**: 커스텀 훅 `useLayoutPreference`
 - **Rationale**: App.jsx에서 localStorage 읽기/쓰기 로직 분리. 재사용 가능. 기존 `useKeyboardSave` 훅 패턴과 일관성.
 - **Alternatives considered**: App.jsx 직접 구현 — 단순하지만 관심사 분리 미흡.
+
+### 레이아웃 모드 범위
+- **Decision**: `narrow` | `default` | `wide` 3단계 지원 유지
+- **Rationale**: 현재 구현은 P3까지 반영되어 있어 좁음/기본/넓음 모두 localStorage와 UI에 연결되어 있다. 문서도 구현 상태와 맞춰야 이후 작업자가 혼동하지 않는다.
+- **Alternatives considered**: `default` | `wide` 2단계로 축소 문서화 — 현재 코드와 불일치하므로 부적절.
