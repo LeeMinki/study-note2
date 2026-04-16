@@ -49,6 +49,7 @@ resource "aws_instance" "this" {
   associate_public_ip_address = var.associate_public_ip
   iam_instance_profile        = var.instance_profile_name
   user_data                   = var.bootstrap_script
+  user_data_replace_on_change = true
 
   root_block_device {
     volume_size = var.root_volume_size_gib

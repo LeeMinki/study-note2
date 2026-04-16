@@ -4,6 +4,8 @@ set -euo pipefail
 LOG_FILE="/var/log/study-note-bootstrap.log"
 DATA_ROOT="/var/lib/study-note"
 KUBECONFIG_PATH="/etc/rancher/k3s/k3s.yaml"
+APP_NAMESPACE="study-note"
+ARGO_APP_MANIFEST_URL="https://raw.githubusercontent.com/LeeMinki/study-note2/main/infra/kubernetes/argocd/applications/study-note-mvp.yaml"
 
 exec > >(tee -a "$LOG_FILE") 2>&1
 
@@ -12,9 +14,9 @@ echo "[study-note] bootstrap started at $(date -Is)"
 install_base_packages() {
   if command -v apt-get >/dev/null 2>&1; then
     apt-get update -y
-    apt-get install -y curl ca-certificates jq
+    apt-get install -y curl ca-certificates jq awscli
   elif command -v dnf >/dev/null 2>&1; then
-    dnf install -y curl ca-certificates jq
+    dnf install -y curl ca-certificates jq awscli
   else
     echo "[study-note] unsupported package manager" >&2
     exit 1
@@ -65,8 +67,39 @@ install_argocd_core() {
     return
   fi
 
-  kubectl apply -n argocd -f "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/core-install.yaml"
-  kubectl rollout status deployment/argocd-application-controller -n argocd --timeout=180s
+  kubectl apply --server-side -n argocd -f "https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/core-install.yaml"
+  kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=180s
+}
+
+create_ecr_pull_secret() {
+  export KUBECONFIG="$KUBECONFIG_PATH"
+
+  local identity_document
+  local region
+  local account_id
+  local registry
+  local token
+
+  identity_document="$(curl -fsS http://169.254.169.254/latest/dynamic/instance-identity/document)"
+  region="$(printf "%s" "$identity_document" | jq -r ".region")"
+  account_id="$(printf "%s" "$identity_document" | jq -r ".accountId")"
+  registry="${account_id}.dkr.ecr.${region}.amazonaws.com"
+  token="$(aws ecr get-login-password --region "$region")"
+
+  kubectl create namespace "$APP_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+  kubectl create secret docker-registry ecr-registry \
+    --namespace "$APP_NAMESPACE" \
+    --docker-server="$registry" \
+    --docker-username=AWS \
+    --docker-password="$token" \
+    --dry-run=client \
+    -o yaml | kubectl apply -f -
+}
+
+install_argocd_application() {
+  export KUBECONFIG="$KUBECONFIG_PATH"
+
+  kubectl apply -n argocd -f "$ARGO_APP_MANIFEST_URL"
 }
 
 install_base_packages
@@ -74,5 +107,7 @@ prepare_host_paths
 install_k3s
 wait_for_k3s
 install_argocd_core
+create_ecr_pull_secret
+install_argocd_application
 
 echo "[study-note] bootstrap completed at $(date -Is)"

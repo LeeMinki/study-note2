@@ -18,6 +18,7 @@ Thumbs.db
 *.tfstate.*
 *.tfvars
 *.tfplan
+tfplan
 .terraform.lock.hcl
 .kube/
 kubeconfig*

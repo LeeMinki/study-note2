@@ -13,6 +13,8 @@ spec:
       labels:
         app: study-note-frontend
     spec:
+      imagePullSecrets:
+        - name: ecr-registry
       containers:
         - name: frontend
           image: 000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-frontend:latest
