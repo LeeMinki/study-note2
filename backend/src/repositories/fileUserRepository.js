@@ -19,8 +19,7 @@ async function readUsersDocument() {
 
   const rawContent = await fs.readFile(dataFilePath, "utf8");
   if (!rawContent.trim()) {
-    // hostPath가 빈 파일만 만든 경우 첫 요청에서 안전하게 초기화한다.
-    await writeUsersDocument(emptyUsersDocument);
+    // 빈 저장소 첫 로그인은 쓰기 없이 빈 문서로 처리해 마운트 파일 잠금 영향을 피한다.
     return { ...emptyUsersDocument, users: [...emptyUsersDocument.users] };
   }
 
