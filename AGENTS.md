@@ -1,30 +1,90 @@
 # study-note2 Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-16
+Auto-generated from feature plans and curated for this repository. Last updated: 2026-04-16
 
 ## Active Technologies
 
-- HCL for infrastructure, YAML for Kubernetes/GitHub Actions, shell scripts for EC2 bootstrap, existing Node.js frontend/backend runtime + Terraform CLI, AWS provider, k3s installer, Argo CD, GitHub Actions, container registry integration (008-aws-mvp-deploy)
+- Frontend: React SPA with Vite, Axios-based HTTP integration, Docker image build.
+- Backend: Node.js 22, Express, local JSON-file persistence owned by the backend.
+- Infrastructure: Terraform for AWS MVP infrastructure, k3s on a single EC2 instance, Argo CD core for GitOps reconciliation.
+- CI/CD: GitHub Actions, GitHub OIDC to AWS, Amazon ECR images `study-note-backend` and `study-note-frontend`.
+- Runtime manifests: Kubernetes YAML and Kustomize overlays under `infra/kubernetes/`.
 
 ## Project Structure
 
 ```text
 backend/
+  src/
+  Dockerfile
+  package.json
+
 frontend/
-tests/
+  src/
+  Dockerfile
+  package.json
+
+infra/
+  terraform/
+  kubernetes/
+  docs/
+
+.github/
+  workflows/
+
+specs/
+  001-study-note-app/
+  008-aws-mvp-deploy/
+  009-github-actions-deploy/
 ```
 
 ## Commands
 
-# Add commands for HCL for infrastructure, YAML for Kubernetes/GitHub Actions, shell scripts for EC2 bootstrap, existing Node.js frontend/backend runtime
+```bash
+# Frontend
+cd frontend
+npm ci
+npm run build
+
+# Backend
+cd backend
+npm ci
+node -e "const { createApp } = require('./src/app'); const app = createApp(); const server = app.listen(0, () => server.close());"
+
+# Docker image sanity
+docker build -t study-note-backend:local -f backend/Dockerfile backend
+docker build -t study-note-frontend:local -f frontend/Dockerfile frontend
+
+# Terraform MVP validation
+terraform fmt -check -recursive infra/terraform
+terraform -chdir=infra/terraform/environments/mvp init -backend=false
+terraform -chdir=infra/terraform/environments/mvp validate
+
+# Kubernetes manifest sanity
+kubectl kustomize infra/kubernetes/study-note/overlays/mvp
+```
 
 ## Code Style
 
-HCL for infrastructure, YAML for Kubernetes/GitHub Actions, shell scripts for EC2 bootstrap, existing Node.js frontend/backend runtime: Follow standard conventions
+- Keep frontend and backend strictly separated. Frontend code must call backend only through HTTP APIs.
+- Keep backend JSON responses in `{ success, data, error }` envelope form.
+- Use English identifiers and filenames. Use PascalCase for React components and camelCase for variables/functions.
+- Write code comments and commit messages in Korean.
+- Do not install new packages without user approval.
+- Prefer simple local state, direct data flow, and small reviewable changes.
+
+## Deployment Notes
+
+- PR workflows must validate only; they must not publish images or deploy production.
+- Main merge workflows may publish images to ECR and update GitOps state.
+- AWS access should use GitHub OIDC, not long-lived AWS access keys.
+- Argo CD should reconcile from GitOps manifests; avoid direct cluster mutation from deployment workflows unless explicitly planned.
+- Terraform state, tfvars, MCP config, and local credentials must never be committed.
 
 ## Recent Changes
 
-- 008-aws-mvp-deploy: Added HCL for infrastructure, YAML for Kubernetes/GitHub Actions, shell scripts for EC2 bootstrap, existing Node.js frontend/backend runtime + Terraform CLI, AWS provider, k3s installer, Argo CD, GitHub Actions, container registry integration
+- 009-github-actions-deploy: Defined automatic deployment plan, PR/main workflow contracts, OIDC/ECR/GitOps operations contract, and 010 test insertion points.
+- 008-aws-mvp-deploy: Added AWS MVP deployment design with Terraform, single EC2 k3s, Argo CD core, ECR integration, and runtime operations docs.
+- 001-study-note-app: Established the Study Note frontend/backend monorepo application baseline.
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
