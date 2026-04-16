@@ -13,6 +13,8 @@ spec:
       labels:
         app: study-note-backend
     spec:
+      imagePullSecrets:
+        - name: ecr-registry
       containers:
         - name: backend
           image: 000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-backend:latest

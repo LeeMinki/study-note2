@@ -21,6 +21,26 @@ resource "aws_iam_instance_profile" "instance" {
   role = aws_iam_role.instance.name
 }
 
+data "aws_iam_policy_document" "instance_ecr_pull" {
+  statement {
+    sid = "EcrPull"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
+      "ecr:DescribeImages",
+      "ecr:GetAuthorizationToken",
+      "ecr:GetDownloadUrlForLayer"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "instance_ecr_pull" {
+  name   = "${var.name_prefix}-instance-ecr-pull-policy"
+  role   = aws_iam_role.instance.id
+  policy = data.aws_iam_policy_document.instance_ecr_pull.json
+}
+
 resource "aws_iam_openid_connect_provider" "github" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
