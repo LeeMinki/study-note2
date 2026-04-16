@@ -2,7 +2,20 @@
 
 ## 목적
 
-아무 인프라도 없는 AWS 상태에서 Study Note를 저비용 MVP로 배포하기 위한 첫 실행 흐름을 정리한다. 목표는 단일 EC2, 단일 k3s, 단일 공인 엔드포인트, GitHub Actions 기반 배포 자동화까지 도달하는 것이다.
+아무 인프라도 없는 AWS 상태에서 Study Note를 저비용 MVP로 배포하거나, 현재 MVP 환경을 재생성하기 위한 실행 흐름을 정리한다. 목표는 단일 EC2, 단일 k3s, 단일 공인 엔드포인트, GitHub Actions 기반 배포 자동화까지 도달하는 것이다.
+
+## 현재 적용 상태
+
+2026-04-16 기준 MVP 환경은 이미 적용되어 있다.
+
+- AWS 계정: `107015853205`
+- 리전: `ap-northeast-2`
+- EC2 인스턴스: `i-00e45b6e3c8a1308d`
+- 공인 엔드포인트: `http://3.38.149.233`
+- API health: `http://3.38.149.233/api/health`
+- Argo CD Application: `study-note-mvp` `Synced/Healthy`
+
+아래 절차는 신규 생성, 재생성, 복구 시 기준 절차로 사용한다.
 
 ## 1. 사전 준비
 
@@ -39,11 +52,11 @@ infra/
 └── docs/
 ```
 
-## 3. 첫 배포 순서
+## 3. 신규 배포 또는 재생성 순서
 
 1. `infra/terraform/environments/mvp`에 추적되지 않는 `terraform.tfvars`를 준비한다.
 2. `terraform fmt`, `terraform init -backend=false`, `terraform validate`, `terraform plan`으로 검증한다.
-3. 사용자 승인 후에만 `terraform apply`로 VPC, 보안 그룹, EC2, IAM 리소스를 생성한다.
+3. 사용자 승인 후에만 `terraform apply`로 VPC, 보안 그룹, EC2, IAM 리소스를 생성하거나 변경한다.
 4. EC2 부트스트랩에서 k3s와 Argo CD core 설치가 완료될 때까지 확인한다.
 5. GitHub Actions OIDC용 AWS role trust policy와 저장소 권한을 확인한다.
 6. 기본 이미지 저장소로 Amazon ECR을 준비한다.
@@ -69,7 +82,7 @@ terraform validate
 terraform plan -var-file=terraform.tfvars
 ```
 
-`terraform apply`는 승인 전 실행하지 않는다.
+`terraform apply`와 `terraform destroy`는 승인 전 실행하지 않는다.
 
 ## 6. GitHub Actions 목표 상태
 
@@ -107,7 +120,7 @@ terraform plan -var-file=terraform.tfvars
 
 - 초기 MVP는 하나의 공인 엔드포인트만 제공한다.
 - 커스텀 도메인과 HTTPS는 선택사항이다.
-- 첫 검증은 공인 IP 또는 임시 DNS 수준으로도 충분하다.
+- 현재 첫 검증과 MVP 운영은 공인 IP HTTP 접속으로 충분하다고 판단한다.
 - 도메인/HTTPS는 비용, 운영 복잡도, 초기 검증 편의성을 비교한 뒤 후속 적용 여부를 결정한다.
 
 ## 9. 운영 문서 산출물

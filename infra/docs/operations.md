@@ -1,6 +1,16 @@
 # Study Note AWS MVP 운영 문서
 
-이 문서는 `008-aws-mvp-deploy` 범위의 단일 EC2 기반 저비용 MVP 배포와 1차 복구 절차를 정리한다. 실제 AWS 리소스 생성과 `terraform apply`는 사용자 승인 전까지 실행하지 않는다.
+이 문서는 `008-aws-mvp-deploy`와 `009-github-actions-deploy` 범위의 단일 EC2 기반 저비용 MVP 배포, 자동배포, 1차 복구 절차를 정리한다. 현재 MVP AWS 리소스는 적용되어 있으며, 신규 생성/재생성/파괴 작업은 사용자 승인 후에만 수행한다.
+
+## 현재 운영 상태
+
+- AWS 계정: `107015853205`
+- 리전: `ap-northeast-2`
+- EC2 인스턴스: `i-00e45b6e3c8a1308d`
+- 공인 엔드포인트: `http://3.38.149.233`
+- 앱 상태 확인: `http://3.38.149.233/api/health`
+- Argo CD Application: `study-note-mvp` `Synced/Healthy`
+- 현재 GitOps overlay image tag는 main 병합 후 `Deploy Main` workflow가 갱신한다.
 
 ## 범위
 
@@ -12,7 +22,7 @@
 - Argo CD core
 - Study Note frontend/backend Kubernetes 배포
 - 하나의 공인 HTTP 엔드포인트
-- GitHub Actions PR 검증과 main 병합 후 배포 초안
+- GitHub Actions PR 검증과 main 병합 후 자동배포
 
 제외:
 
@@ -28,8 +38,8 @@
 - `008` MVP에서는 Terraform state를 로컬 파일로 관리한다.
 - 원격 state backend와 locking은 구성하지 않는다.
 - 동시에 두 명 이상이 `terraform plan` 또는 `terraform apply`를 실행하면 안 된다.
-- 실제 `terraform apply`와 AWS 리소스 생성은 사용자 승인 후에만 실행한다.
-- 원격 state, locking, 권한 분리는 후속 `009` 후보로 남긴다.
+- 신규 `terraform apply`, `terraform destroy`, AWS 리소스 재생성은 사용자 승인 후에만 실행한다.
+- 원격 state, locking, 권한 분리는 후속 spec 후보로 남긴다.
 
 ## 의존성 승인 체크포인트
 
@@ -42,10 +52,13 @@
 - Terraform user data는 `infra/terraform/scripts/ec2-bootstrap.sh`를 EC2 부팅 시 실행한다.
 - 스크립트는 `curl`, `ca-certificates`, `jq` 같은 기본 운영 도구만 설치한다.
 - k3s는 단일 노드 server 모드로 설치한다.
+- CoreDNS upstream은 AWS VPC resolver `169.254.169.253`을 사용하도록 보정한다.
+- Argo CD core 설치 후 default AppProject와 `argocd-secret` `server.secretkey`를 보장한다.
+- ECR pull을 위해 `study-note` namespace의 `ecr-registry` imagePullSecret을 생성/갱신한다.
 - kubeconfig는 `/etc/rancher/k3s/k3s.yaml`에 두며, bootstrap 확인은 `kubectl get nodes`로 수행한다.
 - 백엔드 로컬 저장소는 `/var/lib/study-note/backend` 아래에 둔다.
 - bootstrap 로그는 `/var/log/study-note-bootstrap.log`에서 확인한다.
-- 이 스크립트는 EC2 생성 승인 전까지 로컬에서 실행하지 않는다.
+- 이 스크립트는 EC2 user data로 실행되며, 복구 시에는 EC2 내부에서만 수동 재실행한다.
 
 ## Argo CD와 앱 배포 구조
 
@@ -56,7 +69,7 @@
 - 외부 접속은 k3s 기본 Traefik ingress 하나로 제공한다.
 - `/api`와 `/uploads`는 backend service로, `/`는 frontend service로 라우팅한다.
 
-## 첫 배포 전 준비
+## 신규 배포 또는 재생성 전 준비
 
 1. AWS 계정과 결제 설정을 확인한다.
 2. 운영자 public IP를 확인하고 `ssh_ingress_cidr`에 `/32`로 넣는다.
@@ -82,7 +95,7 @@ terraform plan -var-file=terraform.tfvars
 - `terraform plan`은 AWS API 조회가 필요할 수 있다.
 - `terraform apply`는 사용자 승인 후에만 실행한다.
 
-## 실제 적용 승인 후 배포 순서
+## 신규 적용 또는 재생성 절차
 
 1. `terraform.tfvars.example`을 참고해 추적되지 않는 `terraform.tfvars`를 만든다.
 2. 사용자 승인 후 `terraform apply -var-file=terraform.tfvars`를 실행한다.
@@ -132,9 +145,9 @@ sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get pods -A
 |------|------|------|------------|
 | 공인 IP HTTP | 가장 빠르고 저렴함 | 보안과 사용자 신뢰 약함 | 기본 MVP 경로 |
 | 도메인 + HTTP | 접속 주소가 안정적임 | DNS 준비 필요 | 선택사항 |
-| 도메인 + HTTPS | 사용자 접속 보안 강화 | 인증서와 TLS 종료 설계 필요 | `009` 후보 |
+| 도메인 + HTTPS | 사용자 접속 보안 강화 | 인증서와 TLS 종료 설계 필요 | 후속 spec 후보 |
 
-`008`에서는 외부 접속 가능성 확인을 우선한다. HTTPS 정식화는 Route 53, ACM, ingress/TLS 구성이 함께 필요하므로 후속 spec으로 분리한다.
+현재 MVP는 공인 IP HTTP 접속을 기본 운영 경로로 사용한다. HTTPS 정식화는 Route 53, ACM, ingress/TLS 구성이 함께 필요하므로 후속 spec으로 분리한다.
 
 ## 1차 복구 절차
 
@@ -243,25 +256,40 @@ sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl describe pod -n study-note <po
 
 # ECR pull secret 확인
 sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get secret -n study-note
+
+# Argo CD core 필수 런타임 리소스 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get appproject default -n argocd
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get secret argocd-secret -n argocd -o jsonpath='{.data.server\.secretkey}'
+
+# Argo CD repo-server의 GitHub DNS 조회 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl exec -n argocd deploy/argocd-repo-server -- getent hosts github.com
+
+# k3s CoreDNS upstream 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get configmap coredns -n kube-system -o yaml | rg '169.254.169.253'
 ```
 
 **재실행 기준**:
 - Argo CD Application이 없으면 `kubectl apply -f infra/kubernetes/argocd/applications/study-note-mvp.yaml`을 실행한다.
+- default AppProject가 없으면 같은 application manifest에 포함된 AppProject 정의를 다시 적용한다.
+- `server.secretkey`가 없으면 bootstrap의 `ensure_argocd_secret_key` 로직을 재실행하거나 동일한 값을 수동 생성한다.
+- Argo CD가 GitHub repository를 조회하지 못하면 CoreDNS upstream과 EC2 outbound network를 먼저 확인한다.
 - image pull 오류면 ECR pull secret이 올바르게 구성되었는지 확인한다.
 - GitOps 상태가 최신인데도 동기화 안 되면 Argo CD에서 수동 Sync를 실행한다.
 
 ### Argo CD GitOps 핸드오프 방식 (T034)
 
-GitHub Actions는 절대로 클러스터에 직접 `kubectl apply`하지 않는다.
+정상 배포 경로에서 GitHub Actions는 클러스터에 직접 `kubectl apply`하지 않는다.
 
 | 역할 | 담당 |
 |------|------|
 | 이미지 빌드 및 ECR push | GitHub Actions |
 | `kustomization.yaml` image tag 갱신 및 commit | GitHub Actions |
 | 클러스터 상태 동기화 | Argo CD (automated sync) |
-| 클러스터 직접 apply | **금지** |
+| 클러스터 직접 apply | 정상 배포 경로에서는 금지 |
 
 Argo CD는 `main` 브랜치의 `infra/kubernetes/study-note/overlays/mvp` 경로를 주기적으로 폴링하며, GitOps 상태 변경을 감지하면 자동으로 동기화한다.
+
+비상 복구에서만 운영자가 EC2 내부 kubeconfig로 `kubectl apply`를 사용할 수 있다. 이 경우 반드시 같은 변경을 Git에 반영해 Argo CD desired state와 런타임 상태가 다시 일치해야 한다.
 
 ### 010 테스트 확장 지점 (T045)
 

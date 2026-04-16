@@ -13,9 +13,10 @@
 
 | 이름 | 위치 | 설명 |
 |------|------|------|
-| `AWS_DEPLOY_ROLE_ARN` | GitHub Actions variable 또는 secret | OIDC로 assume할 배포 role ARN |
+| `AWS_DEPLOY_ROLE_ARN` | GitHub Actions variable | OIDC로 assume할 배포 role ARN |
 | `AWS_REGION` | GitHub Actions variable | 단일 AWS 리전 |
 | `JWT_SECRET` | Kubernetes Secret | 백엔드 JWT 서명 값 |
+| `server.secretkey` | Kubernetes Secret `argocd-secret` | Argo CD core server secret key |
 
 ## GitHub OIDC 신뢰 정책 (T036)
 
@@ -44,7 +45,8 @@
 
 - GitHub Actions는 OIDC로 AWS role을 assume한 뒤 ECR 로그인을 수행한다.
 - ECR repository는 `study-note-backend`, `study-note-frontend`를 기본 이름으로 사용한다.
-- k3s 런타임 pull 권한은 EC2 instance role 또는 imagePullSecret 중 더 단순한 경로로 후속 구현에서 확정한다.
+- k3s 런타임 pull 권한은 EC2 bootstrap이 `study-note` namespace에 생성하는 `ecr-registry` imagePullSecret을 사용한다.
+- `ecr-registry` 값은 ECR token 기반의 단기 인증 정보이므로 Git에 커밋하지 않는다.
 
 ## Kubernetes Secret 처리
 
@@ -62,6 +64,7 @@ kubectl create secret generic study-note-secret \
 
 - 위 명령은 클러스터 생성 후에만 실행한다.
 - shell history에 민감값이 남지 않도록 운영 환경에서는 안전한 secret 주입 방식을 사용한다.
+- Argo CD core의 `server.secretkey`는 bootstrap에서 `argocd-secret`에 생성한다. 이 값도 Git에 커밋하지 않는다.
 
 ## GitHub Actions variables (T038)
 
@@ -77,7 +80,7 @@ kubectl create secret generic study-note-secret \
 1. `terraform apply` 완료 후 output의 `deployment_role_arn` 값을 복사한다.
 2. GitHub 저장소 → Settings → Secrets and variables → Actions → Variables 탭으로 이동한다.
 3. `AWS_REGION`과 `AWS_DEPLOY_ROLE_ARN`을 각각 추가한다.
-4. 변수가 설정되지 않으면 `Deploy Main` workflow가 `배포 건너뜀` 메시지와 함께 skip된다.
+4. 변수가 설정되지 않으면 `[skip deploy]` 커밋이 아닌 `Deploy Main` workflow는 명시적으로 실패한다.
 
 ## 금지 사항
 

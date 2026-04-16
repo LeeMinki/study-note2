@@ -57,6 +57,7 @@
 **First checks**:
 
 - `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml` was updated.
+- Image entries use the supported `- name:` structure.
 - Rendered manifest is non-empty.
 - Commit includes `[skip deploy]` to prevent recursion.
 
@@ -69,6 +70,9 @@
 **First checks**:
 
 - Argo CD Application `study-note-mvp` exists.
+- Argo CD default AppProject exists.
+- `argocd-secret` contains `server.secretkey`.
+- Argo CD repo-server can resolve `github.com` through k3s CoreDNS.
 - k3s node is ready.
 - `study-note` namespace exists.
 - ECR pull secret exists.
