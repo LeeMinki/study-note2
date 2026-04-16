@@ -163,6 +163,107 @@ sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl logs -n study-note <pod-name>
 - image tag가 overlay에 반영됐는지 확인한다.
 - GHCR 전환은 `008`에서 즉시 수행하지 않고 후속 결정으로 남긴다.
 
+## 009 GitHub Actions 자동배포 운영 가이드
+
+### branch protection required checks 설정 (T043)
+
+GitHub → 저장소 → Settings → Branches → main 브랜치 보호 규칙에 아래 check 이름을 추가한다:
+
+| check 이름 | 대응 job | 등록 여부 |
+|------------|----------|-----------|
+| `Terraform fmt and validate` | `pr-checks.yml / terraform` | required check로 추가 |
+| `App and image build` | `pr-checks.yml / app-build` | required check로 추가 |
+| `Kubernetes manifest sanity` | `pr-checks.yml / manifest-sanity` | required check로 추가 |
+
+주의:
+- check 이름은 workflow의 `name:` 필드 값과 **정확히** 일치해야 한다.
+- `Deploy Main`은 PR required check가 아니다 — main 병합 후에만 실행된다.
+
+### OIDC 인증 실패 확인 및 재실행 기준 (T039)
+
+**확인 순서**:
+
+1. GitHub Actions 로그에서 `Configure AWS credentials` step 오류를 확인한다.
+2. `AWS_REGION` 저장소 변수가 설정되어 있는지 확인한다.
+3. `AWS_DEPLOY_ROLE_ARN` 저장소 변수가 정확한 ARN 형식인지 확인한다.
+4. IAM trust policy의 subject 조건이 `repo:LeeMinki/study-note2:ref:refs/heads/main`과 일치하는지 확인한다.
+5. workflow `permissions`에 `id-token: write`가 선언되어 있는지 확인한다.
+
+**재실행 기준**: 변수 또는 IAM trust policy를 수정한 뒤 GitHub Actions에서 실패한 run을 `Re-run failed jobs`로 재실행한다.
+
+### ECR 게시 실패 확인 및 재실행 기준 (T040)
+
+**확인 순서**:
+
+1. `Login to Amazon ECR` step이 성공했는지 확인한다.
+2. IAM role에 `ecr:GetAuthorizationToken`, `ecr:BatchCheckLayerAvailability`, `ecr:InitiateLayerUpload`, `ecr:PutImage` 권한이 있는지 확인한다.
+3. `Ensure ECR repositories` step에서 `study-note-backend`, `study-note-frontend` repository가 생성 또는 확인됐는지 확인한다.
+4. image tag(`${{ github.sha }}`) 형식이 ECR 태그 규칙과 충돌하지 않는지 확인한다.
+
+**재실행 기준**: 일시적 네트워크 오류면 바로 재실행한다. 권한 문제면 IAM 정책 수정 후 재실행한다.
+
+### GitOps 갱신 실패 확인 및 재실행 기준 (T041)
+
+**확인 순서**:
+
+1. `Update GitOps image tags` step 로그에서 Python 스크립트 오류를 확인한다.
+2. `infra/kubernetes/study-note/overlays/mvp/kustomization.yaml`의 `images:` 블록 구조가 변경되지 않았는지 확인한다.
+3. `Validate rendered manifests` step에서 kustomize 렌더 결과가 비어 있지 않은지 확인한다.
+4. `Commit GitOps update` step에서 Git push 권한(`contents: write`)이 있는지 확인한다.
+
+**재실행 기준**: `kustomization.yaml` 구조 변경이 원인이면 Python 스크립트와 YAML 구조를 맞춘 뒤 재실행한다. Git push 오류는 workflow 재실행으로 해결되는 경우가 많다.
+
+### Argo CD 동기화 실패 확인 및 런타임 점검 (T042)
+
+**확인 순서**:
+
+```bash
+# Argo CD Application 상태 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get applications -n argocd
+
+# 앱 상태 상세 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl describe application study-note-mvp -n argocd
+
+# study-note 네임스페이스 Pod 상태 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get pods -n study-note
+
+# image pull 오류 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl describe pod -n study-note <pod-name>
+
+# ECR pull secret 확인
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get secret -n study-note
+```
+
+**재실행 기준**:
+- Argo CD Application이 없으면 `kubectl apply -f infra/kubernetes/argocd/applications/study-note-mvp.yaml`을 실행한다.
+- image pull 오류면 ECR pull secret이 올바르게 구성되었는지 확인한다.
+- GitOps 상태가 최신인데도 동기화 안 되면 Argo CD에서 수동 Sync를 실행한다.
+
+### Argo CD GitOps 핸드오프 방식 (T034)
+
+GitHub Actions는 절대로 클러스터에 직접 `kubectl apply`하지 않는다.
+
+| 역할 | 담당 |
+|------|------|
+| 이미지 빌드 및 ECR push | GitHub Actions |
+| `kustomization.yaml` image tag 갱신 및 commit | GitHub Actions |
+| 클러스터 상태 동기화 | Argo CD (automated sync) |
+| 클러스터 직접 apply | **금지** |
+
+Argo CD는 `main` 브랜치의 `infra/kubernetes/study-note/overlays/mvp` 경로를 주기적으로 폴링하며, GitOps 상태 변경을 감지하면 자동으로 동기화한다.
+
+### 010 테스트 확장 지점 (T045)
+
+009 workflow는 빌드 검증 중심이다. 010 spec에서 아래 지점에 테스트를 추가한다:
+
+| 삽입 위치 | 삽입 내용 | workflow 파일 |
+|-----------|-----------|---------------|
+| 프론트엔드 `npm ci` 이후 | `npm test` (unit/component) | `pr-checks.yml / app-build` |
+| 백엔드 `npm ci` 이후 | `npm test` (unit/integration) | `pr-checks.yml / app-build` |
+| 백엔드 startup sanity 이후 | API 계약 테스트 | `pr-checks.yml / app-build` |
+
+테스트 check를 branch protection required checks에 추가하는 시점은 010에서 test scope와 의존성 승인 이후로 결정한다.
+
 ## 009 이후 후속 spec 후보
 
 - Route 53 + ACM + HTTPS 정식화
