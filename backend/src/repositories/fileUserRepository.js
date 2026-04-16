@@ -36,7 +36,17 @@ async function readUsersDocument() {
 async function writeUsersDocument(document) {
   const serialized = JSON.stringify(document, null, 2);
   await fs.writeFile(tempFilePath, serialized);
-  await fs.rename(tempFilePath, dataFilePath);
+  try {
+    await fs.rename(tempFilePath, dataFilePath);
+  } catch (error) {
+    if (error.code !== "EBUSY" && error.code !== "EXDEV") {
+      throw error;
+    }
+
+    // Kubernetes subPath 파일 마운트는 rename 교체가 막힐 수 있어 직접 쓰기로 보정한다.
+    await fs.writeFile(dataFilePath, serialized);
+    await fs.rm(tempFilePath, { force: true });
+  }
 }
 
 async function findUserByEmail(email) {
