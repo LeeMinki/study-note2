@@ -29,16 +29,16 @@ module "identity" {
 module "compute" {
   source = "../../modules/compute"
 
-  name_prefix               = local.name_prefix
-  ami_id                    = var.ami_id
-  instance_type             = var.instance_type
-  key_name                  = var.key_name
-  public_subnet_id          = module.network.public_subnet_id
-  vpc_id                    = module.network.vpc_id
-  ssh_ingress_cidr          = var.ssh_ingress_cidr
-  instance_profile_name     = module.identity.instance_profile_name
-  bootstrap_script          = local.bootstrap_script
-  associate_public_ip       = true
-  root_volume_size_gib      = 30
-  root_volume_type          = "gp3"
+  name_prefix           = local.name_prefix
+  ami_id                = var.ami_id
+  instance_type         = var.instance_type
+  key_name              = var.key_name
+  public_subnet_id      = module.network.public_subnet_id
+  vpc_id                = module.network.vpc_id
+  ssh_ingress_cidr      = var.ssh_ingress_cidr
+  instance_profile_name = module.identity.instance_profile_name
+  bootstrap_script      = local.bootstrap_script
+  associate_public_ip   = true
+  root_volume_size_gib  = 30
+  root_volume_type      = "gp3"
 }
