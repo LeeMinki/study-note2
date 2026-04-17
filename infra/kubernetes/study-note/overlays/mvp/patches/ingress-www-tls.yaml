@@ -1,7 +1,7 @@
 # www ingress 도메인명 패치
 - op: replace
   path: /spec/tls/0/hosts/0
-  value: www.DOMAIN_PLACEHOLDER
+  value: www.study-note.yuna.com
 - op: replace
   path: /spec/rules/0/host
-  value: www.DOMAIN_PLACEHOLDER
+  value: www.study-note.yuna.com

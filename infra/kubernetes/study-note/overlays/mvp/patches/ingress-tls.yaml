@@ -1,11 +1,10 @@
-# 실제 도메인명으로 DOMAIN_PLACEHOLDER를 교체하는 패치
-# 사용 전: DOMAIN_PLACEHOLDER를 실제 도메인으로 수정할 것 (예: study-note.example.com)
+# study-note.yuna.com ingress TLS 패치
 - op: replace
   path: /spec/tls/0/hosts/0
-  value: DOMAIN_PLACEHOLDER
+  value: study-note.yuna.com
 - op: replace
   path: /spec/tls/0/hosts/1
-  value: www.DOMAIN_PLACEHOLDER
+  value: www.study-note.yuna.com
 - op: replace
   path: /spec/rules/0/host
-  value: DOMAIN_PLACEHOLDER
+  value: study-note.yuna.com

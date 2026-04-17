@@ -6,7 +6,7 @@ spec:
   acme:
     # 운영용 — 발급 성공 시 브라우저 신뢰 인증서
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: REPLACE_WITH_OPERATOR_EMAIL
+    email: kai0122@naver.com
     privateKeySecretRef:
       name: letsencrypt-prod-account-key
     solvers:
