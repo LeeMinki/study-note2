@@ -3,10 +3,19 @@ kind: Ingress
 metadata:
   name: study-note
   namespace: study-note
+  annotations:
+    # cert-manager가 이 어노테이션을 읽어 Certificate CRD와 Secret을 자동 생성/갱신한다
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - DOMAIN_PLACEHOLDER
+        - www.DOMAIN_PLACEHOLDER
+      secretName: study-note-tls-secret
   rules:
-    - http:
+    - host: DOMAIN_PLACEHOLDER
+      http:
         paths:
           - path: /api
             pathType: Prefix

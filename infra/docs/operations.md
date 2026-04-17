@@ -342,6 +342,173 @@ Argo CD는 `main` 브랜치의 `infra/kubernetes/study-note/overlays/mvp` 경로
 
 테스트 check를 branch protection required checks에 추가하는 시점은 010에서 test scope와 의존성 승인 이후로 결정한다.
 
+## 011 도메인/HTTPS 운영 가이드
+
+### 적용 전 체크리스트
+
+```bash
+# 1. 도메인명을 patch 파일에 반영했는지 확인
+grep "DOMAIN_PLACEHOLDER" infra/kubernetes/study-note/overlays/mvp/patches/ingress-tls.yaml
+grep "DOMAIN_PLACEHOLDER" infra/kubernetes/study-note/overlays/mvp/patches/ingress-www-tls.yaml
+# 출력이 있으면 실제 도메인으로 교체 필요
+
+# 2. ClusterIssuer 이메일을 설정했는지 확인
+grep "REPLACE_WITH_OPERATOR_EMAIL" infra/kubernetes/cert-manager/cluster-issuer-*.yaml
+# 출력이 있으면 실제 이메일로 교체 필요
+
+# 3. terraform.tfvars에 domain_name 설정 여부 확인
+grep "domain_name" infra/terraform/environments/mvp/terraform.tfvars
+```
+
+### 초기 적용 순서
+
+```bash
+# Step 1: Terraform으로 Route 53 Hosted Zone + DNS 레코드 생성
+cd infra/terraform/environments/mvp
+terraform plan -var-file=terraform.tfvars   # Route 53 리소스 preview
+terraform apply -var-file=terraform.tfvars
+terraform output route53_nameservers         # NS 레코드 4개 확인
+
+# Step 2: 도메인 등록 기관에서 NS 레코드 교체 (전파 최대 48시간)
+# Step 3: DNS 전파 확인
+dig A <DOMAIN>                               # EC2 IP 반환 확인
+dig CNAME www.<DOMAIN>                       # DOMAIN 반환 확인
+
+# Step 4: Traefik HTTP→HTTPS 리디렉션 적용
+kubectl apply -f infra/kubernetes/kube-system/traefik-config.yaml
+kubectl rollout status deployment/traefik -n kube-system
+
+# Step 5: cert-manager 설치
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+kubectl wait --for=condition=Available deployment --all -n cert-manager --timeout=120s
+
+# Step 6: ClusterIssuer 적용 (staging 먼저)
+kubectl apply -f infra/kubernetes/cert-manager/cluster-issuer-staging.yaml
+# ... staging 테스트 후 production 전환
+kubectl apply -f infra/kubernetes/cert-manager/cluster-issuer-prod.yaml
+
+# Step 7: ingress TLS 적용 (Argo CD sync 또는 직접 apply)
+kubectl apply -k infra/kubernetes/study-note/overlays/mvp
+```
+
+### DNS 전파 확인
+
+```bash
+# NS 레코드 전파 확인
+dig NS <DOMAIN>
+
+# A 레코드 전파 확인
+dig A <DOMAIN>
+nslookup <DOMAIN>
+
+# www CNAME 확인
+dig CNAME www.<DOMAIN>
+
+# 브라우저 DNS 캐시 초기화 (WSL 외부 접속 시)
+# Chrome: chrome://net-internals/#dns → Clear host cache
+```
+
+### 인증서 상태 확인
+
+```bash
+# Certificate 상태 확인 (READY=True 목표)
+kubectl get certificate -n study-note
+
+# Certificate 상세 확인 (갱신 스케줄, 챌린지 상태)
+kubectl describe certificate study-note-tls -n study-note
+
+# ACME 챌린지 상태 확인 (발급 중일 때)
+kubectl get challenges -n study-note
+kubectl describe challenge -n study-note <challenge-name>
+
+# 인증서 유효 기간 확인
+kubectl get secret study-note-tls-secret -n study-note \
+  -o jsonpath='{.data.tls\.crt}' | base64 -d | openssl x509 -noout -dates
+
+# cert-manager 로그 확인
+kubectl logs -n cert-manager -l app=cert-manager --tail=50
+```
+
+### 인증서 갱신 실패 복구
+
+```bash
+# 인증서 강제 재발급 (Secret 삭제 → cert-manager 자동 재발급)
+kubectl delete secret study-note-tls-secret -n study-note
+# cert-manager가 Certificate를 감지하고 새 Secret 생성 (수 분 소요)
+kubectl get certificate -n study-note -w   # READY=True 대기
+
+# 챌린지 재시도 트리거
+kubectl delete challenge -n study-note --all
+
+# Rate limit 초과 시: 최대 7일 대기 또는 staging으로 전환 후 테스트
+```
+
+### Staging → Production 전환
+
+```bash
+# 1. staging 인증서 확인 (READY=True, 브라우저 경고 무시)
+kubectl get certificate -n study-note
+
+# 2. ingress 어노테이션을 production으로 변경
+#    infra/kubernetes/study-note/base/ingress.yaml 에서
+#    cert-manager.io/cluster-issuer: letsencrypt-staging
+#    → cert-manager.io/cluster-issuer: letsencrypt-prod 로 수정 후 apply
+
+# 3. staging Secret 삭제 → production Secret 자동 생성
+kubectl delete secret study-note-tls-secret -n study-note
+kubectl get certificate -n study-note -w   # production 인증서 발급 대기
+```
+
+### 장애 시 임시 우회
+
+| 장애 유형 | 우회 방법 |
+|----------|---------|
+| DNS 전파 미완료 | `http://3.38.149.233` IP 직접 접속 |
+| cert-manager 인증서 발급 실패 | HelmChartConfig 리디렉션 일시 해제 후 HTTP 운영 |
+| Traefik TLS 오류 | `kubectl delete helmchartconfig traefik -n kube-system` → HTTP-only로 복귀 |
+| 인증서 만료 임박 | 강제 재발급 절차 실행 |
+
+**Traefik 리디렉션 일시 해제**:
+
+```bash
+# HelmChartConfig 삭제 → HTTP-only로 즉시 복귀
+kubectl delete helmchartconfig traefik -n kube-system
+# 재활성화: kubectl apply -f infra/kubernetes/kube-system/traefik-config.yaml
+```
+
+### EC2 IP 변경 시 DNS 갱신
+
+EC2 인스턴스가 재생성되면 공인 IP가 변경된다. 아래 절차로 DNS를 갱신한다:
+
+```bash
+# 새 IP 확인
+aws ec2 describe-instances \
+  --query 'Reservations[*].Instances[*].PublicIpAddress' \
+  --profile study-note-admin
+
+# terraform.tfvars는 변경 불필요 — Terraform이 compute 모듈에서 새 IP를 참조
+cd infra/terraform/environments/mvp
+terraform apply -var-file=terraform.tfvars   # Route 53 A 레코드 자동 갱신
+
+# DNS TTL(기본 300초) 이후 전파 확인
+dig A <DOMAIN>
+```
+
+### 도메인 등록 만료 주의사항
+
+**도메인이 만료되면 DNS가 해제되어 서비스 전체 접속이 불가능해진다.**
+
+- 도메인 등록 기관에서 자동 갱신(Auto-Renew)을 활성화한다.
+- 매년 갱신 이메일을 확인하고 결제 정보를 최신으로 유지한다.
+- Route 53에서 도메인을 직접 등록한 경우: AWS Billing 알림을 설정한다.
+
+## 011 이후 후속 spec 후보
+
+- Elastic IP 도입 — EC2 재생성 시 IP 변경 방지 (현재 IP 직접 갱신 필요)
+- IP 직접 접속 차단 — 보안그룹에서 HTTP/HTTPS를 도메인 경유만 허용
+- Route 53 Health Check 기반 DNS failover
+- Argo CD 자동 sync 연동 (현재: 수동 kubectl apply 필요)
+
 ## 009 이후 후속 spec 후보
 
 - Route 53 + ACM + HTTPS 정식화

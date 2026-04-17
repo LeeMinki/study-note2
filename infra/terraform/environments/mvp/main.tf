@@ -42,3 +42,12 @@ module "compute" {
   root_volume_size_gib  = 30
   root_volume_type      = "gp3"
 }
+
+module "dns" {
+  source = "../../modules/dns"
+  count  = var.domain_name != "" ? 1 : 0
+
+  domain_name   = var.domain_name
+  ec2_public_ip = module.compute.public_ip
+  name_prefix   = local.name_prefix
+}

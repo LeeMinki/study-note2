@@ -67,3 +67,9 @@ variable "github_branch" {
   type        = string
   default     = "main"
 }
+
+variable "domain_name" {
+  description = "루트 도메인명 (예: study-note.example.com). 설정 시 Route 53 Hosted Zone과 DNS 레코드를 생성한다. 비워두면 DNS 모듈을 건너뛴다."
+  type        = string
+  default     = ""
+}
