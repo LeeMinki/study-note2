@@ -53,7 +53,8 @@ backend/
 ├── src/
 ├── tests/
 │   ├── auth.test.js
-│   ├── notes.test.js
+│   ├── protectedRoutes.test.js
+│   ├── responseEnvelope.test.js
 │   └── persistence.test.js
 └── package.json
 

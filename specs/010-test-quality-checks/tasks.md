@@ -52,6 +52,8 @@
 
 ### Tests for User Story 1
 
+Backend tests are the first implementation priority for this story. Complete T012-T015 before starting the frontend test tasks unless a dependency approval checkpoint blocks backend progress.
+
 - [ ] T012 [P] [US1] Add backend auth success/failure tests in `backend/tests/auth.test.js`
 - [ ] T013 [P] [US1] Add backend protected route unauthenticated tests in `backend/tests/protectedRoutes.test.js`
 - [ ] T014 [P] [US1] Add backend JSON envelope tests for representative success/error responses in `backend/tests/responseEnvelope.test.js`
@@ -150,6 +152,7 @@
 ### User Story Dependencies
 
 - **US1 (P1)**: First deliverable; creates meaningful automated tests.
+- **US1 backend-first note**: Complete backend regression tests T012-T015 before frontend tests T016-T018 to preserve the clarified backend-first priority.
 - **US2 (P2)**: Requires US1 test commands before workflow wiring.
 - **US3 (P3)**: Requires final workflow/check naming from US2.
 
