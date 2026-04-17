@@ -65,7 +65,7 @@ configure_coredns_upstream() {
   export KUBECONFIG="$KUBECONFIG_PATH"
 
   kubectl get configmap coredns -n kube-system -o yaml \
-    | sed 's#forward \. /etc/resolv.conf#forward . 169.254.169.253#' \
+    | sed 's#forward \. .*#forward . 1.1.1.1 8.8.8.8#' \
     | kubectl apply -f -
   kubectl rollout restart deployment/coredns -n kube-system
   kubectl rollout status deployment/coredns -n kube-system --timeout=180s

@@ -176,7 +176,7 @@ Use the 008 identity module baseline:
 - Argo CD Application remains `infra/kubernetes/argocd/applications/study-note-mvp.yaml`.
 - Argo CD core runtime must include the `default` AppProject because the Application references it.
 - Argo CD core runtime must have `argocd-secret` `server.secretkey`; bootstrap creates it when missing.
-- k3s CoreDNS must resolve GitHub reliably; bootstrap points CoreDNS upstream to the AWS VPC resolver `169.254.169.253`.
+- k3s CoreDNS must resolve GitHub reliably; bootstrap points CoreDNS upstream to public resolvers `1.1.1.1 8.8.8.8` because the current MVP k3s Pod CIDR overlaps the AWS VPC CIDR.
 - The Application watches `infra/kubernetes/study-note/overlays/mvp`.
 - The main workflow updates image references in the GitOps overlay.
 - Argo CD sync is triggered by repository state change, not by direct Argo CD API calls.

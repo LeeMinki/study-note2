@@ -53,7 +53,7 @@
 - Terraform user data는 `infra/terraform/scripts/ec2-bootstrap.sh`를 EC2 부팅 시 실행한다.
 - 스크립트는 `curl`, `ca-certificates`, `jq` 같은 기본 운영 도구만 설치한다.
 - k3s는 단일 노드 server 모드로 설치한다.
-- CoreDNS upstream은 AWS VPC resolver `169.254.169.253`을 사용하도록 보정한다.
+- CoreDNS upstream은 공용 resolver `1.1.1.1 8.8.8.8`을 사용하도록 보정한다.
 - Argo CD core 설치 후 default AppProject와 `argocd-secret` `server.secretkey`를 보장한다.
 - ECR pull을 위해 `study-note` namespace의 `ecr-registry` imagePullSecret을 생성/갱신한다.
 - kubeconfig는 `/etc/rancher/k3s/k3s.yaml`에 두며, bootstrap 확인은 `kubectl get nodes`로 수행한다.
@@ -304,7 +304,7 @@ sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get secret argocd-secret -n ar
 sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl exec -n argocd deploy/argocd-repo-server -- getent hosts github.com
 
 # k3s CoreDNS upstream 확인
-sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get configmap coredns -n kube-system -o yaml | rg '169.254.169.253'
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get configmap coredns -n kube-system -o yaml | rg '1.1.1.1 8.8.8.8'
 ```
 
 **재실행 기준**:
