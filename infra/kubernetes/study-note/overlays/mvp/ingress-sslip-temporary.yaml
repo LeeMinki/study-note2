@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: study-note-sslip-temporary
+  namespace: study-note
+  annotations:
+    # 정식 DNS 위임 전까지 sslip.io 기반 임시 HTTPS 접속을 제공한다
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - study-note.3.38.149.233.sslip.io
+      secretName: study-note-sslip-tls-secret
+  rules:
+    - host: study-note.3.38.149.233.sslip.io
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: study-note-backend
+                port:
+                  number: 3001
+          - path: /uploads
+            pathType: Prefix
+            backend:
+              service:
+                name: study-note-backend
+                port:
+                  number: 3001
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: study-note-frontend
+                port:
+                  number: 80
