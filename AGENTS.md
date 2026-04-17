@@ -1,6 +1,6 @@
 # study-note2 Development Guidelines
 
-Auto-generated from feature plans and curated for this repository. Last updated: 2026-04-16
+Auto-generated from feature plans and curated for this repository. Last updated: 2026-04-17
 
 ## Active Technologies
 
@@ -9,6 +9,7 @@ Auto-generated from feature plans and curated for this repository. Last updated:
 - Infrastructure: Terraform for AWS MVP infrastructure, k3s on a single EC2 instance, Argo CD core for GitOps reconciliation.
 - CI/CD: GitHub Actions, GitHub OIDC to AWS, Amazon ECR images `study-note-backend` and `study-note-frontend`.
 - Runtime manifests: Kubernetes YAML and Kustomize overlays under `infra/kubernetes/`.
+- Quality checks: 010 plans MVP tests for backend auth/protected routes/JSON persistence and frontend API URL/image upload/Markdown rendering; new test/lint dependencies require approval before installation.
 
 ## Project Structure
 
@@ -41,6 +42,7 @@ specs/
   007-auth-form-reset-and-password-profile/
   008-aws-mvp-deploy/
   009-github-actions-deploy/
+  010-test-quality-checks/
 ```
 
 ## Commands
@@ -49,11 +51,13 @@ specs/
 # Frontend
 cd frontend
 npm ci
+npm test
 npm run build
 
 # Backend
 cd backend
 npm ci
+npm test
 node -e "const { createApp } = require('./src/app'); const app = createApp(); const server = app.listen(0, () => server.close());"
 
 # Docker image sanity
@@ -89,7 +93,7 @@ kubectl kustomize infra/kubernetes/study-note/overlays/mvp
 - Terraform state, tfvars, MCP config, and local credentials must never be committed.
 
 ## Recent Changes
-
+- 010-test-quality-checks: Planned MVP test and quality gate strategy, backend-first tests, focused frontend service/renderer tests, and 009 PR workflow extension.
 - 009-github-actions-deploy: Implemented PR checks, main deployment workflow, OIDC/ECR/GitOps handoff, runtime GitOps image tag fixes, and Argo CD core recovery notes.
 - 008-aws-mvp-deploy: Applied AWS MVP deployment with Terraform, single EC2 k3s, Argo CD core, ECR integration, and runtime operations docs.
 - 002-007: Added layout, image paste/autosave, authentication, profile, and password-management increments on top of the Study Note baseline.
