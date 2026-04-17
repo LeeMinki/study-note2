@@ -62,3 +62,13 @@
 
 - 지금 도구를 확정하고 설치: 빠르지만 dependency policy 위반이다.
 - 도구 없이 shell smoke만 추가: 시작은 쉽지만 유지 가능한 테스트 체계로 확장하기 어렵다.
+
+## Decision: 010 구현은 Node 내장 test runner를 사용한다
+
+**Rationale**: 현재 MVP 회귀 범위는 백엔드 service/middleware/repository와 프론트엔드 service/utility 함수 중심이므로 `node --test`와 기본 `assert`만으로 검증 가능하다. 새 test runner, DOM adapter, HTTP helper 패키지를 설치하지 않아도 인증, 보호 라우트, JSON envelope, local JSON persistence, API URL, 이미지 업로드 Authorization 헤더, Markdown 렌더링을 검증할 수 있다.
+
+**Alternatives considered**:
+
+- Vitest/Jest 도입: 프론트엔드 테스트 작성 경험은 좋지만 새 패키지 승인과 설정 비용이 필요하다.
+- Supertest 도입: Express HTTP 테스트가 단순해지지만 새 패키지 승인 전에는 부적합하다.
+- 브라우저 기반 테스트: 사용자 흐름 재현력은 높지만 010 MVP 범위를 넘어선다.

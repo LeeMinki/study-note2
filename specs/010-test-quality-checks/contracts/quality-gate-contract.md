@@ -31,11 +31,11 @@ Initial required checks:
 | Check name | Purpose | Required in 010 MVP |
 |------------|---------|---------------------|
 | `Terraform fmt and validate` | Keeps Terraform formatting and validation healthy | Yes |
-| `App and image build` | Keeps frontend/backend build and Docker sanity healthy | Yes |
+| `App and image build` | Keeps frontend/backend tests, build, startup sanity, and Docker sanity healthy | Yes |
 | `Kubernetes manifest sanity` | Keeps MVP Kubernetes render healthy | Yes |
-| `App tests` | Preferred explicit test signal if implementation splits tests into a separate job | Yes if created |
+| `App tests` | Optional future explicit test signal if implementation later splits tests into a separate job | No |
 
-If tests stay inside `App and image build`, that check remains the required build-and-test gate. If tests are split into `App tests`, both `App tests` and `App and image build` should be required.
+010 implementation keeps tests inside `App and image build` to avoid adding another workflow job for the MVP. That check is the required build-and-test gate. If a later spec splits tests into `App tests`, both `App tests` and `App and image build` should be required.
 
 Staged checks:
 

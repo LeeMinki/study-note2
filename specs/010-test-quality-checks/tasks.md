@@ -19,12 +19,12 @@
 
 **Purpose**: Confirm the minimal test tool strategy and create reviewable test locations without installing packages automatically.
 
-- [ ] T001 Review existing frontend scripts and dependency constraints in `frontend/package.json`
-- [ ] T002 Review existing backend scripts and dependency constraints in `backend/package.json`
-- [ ] T003 Review existing PR workflow insertion points in `.github/workflows/pr-checks.yml`
-- [ ] T004 [P] Create backend test directory structure in `backend/tests/`
-- [ ] T005 [P] Create frontend test directory structure in `frontend/tests/`
-- [ ] T006 Record dependency approval checkpoint for any non-built-in test/lint/format tooling in `specs/010-test-quality-checks/quickstart.md`
+- [X] T001 Review existing frontend scripts and dependency constraints in `frontend/package.json`
+- [X] T002 Review existing backend scripts and dependency constraints in `backend/package.json`
+- [X] T003 Review existing PR workflow insertion points in `.github/workflows/pr-checks.yml`
+- [X] T004 [P] Create backend test directory structure in `backend/tests/`
+- [X] T005 [P] Create frontend test directory structure in `frontend/tests/`
+- [X] T006 Record dependency approval checkpoint for any non-built-in test/lint/format tooling in `specs/010-test-quality-checks/quickstart.md`
 
 ---
 
@@ -34,11 +34,11 @@
 
 **CRITICAL**: No user story test should be wired into PR required checks before this phase is complete.
 
-- [ ] T007 Define MVP test command conventions for backend and frontend in `backend/package.json` and `frontend/package.json`
-- [ ] T008 Define backend test data isolation approach for local JSON files in `backend/tests/helpers/testData.js`
-- [ ] T009 Define frontend test environment helpers for localStorage, fetch, and environment-like API base inputs in `frontend/tests/helpers/testEnvironment.js`
-- [ ] T010 Document selected test tool/structure decision and rejected alternatives in `specs/010-test-quality-checks/research.md`
-- [ ] T011 Update local quickstart commands for test execution in `specs/010-test-quality-checks/quickstart.md`
+- [X] T007 Define MVP test command conventions for backend and frontend in `backend/package.json` and `frontend/package.json`
+- [X] T008 Define backend test data isolation approach for local JSON files in `backend/tests/helpers/testData.js`
+- [X] T009 Define frontend test environment helpers for localStorage, fetch, and environment-like API base inputs in `frontend/tests/helpers/testEnvironment.js`
+- [X] T010 Document selected test tool/structure decision and rejected alternatives in `specs/010-test-quality-checks/research.md`
+- [X] T011 Update local quickstart commands for test execution in `specs/010-test-quality-checks/quickstart.md`
 
 **Checkpoint**: Test structure and local execution conventions are ready; user story tests can now be implemented.
 
@@ -54,22 +54,22 @@
 
 Backend tests are the first implementation priority for this story. Complete T012-T015 before starting the frontend test tasks unless a dependency approval checkpoint blocks backend progress.
 
-- [ ] T012 [P] [US1] Add backend auth success/failure tests in `backend/tests/auth.test.js`
-- [ ] T013 [P] [US1] Add backend protected route unauthenticated tests in `backend/tests/protectedRoutes.test.js`
-- [ ] T014 [P] [US1] Add backend JSON envelope tests for representative success/error responses in `backend/tests/responseEnvelope.test.js`
-- [ ] T015 [P] [US1] Add backend local JSON persistence empty-file and write-fallback tests in `backend/tests/persistence.test.js`
-- [ ] T016 [P] [US1] Add frontend API base URL normalization tests in `frontend/tests/apiBase.test.js`
-- [ ] T017 [P] [US1] Add frontend image upload Authorization header tests in `frontend/tests/imagesApi.test.js`
-- [ ] T018 [P] [US1] Add frontend Markdown rendering tests for images, inline code, and fenced code blocks in `frontend/tests/renderMarkdown.test.js`
+- [X] T012 [P] [US1] Add backend auth success/failure tests in `backend/tests/auth.test.js`
+- [X] T013 [P] [US1] Add backend protected route unauthenticated tests in `backend/tests/protectedRoutes.test.js`
+- [X] T014 [P] [US1] Add backend JSON envelope tests for representative success/error responses in `backend/tests/responseEnvelope.test.js`
+- [X] T015 [P] [US1] Add backend local JSON persistence empty-file and write-fallback tests in `backend/tests/persistence.test.js`
+- [X] T016 [P] [US1] Add frontend API base URL normalization tests in `frontend/tests/apiBase.test.js`
+- [X] T017 [P] [US1] Add frontend image upload Authorization header tests in `frontend/tests/imagesApi.test.js`
+- [X] T018 [P] [US1] Add frontend Markdown rendering tests for images, inline code, and fenced code blocks in `frontend/tests/renderMarkdown.test.js`
 
 ### Implementation for User Story 1
 
-- [ ] T019 [US1] Ensure backend test command runs all backend MVP tests in `backend/package.json`
-- [ ] T020 [US1] Ensure frontend test command runs all frontend MVP tests in `frontend/package.json`
-- [ ] T021 [US1] Verify backend tests do not permanently modify `backend/data.json` or `backend/users.json`
-- [ ] T022 [US1] Verify frontend tests do not import backend source files from `frontend/tests/`
-- [ ] T023 [US1] Run local backend test command from `backend/` and update `specs/010-test-quality-checks/quickstart.md` with observed command if changed
-- [ ] T024 [US1] Run local frontend test command from `frontend/` and update `specs/010-test-quality-checks/quickstart.md` with observed command if changed
+- [X] T019 [US1] Ensure backend test command runs all backend MVP tests in `backend/package.json`
+- [X] T020 [US1] Ensure frontend test command runs all frontend MVP tests in `frontend/package.json`
+- [X] T021 [US1] Verify backend tests do not permanently modify `backend/data.json` or `backend/users.json`
+- [X] T022 [US1] Verify frontend tests do not import backend source files from `frontend/tests/`
+- [X] T023 [US1] Run local backend test command from `backend/` and update `specs/010-test-quality-checks/quickstart.md` with observed command if changed
+- [X] T024 [US1] Run local frontend test command from `frontend/` and update `specs/010-test-quality-checks/quickstart.md` with observed command if changed
 
 **Checkpoint**: MVP automated tests exist and are independently runnable without requiring production deployment.
 
@@ -83,17 +83,17 @@ Backend tests are the first implementation priority for this story. Complete T01
 
 ### Tests for User Story 2
 
-- [ ] T025 [US2] Add backend test execution step to `.github/workflows/pr-checks.yml`
-- [ ] T026 [US2] Add frontend test execution step to `.github/workflows/pr-checks.yml`
-- [ ] T027 [US2] Verify test steps run before frontend/backend build and Docker image sanity in `.github/workflows/pr-checks.yml`
+- [X] T025 [US2] Add backend test execution step to `.github/workflows/pr-checks.yml`
+- [X] T026 [US2] Add frontend test execution step to `.github/workflows/pr-checks.yml`
+- [X] T027 [US2] Verify test steps run before frontend/backend build and Docker image sanity in `.github/workflows/pr-checks.yml`
 
 ### Implementation for User Story 2
 
-- [ ] T028 [US2] Decide whether tests stay inside `App and image build` or split into `App tests` and document the decision in `specs/010-test-quality-checks/contracts/quality-gate-contract.md`
-- [ ] T029 [US2] Keep PR workflow permissions read-only and verify no AWS OIDC/ECR/GitOps mutation is added in `.github/workflows/pr-checks.yml`
-- [ ] T030 [US2] Document lint and format as staged checks that require approval before new tooling installation in `specs/010-test-quality-checks/quickstart.md`
-- [ ] T031 [US2] Update `AGENTS.md` commands to include the finalized frontend/backend test commands
-- [ ] T032 [US2] Run local workflow-equivalent commands for `backend/package.json`, `frontend/package.json`, `backend/src/app.js`, and `frontend/src/`
+- [X] T028 [US2] Decide whether tests stay inside `App and image build` or split into `App tests` and document the decision in `specs/010-test-quality-checks/contracts/quality-gate-contract.md`
+- [X] T029 [US2] Keep PR workflow permissions read-only and verify no AWS OIDC/ECR/GitOps mutation is added in `.github/workflows/pr-checks.yml`
+- [X] T030 [US2] Document lint and format as staged checks that require approval before new tooling installation in `specs/010-test-quality-checks/quickstart.md`
+- [X] T031 [US2] Update `AGENTS.md` commands to include the finalized frontend/backend test commands
+- [X] T032 [US2] Run local workflow-equivalent commands for `backend/package.json`, `frontend/package.json`, `backend/src/app.js`, and `frontend/src/`
 
 **Checkpoint**: PR quality gate runs MVP tests and build checks without conflicting with 009 main deployment.
 
@@ -107,16 +107,16 @@ Backend tests are the first implementation priority for this story. Complete T01
 
 ### Tests for User Story 3
 
-- [ ] T033 [US3] Validate that every required check name in `specs/010-test-quality-checks/contracts/quality-gate-contract.md` matches `.github/workflows/pr-checks.yml`
-- [ ] T034 [US3] Validate that failure categories in `specs/010-test-quality-checks/contracts/quality-gate-contract.md` are covered by `specs/010-test-quality-checks/quickstart.md`
+- [X] T033 [US3] Validate that every required check name in `specs/010-test-quality-checks/contracts/quality-gate-contract.md` matches `.github/workflows/pr-checks.yml`
+- [X] T034 [US3] Validate that failure categories in `specs/010-test-quality-checks/contracts/quality-gate-contract.md` are covered by `specs/010-test-quality-checks/quickstart.md`
 
 ### Implementation for User Story 3
 
-- [ ] T035 [US3] Document required status checks and branch protection mapping in `infra/docs/operations.md`
-- [ ] T036 [US3] Document local developer execution guide in `README.md`
-- [ ] T037 [US3] Document failure triage for backend test, frontend test, build, manifest, terraform, lint, and format in `infra/docs/operations.md`
-- [ ] T038 [US3] Document future extension points for E2E, coverage threshold, lint, format, and production smoke checks in `specs/010-test-quality-checks/quickstart.md`
-- [ ] T039 [US3] Confirm coverage remains non-blocking in `specs/010-test-quality-checks/contracts/quality-gate-contract.md`
+- [X] T035 [US3] Document required status checks and branch protection mapping in `infra/docs/operations.md`
+- [X] T036 [US3] Document local developer execution guide in `README.md`
+- [X] T037 [US3] Document failure triage for backend test, frontend test, build, manifest, terraform, lint, and format in `infra/docs/operations.md`
+- [X] T038 [US3] Document future extension points for E2E, coverage threshold, lint, format, and production smoke checks in `specs/010-test-quality-checks/quickstart.md`
+- [X] T039 [US3] Confirm coverage remains non-blocking in `specs/010-test-quality-checks/contracts/quality-gate-contract.md`
 
 **Checkpoint**: Required checks and failure handling are documented enough for branch protection and PR review.
 
@@ -126,15 +126,15 @@ Backend tests are the first implementation priority for this story. Complete T01
 
 **Purpose**: Final consistency checks across documentation, scripts, and CI configuration.
 
-- [ ] T040 Run `git diff --check` from repository root for `specs/010-test-quality-checks/tasks.md`
-- [ ] T041 Run backend test command in `backend/`
-- [ ] T042 Run frontend test command in `frontend/`
-- [ ] T043 Run frontend build command in `frontend/`
-- [ ] T044 Run backend startup sanity command in `backend/`
-- [ ] T045 Verify `.github/workflows/pr-checks.yml` still has no production deploy, ECR push, or GitOps commit
-- [ ] T046 Verify no new package was installed without explicit user approval by checking `frontend/package.json`, `frontend/package-lock.json`, `backend/package.json`, and `backend/package-lock.json`
-- [ ] T047 Update `specs/010-test-quality-checks/quickstart.md` with final validation results
-- [ ] T048 Re-check `AGENTS.md` for current commands and dependency policy consistency
+- [X] T040 Run `git diff --check` from repository root for `specs/010-test-quality-checks/tasks.md`
+- [X] T041 Run backend test command in `backend/`
+- [X] T042 Run frontend test command in `frontend/`
+- [X] T043 Run frontend build command in `frontend/`
+- [X] T044 Run backend startup sanity command in `backend/`
+- [X] T045 Verify `.github/workflows/pr-checks.yml` still has no production deploy, ECR push, or GitOps commit
+- [X] T046 Verify no new package was installed without explicit user approval by checking `frontend/package.json`, `frontend/package-lock.json`, `backend/package.json`, and `backend/package-lock.json`
+- [X] T047 Update `specs/010-test-quality-checks/quickstart.md` with final validation results
+- [X] T048 Re-check `AGENTS.md` for current commands and dependency policy consistency
 
 ---
 

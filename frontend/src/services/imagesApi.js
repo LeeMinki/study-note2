@@ -1,4 +1,4 @@
-import { buildApiUrl } from "./apiBase";
+import { buildApiUrl } from "./apiBase.js";
 
 const TOKEN_KEY = "study-note-token";
 
