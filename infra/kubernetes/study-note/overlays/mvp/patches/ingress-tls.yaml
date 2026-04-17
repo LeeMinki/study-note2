@@ -1,10 +1,10 @@
-# study-note.yuna.com ingress TLS 패치
+# study-note.yuna-pa.com ingress TLS 패치
 - op: replace
   path: /spec/tls/0/hosts/0
-  value: study-note.yuna.com
+  value: study-note.yuna-pa.com
 - op: replace
   path: /spec/tls/0/hosts/1
-  value: www.study-note.yuna.com
+  value: www.study-note.yuna-pa.com
 - op: replace
   path: /spec/rules/0/host
-  value: study-note.yuna.com
+  value: study-note.yuna-pa.com
