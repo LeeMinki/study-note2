@@ -1,7 +1,9 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const dataFilePath = path.resolve(__dirname, "../../users.json");
+const dataFilePath = process.env.STUDY_NOTE_USERS_FILE
+  ? path.resolve(process.env.STUDY_NOTE_USERS_FILE)
+  : path.resolve(__dirname, "../../users.json");
 const tempFilePath = `${dataFilePath}.tmp`;
 const emptyUsersDocument = { users: [] };
 

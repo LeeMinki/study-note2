@@ -51,7 +51,10 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
-      # 010: 프론트엔드 단위/컴포넌트 테스트 삽입 지점 (예: npm test)
+
+      - name: Test frontend
+        working-directory: frontend
+        run: npm test
 
       - name: Build frontend
         working-directory: frontend
@@ -62,12 +65,14 @@ jobs:
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
-      # 010: 백엔드 단위/통합 테스트 삽입 지점 (예: npm test)
+
+      - name: Test backend
+        working-directory: backend
+        run: npm test
 
       - name: Check backend startup
         working-directory: backend
         run: node -e "const { createApp } = require('./src/app'); const app = createApp(); const server = app.listen(0, () => server.close());"
-      # 010: API 계약 테스트 삽입 지점 (예: npm run test:api)
 
       - name: Build backend image
         run: docker build -t study-note-backend:pr -f backend/Dockerfile backend

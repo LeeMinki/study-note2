@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "node src/app.js",
-    "test": "echo \"테스트 도구는 아직 구성되지 않았습니다.\""
+    "test": "node --test tests/*.test.js"
   },
   "keywords": [],
   "author": "",

@@ -1,7 +1,6 @@
 const DEFAULT_API_BASE = "http://localhost:3001";
 
-export function getApiBase() {
-  const rawBase = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE;
+export function normalizeApiBase(rawBase = DEFAULT_API_BASE) {
   const trimmedBase = rawBase.trim();
 
   if (trimmedBase === "/") {
@@ -9,6 +8,13 @@ export function getApiBase() {
   }
 
   return trimmedBase.replace(/\/+$/, "");
+}
+
+export function getApiBase() {
+  const runtimeEnv = import.meta.env || {};
+  const rawBase = runtimeEnv.VITE_API_BASE_URL || DEFAULT_API_BASE;
+
+  return normalizeApiBase(rawBase);
 }
 
 export function buildApiUrl(path) {
