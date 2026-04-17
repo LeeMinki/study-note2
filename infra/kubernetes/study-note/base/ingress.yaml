@@ -6,6 +6,8 @@ metadata:
   annotations:
     # cert-manager가 이 어노테이션을 읽어 Certificate CRD와 Secret을 자동 생성/갱신한다
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    # 도메인 HTTP 요청은 HTTPS로 전환한다
+    traefik.ingress.kubernetes.io/router.middlewares: study-note-https-redirect@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:

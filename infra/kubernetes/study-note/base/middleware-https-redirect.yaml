@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+  namespace: study-note
+spec:
+  # 도메인 HTTP 요청만 HTTPS로 영구 리디렉션한다
+  redirectScheme:
+    scheme: https
+    permanent: true

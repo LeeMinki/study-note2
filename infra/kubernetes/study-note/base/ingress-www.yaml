@@ -5,7 +5,7 @@ metadata:
   namespace: study-note
   annotations:
     # www → root 리디렉션 Middleware 적용
-    traefik.ingress.kubernetes.io/router.middlewares: study-note-www-redirect@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: study-note-https-redirect@kubernetescrd,study-note-www-redirect@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
