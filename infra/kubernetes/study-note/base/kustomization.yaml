@@ -11,4 +11,5 @@ resources:
   - ingress.yaml
   - ingress-ip-fallback.yaml
   - ingress-www.yaml
+  - middleware-https-redirect.yaml
   - middleware-www-redirect.yaml
