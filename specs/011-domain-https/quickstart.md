@@ -84,8 +84,10 @@ curl -k https://your-domain.com
 # ClusterIssuer (production) 적용
 kubectl apply -f infra/kubernetes/cert-manager/cluster-issuer-prod.yaml
 
-# Certificate issuerRef를 production으로 변경 후 apply
-kubectl apply -f infra/kubernetes/cert-manager/certificate.yaml
+# Ingress 어노테이션 방식이므로 별도 Certificate YAML은 없다.
+# cert-manager가 ingress의 cert-manager.io/cluster-issuer 어노테이션을 읽어 Certificate를 생성한다.
+kubectl annotate ingress study-note -n study-note \
+  cert-manager.io/cluster-issuer=letsencrypt-prod --overwrite
 
 # 인증서 발급 확인 (Ready: True)
 kubectl get certificate -n study-note
@@ -156,9 +158,8 @@ kubectl describe challenge <challenge-name> -n study-note
 ### 인증서 수동 갱신 (긴급)
 
 ```bash
-# Certificate 삭제 → cert-manager가 자동 재발급
+# Certificate/Secret 삭제 → cert-manager가 ingress 어노테이션을 보고 자동 재발급
 kubectl delete certificate study-note-tls -n study-note
-kubectl apply -f infra/kubernetes/cert-manager/certificate.yaml
 
 # 또는 annotate로 갱신 트리거
 kubectl annotate certificate study-note-tls -n study-note \

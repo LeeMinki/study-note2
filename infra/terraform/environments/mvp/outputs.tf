@@ -22,3 +22,13 @@ output "deployment_role_arn" {
   description = "GitHub Actions OIDC role ARN for deployment workflow."
   value       = module.identity.deployment_role_arn
 }
+
+output "route53_zone_id" {
+  description = "Route 53 Hosted Zone ID when domain_name is configured."
+  value       = var.domain_name != "" ? module.dns[0].zone_id : null
+}
+
+output "route53_nameservers" {
+  description = "Name servers to delegate from the parent DNS provider when domain_name is configured."
+  value       = var.domain_name != "" ? module.dns[0].nameservers : []
+}
