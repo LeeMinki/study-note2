@@ -86,7 +86,7 @@ Do not require `Deploy Main` as a PR status check because it runs after merge.
 - Check whether `kustomization.yaml` image entries use the supported `- name:` structure.
 - Check whether the `default` AppProject exists in the `argocd` namespace.
 - Check whether `argocd-secret` contains `server.secretkey`.
-- Check whether Argo CD repo-server can resolve `github.com`; if not, inspect k3s CoreDNS upstream `169.254.169.253`.
+- Check whether Argo CD repo-server can resolve `github.com`; if not, inspect k3s CoreDNS upstream `1.1.1.1 8.8.8.8`.
 
 ## 010 Test Placeholder
 

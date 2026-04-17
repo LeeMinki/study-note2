@@ -15,7 +15,7 @@
 - 배포 상태 확인은 `kubectl`과 GitHub Actions 로그를 우선 사용한다.
 - core 설치 후 `default` AppProject가 없으면 `study-note-mvp` Application이 유효하지 않으므로 application manifest에 포함된 AppProject를 함께 적용한다.
 - `argocd-secret`의 `server.secretkey`가 없으면 일부 Argo CD component가 정상 기동하지 않으므로 EC2 bootstrap에서 누락 시 생성한다.
-- Argo CD repo-server가 GitHub를 조회하지 못하면 k3s CoreDNS upstream이 AWS VPC resolver `169.254.169.253`로 설정되어 있는지 확인한다.
+- Argo CD repo-server가 GitHub를 조회하지 못하면 k3s CoreDNS upstream이 공용 resolver `1.1.1.1 8.8.8.8`로 설정되어 있는지 확인한다.
 
 수동 확인 예시:
 
