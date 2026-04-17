@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: study-note
 resources:
   - ../../base
+  - ingress-sslip-temporary.yaml
 patches:
   - path: patches/ingress-tls.yaml
     target:
