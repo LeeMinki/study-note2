@@ -9,3 +9,5 @@ resources:
   - frontend-deployment.yaml
   - frontend-service.yaml
   - ingress.yaml
+  - ingress-www.yaml
+  - middleware-www-redirect.yaml
