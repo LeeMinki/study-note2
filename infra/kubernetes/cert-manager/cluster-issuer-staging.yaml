@@ -6,7 +6,7 @@ spec:
   acme:
     # 인증서 발급 테스트용 — 브라우저 경고 발생하지만 Rate limit 없음
     server: https://acme-staging-v02.api.letsencrypt.org/directory
-    email: REPLACE_WITH_OPERATOR_EMAIL
+    email: kai0122@naver.com
     privateKeySecretRef:
       name: letsencrypt-staging-account-key
     solvers:
