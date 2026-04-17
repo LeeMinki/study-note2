@@ -16,7 +16,7 @@ patches:
 images:
   - name: 000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-backend
     newName: 107015853205.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-backend
-    newTag: 6e0a68c3978e04228579abcb00d0285f330363a6
+    newTag: 28bf4a64faf81c2a4eb8dd220aeeb14ce9922f2c
   - name: 000000000000.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-frontend
     newName: 107015853205.dkr.ecr.ap-northeast-2.amazonaws.com/study-note-frontend
-    newTag: 6e0a68c3978e04228579abcb00d0285f330363a6
+    newTag: 28bf4a64faf81c2a4eb8dd220aeeb14ce9922f2c
