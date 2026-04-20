@@ -51,11 +51,16 @@ function createApp() {
 }
 
 if (require.main === module) {
+  const { initialize } = require("./db");
+  const { migrate } = require("./db/migrate");
+
+  const db = initialize();
+  migrate(db);
+
   const app = createApp();
   const port = Number(process.env.PORT || 3001);
 
   app.listen(port, () => {
-    // 개발 서버 시작 로그만 남긴다.
     console.log(`Study Note backend listening on ${port}`);
   });
 }

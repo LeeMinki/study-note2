@@ -26,3 +26,7 @@ kubeconfig*
 secrets/
 *.key
 *.crt
+*.db
+*.db-shm
+*.db-wal
+:memory:

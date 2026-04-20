@@ -1,50 +1,29 @@
-const fs = require("node:fs/promises");
-const os = require("node:os");
-const path = require("node:path");
+const dbModule = require("../../src/db");
 
-async function createTestStorage() {
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "study-note-backend-"));
-  const dataFile = path.join(directory, "data.json");
-  const usersFile = path.join(directory, "users.json");
-
-  await fs.writeFile(dataFile, JSON.stringify({ notes: [] }, null, 2));
-  await fs.writeFile(usersFile, JSON.stringify({ users: [] }, null, 2));
-
-  return {
-    directory,
-    dataFile,
-    usersFile,
-  };
+// in-memory SQLite DB를 생성해 테스트 격리를 보장한다.
+function createTestDb() {
+  process.env.STUDY_NOTE_DB_FILE = ":memory:";
+  const db = dbModule.initialize();
+  return db;
 }
 
-async function removeTestStorage(storage) {
-  if (!storage?.directory) {
-    return;
-  }
-
-  await fs.rm(storage.directory, { recursive: true, force: true });
+function closeTestDb() {
+  dbModule.close();
+  delete process.env.STUDY_NOTE_DB_FILE;
+  clearBackendRequireCache();
 }
 
 function clearBackendRequireCache() {
-  const sourceRoot = path.resolve(__dirname, "../../src");
+  const nodePath = require("node:path");
+  const sourceRoot = nodePath.resolve(__dirname, "../../src");
+  // db 싱글턴 모듈은 캐시를 유지해야 re-require 시 동일 인스턴스를 사용한다
+  const dbDir = nodePath.resolve(__dirname, "../../src/db");
 
   for (const modulePath of Object.keys(require.cache)) {
-    if (modulePath.startsWith(sourceRoot)) {
+    if (modulePath.startsWith(sourceRoot) && !modulePath.startsWith(dbDir)) {
       delete require.cache[modulePath];
     }
   }
-}
-
-function applyTestStorage(storage) {
-  process.env.STUDY_NOTE_DATA_FILE = storage.dataFile;
-  process.env.STUDY_NOTE_USERS_FILE = storage.usersFile;
-  clearBackendRequireCache();
-}
-
-function resetTestStorageEnv() {
-  delete process.env.STUDY_NOTE_DATA_FILE;
-  delete process.env.STUDY_NOTE_USERS_FILE;
-  clearBackendRequireCache();
 }
 
 function assertEnvelope(assert, body, expectedSuccess) {
@@ -58,8 +37,7 @@ function assertEnvelope(assert, body, expectedSuccess) {
 
 module.exports = {
   assertEnvelope,
-  applyTestStorage,
-  createTestStorage,
-  removeTestStorage,
-  resetTestStorageEnv,
+  createTestDb,
+  closeTestDb,
+  clearBackendRequireCache,
 };

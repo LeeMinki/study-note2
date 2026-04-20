@@ -11,7 +11,7 @@ const {
   findUserById,
   saveUser,
   updateUser,
-} = require("../repositories/fileUserRepository");
+} = require("../repositories/dbUserRepository");
 
 // JWT_SECRET 미설정 시 개발용 fallback (프로덕션에서는 환경변수 필수)
 const JWT_SECRET = process.env.JWT_SECRET || "study-note-dev-secret-change-in-production";
