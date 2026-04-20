@@ -34,8 +34,8 @@ shared contract between the two sides MUST be expressed as API schemas or docume
 request/response shapes, never as cross-imported runtime code.
 
 Rationale: This preserves a replaceable service boundary, prevents accidental
-tight coupling, and keeps the local JSON storage implementation isolated behind
-backend interfaces so it can later be replaced by a real database.
+tight coupling, and keeps the storage implementation isolated behind backend
+interfaces (currently SQLite via `better-sqlite3`).
 
 ### II. English Code, Korean Commentary
 All variable names, function names, file names, directory names, and component
@@ -59,14 +59,13 @@ error handling predictable, and creates a clean seam for future backend changes.
 ### IV. Dependency Approval and Storage Simplicity
 If new packages or libraries appear necessary, the implementation MUST pause for
 user approval before installation. Existing dependencies and platform-default
-capabilities MUST be preferred first. Backend persistence MUST stay simple and
-compatible with the current local JSON file store, while code structure MUST keep
-storage logic encapsulated so the persistence layer can later be swapped for a
-database without rewriting feature logic.
+capabilities MUST be preferred first. Backend persistence MUST stay simple (currently
+SQLite single-file via `better-sqlite3`), and code structure MUST keep storage logic
+encapsulated in repository modules so the persistence layer can be swapped without
+rewriting feature logic.
 
 Rationale: This reduces dependency sprawl, avoids premature framework decisions,
-and keeps the current file-based system easy to reason about during early
-development.
+and keeps the storage layer easy to reason about and replace.
 
 ### V. Fast, Predictable UX and Incremental Delivery
 Implementations MUST optimize for fast rendering, simple data flow, and predictable
@@ -83,9 +82,9 @@ clarity, and reviewability matter more than ornamental architecture.
 
 - The canonical application shape is a web monorepo with `frontend/` and
   `backend/` as first-level project roots.
-- Backend modules that read or write JSON files MUST isolate filesystem access in
-  backend-owned services or repositories; route handlers and frontend code MUST not
-  perform direct persistence operations.
+- Backend modules that perform persistence operations (SQLite queries, file writes)
+  MUST isolate that access in backend-owned repositories; route handlers and frontend
+  code MUST NOT perform direct persistence operations.
 - Feature designs MUST document the HTTP endpoints, payload shapes, and ownership
   of any state transitions that cross the frontend/backend boundary.
 - Development workflows, scripts, and quickstart instructions SHOULD target WSL

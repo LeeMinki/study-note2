@@ -10,10 +10,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - study-note.3.38.149.233.sslip.io
+        - study-note.3.39.3.103.sslip.io
       secretName: study-note-sslip-tls-secret
   rules:
-    - host: study-note.3.38.149.233.sslip.io
+    - host: study-note.3.39.3.103.sslip.io
       http:
         paths:
           - path: /api

@@ -499,7 +499,7 @@ kubectl get certificate -n study-note -w   # production 인증서 발급 대기
 
 **Traefik 리디렉션 일시 해제**:
 
-HTTP→HTTPS 리디렉션은 전역 HelmChartConfig 대신 도메인 Ingress 전용 Middleware로 구현되어 있다. IP fallback(`http://3.38.149.233`)은 영향을 받지 않는다.
+HTTP→HTTPS 리디렉션은 전역 HelmChartConfig 대신 도메인 Ingress 전용 Middleware로 구현되어 있다. IP fallback(`http://3.39.3.103`)은 영향을 받지 않는다.
 
 ```bash
 # study-note Ingress에서 https-redirect Middleware 어노테이션 제거 → HTTP-only로 복귀
