@@ -5,17 +5,18 @@ Auto-generated from feature plans and curated for this repository. Last updated:
 ## Active Technologies
 
 - Frontend: React SPA with Vite, Axios-based HTTP integration, Docker image build.
-- Backend: Node.js 22, Express, local JSON-file persistence owned by the backend.
+- Backend: Node.js 22, Express, SQLite (`better-sqlite3`) persistence owned by the backend.
 - Infrastructure: Terraform for AWS MVP infrastructure, k3s on a single EC2 instance, Argo CD core for GitOps reconciliation.
 - CI/CD: GitHub Actions, GitHub OIDC to AWS, Amazon ECR images `study-note-backend` and `study-note-frontend`.
 - Runtime manifests: Kubernetes YAML and Kustomize overlays under `infra/kubernetes/`.
-- Quality checks: Node built-in `node --test` MVP tests for backend auth/protected routes/JSON persistence and frontend API URL/image upload/Markdown rendering; new test/lint dependencies require approval before installation.
+- Quality checks: Node built-in `node --test` MVP tests for backend auth/protected routes/SQLite DB persistence and frontend API URL/image upload/Markdown rendering; new test/lint dependencies require approval before installation.
 
 ## Project Structure
 
 ```text
 backend/
   src/
+    db/
   Dockerfile
   package.json
 
@@ -43,6 +44,8 @@ specs/
   008-aws-mvp-deploy/
   009-github-actions-deploy/
   010-test-quality-checks/
+  011-domain-https/
+  012-db-migration/
 ```
 
 ## Commands
@@ -88,11 +91,13 @@ kubectl kustomize infra/kubernetes/study-note/overlays/mvp
 - Main merge workflows may publish images to ECR and update GitOps state.
 - AWS access should use GitHub OIDC, not long-lived AWS access keys.
 - Argo CD should reconcile from GitOps manifests; avoid direct cluster mutation from deployment workflows unless explicitly planned.
-- Current MVP endpoint is `http://3.38.149.233` on EC2 `i-00e45b6e3c8a1308d` in `ap-northeast-2`.
+- Current MVP endpoint is `https://study-note.yuna-pa.com` (`http://3.39.3.103` Elastic IP) on EC2 `i-00e45b6e3c8a1308d` in `ap-northeast-2`.
 - Argo CD core runtime needs the default AppProject, `argocd-secret` `server.secretkey`, and CoreDNS upstream resolution to GitHub.
 - Terraform state, tfvars, MCP config, and local credentials must never be committed.
 
 ## Recent Changes
+- 012-db-migration: Migrated from JSON-file storage to SQLite (`better-sqlite3`); added `dbUserRepository`/`dbNoteRepository`, startup migration script, Kubernetes PVC config, and ECR pull secret auto-refresh CronJob.
+- 011-domain-https: Applied custom domain `study-note.yuna-pa.com` with Let's Encrypt TLS, Traefik HTTPS/www redirect middleware, and Elastic IP `3.39.3.103`.
 - 010-test-quality-checks: Implemented Node built-in MVP tests, frontend/backend `npm test` scripts, existing 009 PR workflow test steps, and required checks documentation.
 - 009-github-actions-deploy: Implemented PR checks, main deployment workflow, OIDC/ECR/GitOps handoff, runtime GitOps image tag fixes, and Argo CD core recovery notes.
 - 008-aws-mvp-deploy: Applied AWS MVP deployment with Terraform, single EC2 k3s, Argo CD core, ECR integration, and runtime operations docs.

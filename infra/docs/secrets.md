@@ -16,6 +16,7 @@
 | `AWS_DEPLOY_ROLE_ARN` | GitHub Actions variable | OIDC로 assume할 배포 role ARN |
 | `AWS_REGION` | GitHub Actions variable | 단일 AWS 리전 |
 | `JWT_SECRET` | Kubernetes Secret | 백엔드 JWT 서명 값 |
+| `STUDY_NOTE_DB_FILE` | Kubernetes ConfigMap | SQLite DB 파일 경로 (`/var/lib/study-note/backend/study-note.db`) |
 | `server.secretkey` | Kubernetes Secret `argocd-secret` | Argo CD core server secret key |
 
 ## GitHub OIDC 신뢰 정책 (T036)

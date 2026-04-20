@@ -21,11 +21,8 @@ When working on changes:
 - Keep frontend and backend separated; frontend must communicate with backend only through HTTP APIs.
 
 ## Active Technologies
-- Node.js 22, CommonJS + Express 5, bcryptjs, jsonwebtoken, multer + `better-sqlite3` (신규, NEEDS USER APPROVAL) (012-db-migration)
-- SQLite 단일 파일 (`study-note.db`), hostPath PVC (`/var/lib/study-note/backend/`) (012-db-migration)
-
 - Frontend: React SPA with Vite and Axios-based HTTP integration.
-- Backend: Node.js 22, Express, local JSON-file persistence owned by the backend.
+- Backend: Node.js 22, CommonJS + Express 5, bcryptjs, jsonwebtoken, multer + `better-sqlite3`; SQLite 단일 파일 (`study-note.db`), hostPath PVC (`/var/lib/study-note/backend/`).
 - Infrastructure: Terraform, single AWS EC2, k3s, Argo CD core, Kubernetes manifests.
 - CI/CD: GitHub Actions, GitHub OIDC to AWS, Amazon ECR, GitOps image tag updates.
 
@@ -36,7 +33,7 @@ When working on changes:
 - To switch between Codex and Claude Code, follow `docs/agent-switching-guide.md` and preserve `.specify/memory/constitution.md`.
 
 ## Recent Changes
-- 012-db-migration: Added Node.js 22, CommonJS + Express 5, bcryptjs, jsonwebtoken, multer + `better-sqlite3` (신규, NEEDS USER APPROVAL)
-
+- 012-db-migration: 파일 기반 JSON 저장소를 SQLite(`better-sqlite3`)로 전환; dbUserRepository/dbNoteRepository, 스타트업 마이그레이션, PVC 설정, ECR pull secret 자동 갱신 CronJob 추가.
+- 011-domain-https: 커스텀 도메인 `study-note.yuna-pa.com` + Let's Encrypt TLS + Elastic IP `3.39.3.103` 적용.
 - 009-github-actions-deploy: PR validation, main deployment workflow, OIDC/ECR/GitOps handoff, and Argo CD runtime fixes are documented.
-- 008-aws-mvp-deploy: AWS MVP runtime is applied on `ap-northeast-2` with public endpoint `http://3.38.149.233`.
+- 008-aws-mvp-deploy: AWS MVP runtime is applied on `ap-northeast-2` with Elastic IP `3.39.3.103` and domain `https://study-note.yuna-pa.com`.
