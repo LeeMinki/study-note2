@@ -7,8 +7,9 @@
 - AWS 계정: `107015853205`
 - 리전: `ap-northeast-2`
 - EC2 인스턴스: `i-00e45b6e3c8a1308d`
-- 공인 엔드포인트: `http://3.38.149.233`
-- 앱 상태 확인: `http://3.38.149.233/api/health`
+- Elastic IP: `3.39.3.103` (Allocation ID: `eipalloc-038ca8aec00af4542`, Association ID: `eipassoc-0233690141c229769`)
+- 공인 엔드포인트: `http://3.39.3.103`
+- 앱 상태 확인: `http://3.39.3.103/api/health`
 - Argo CD Application: `study-note-mvp` `Synced/Healthy`
 - 현재 GitOps overlay image tag는 main 병합 후 `Deploy Main` workflow가 갱신한다.
 
@@ -400,7 +401,7 @@ kubectl apply -k infra/kubernetes/study-note/overlays/mvp
 | 운영 도메인 | `study-note.yuna-pa.com` |
 | www 도메인 | `www.study-note.yuna-pa.com` |
 | Route 53 hosted zone | `Z06364843I0SKGHVHRUIH` |
-| EC2 공인 IP | `3.38.149.233` |
+| EC2 Elastic IP | `3.39.3.103` |
 | TLS Secret | `study-note-tls-secret` |
 
 ### EC2 SSH 접속
@@ -491,7 +492,7 @@ kubectl get certificate -n study-note -w   # production 인증서 발급 대기
 
 | 장애 유형 | 우회 방법 |
 |----------|---------|
-| DNS 전파 미완료 | `http://3.38.149.233` IP 직접 접속 |
+| DNS 전파 미완료 | `http://3.39.3.103` IP 직접 접속 |
 | cert-manager 인증서 발급 실패 | 도메인 Ingress Middleware 어노테이션 제거 후 HTTP 운영 |
 | Traefik TLS 오류 | Ingress에서 https-redirect Middleware 어노테이션 제거 → HTTP-only로 복귀 |
 | 인증서 만료 임박 | 강제 재발급 절차 실행 |
@@ -514,20 +515,24 @@ kubectl annotate ingress study-note -n study-note \
 
 ### EC2 IP 변경 시 DNS 갱신
 
-EC2 인스턴스가 재생성되면 공인 IP가 변경된다. 아래 절차로 DNS를 갱신한다:
+현재 EC2에는 Elastic IP(`3.39.3.103`)가 할당되어 있다. **stop/start 사이클로는 IP가 바뀌지 않는다.**
+
+EC2 인스턴스가 **재생성(terminate → new)** 되면 Elastic IP 연결(Association)이 해제된다. 이 경우 아래 절차로 재연결한다:
 
 ```bash
-# 새 IP 확인
+# 새 인스턴스 ID 확인
 aws ec2 describe-instances \
-  --query 'Reservations[*].Instances[*].PublicIpAddress' \
+  --query 'Reservations[*].Instances[*].{ID:InstanceId,State:State.Name}' \
   --profile study-note-admin
 
-# terraform.tfvars는 변경 불필요 — Terraform이 compute 모듈에서 새 IP를 참조
-cd infra/terraform/environments/mvp
-terraform apply -var-file=terraform.tfvars   # Route 53 A 레코드 자동 갱신
+# Elastic IP 재연결
+aws ec2 associate-address \
+  --instance-id <new-instance-id> \
+  --allocation-id eipalloc-038ca8aec00af4542 \
+  --profile study-note-admin
 
-# DNS TTL(기본 300초) 이후 전파 확인
-dig A <DOMAIN>
+# DNS는 Route 53 A 레코드가 이미 3.39.3.103을 가리키므로 변경 불필요
+dig A study-note.yuna-pa.com   # 3.39.3.103 확인
 ```
 
 ### 도메인 등록 만료 주의사항
@@ -538,9 +543,36 @@ dig A <DOMAIN>
 - 매년 갱신 이메일을 확인하고 결제 정보를 최신으로 유지한다.
 - Route 53에서 도메인을 직접 등록한 경우: AWS Billing 알림을 설정한다.
 
+## EC2 스케줄 운영
+
+EC2는 비용 절감을 위해 평일/주말 공통으로 자동 스케줄이 적용되어 있다.
+
+| 스케줄 이름 | cron | 동작 | 타임존 |
+|-------------|------|------|--------|
+| `study-note-mvp-ec2-start-0900` | `cron(0 9 * * ? *)` | 시작 | Asia/Seoul |
+| `study-note-mvp-ec2-stop-1800` | `cron(0 18 * * ? *)` | 중지 | Asia/Seoul |
+
+**구현 방식**: EventBridge Scheduler → SSM Automation (`AWS-StartEC2Instance` / `AWS-StopEC2Instance`)
+
+- SSM Automation 실행용 IAM Role: `arn:aws:iam::107015853205:role/study-note-mvp-ec2-ssm-scheduler-role`
+- 대상 EC2: `i-00e45b6e3c8a1308d`
+- Elastic IP가 할당되어 있으므로 재시작 후에도 IP(`3.39.3.103`)와 도메인이 유지된다.
+
+**스케줄 외 수동 시작/중지**:
+
+```bash
+# 수동 시작
+aws ec2 start-instances --instance-ids i-00e45b6e3c8a1308d --profile study-note-admin
+
+# 수동 중지
+aws ec2 stop-instances --instance-ids i-00e45b6e3c8a1308d --profile study-note-admin
+
+# 상태 확인
+aws ec2 describe-instance-status --instance-ids i-00e45b6e3c8a1308d --profile study-note-admin
+```
+
 ## 011 이후 후속 spec 후보
 
-- Elastic IP 도입 — EC2 재생성 시 IP 변경 방지 (현재 IP 직접 갱신 필요)
 - IP 직접 접속 차단 — 보안그룹에서 HTTP/HTTPS를 도메인 경유만 허용
 - Route 53 Health Check 기반 DNS failover
 - Argo CD 자동 sync 연동 (현재: 수동 kubectl apply 필요)

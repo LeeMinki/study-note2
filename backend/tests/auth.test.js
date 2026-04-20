@@ -1,27 +1,13 @@
 const assert = require("node:assert/strict");
 const { afterEach, test } = require("node:test");
-const {
-  assertEnvelope,
-  createTestStorage,
-  removeTestStorage,
-  applyTestStorage,
-  resetTestStorageEnv,
-} = require("./helpers/testData");
+const { assertEnvelope, createTestDb, closeTestDb } = require("./helpers/testData");
 
-let activeStorage;
-
-afterEach(async () => {
-  if (activeStorage) {
-    await removeTestStorage(activeStorage);
-    activeStorage = null;
-  }
-
-  resetTestStorageEnv();
+afterEach(() => {
+  closeTestDb();
 });
 
 test("register and login return token and public user", async () => {
-  activeStorage = await createTestStorage();
-  applyTestStorage(activeStorage);
+  createTestDb();
   const { register, login } = require("../src/services/authService");
   const { createSuccessResponse } = require("../src/utils/responseEnvelope");
 
@@ -49,8 +35,7 @@ test("register and login return token and public user", async () => {
 });
 
 test("login with no account returns controlled auth error", async () => {
-  activeStorage = await createTestStorage();
-  applyTestStorage(activeStorage);
+  createTestDb();
   const { login } = require("../src/services/authService");
   const { createErrorResponse } = require("../src/utils/responseEnvelope");
 

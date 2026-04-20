@@ -21,6 +21,8 @@ When working on changes:
 - Keep frontend and backend separated; frontend must communicate with backend only through HTTP APIs.
 
 ## Active Technologies
+- Node.js 22, CommonJS + Express 5, bcryptjs, jsonwebtoken, multer + `better-sqlite3` (신규, NEEDS USER APPROVAL) (012-db-migration)
+- SQLite 단일 파일 (`study-note.db`), hostPath PVC (`/var/lib/study-note/backend/`) (012-db-migration)
 
 - Frontend: React SPA with Vite and Axios-based HTTP integration.
 - Backend: Node.js 22, Express, local JSON-file persistence owned by the backend.
@@ -34,7 +36,7 @@ When working on changes:
 - To switch between Codex and Claude Code, follow `docs/agent-switching-guide.md` and preserve `.specify/memory/constitution.md`.
 
 ## Recent Changes
+- 012-db-migration: Added Node.js 22, CommonJS + Express 5, bcryptjs, jsonwebtoken, multer + `better-sqlite3` (신규, NEEDS USER APPROVAL)
 
 - 009-github-actions-deploy: PR validation, main deployment workflow, OIDC/ECR/GitOps handoff, and Argo CD runtime fixes are documented.
 - 008-aws-mvp-deploy: AWS MVP runtime is applied on `ap-northeast-2` with public endpoint `http://3.38.149.233`.
-- 001-007: Core notes, layout, image paste/autosave, authentication, profile, and password features are implemented.

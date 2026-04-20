@@ -41,11 +41,7 @@ spec:
             periodSeconds: 30
           volumeMounts:
             - name: backend-data
-              mountPath: /app/data.json
-              subPath: data.json
-            - name: backend-data
-              mountPath: /app/users.json
-              subPath: users.json
+              mountPath: /var/lib/study-note/backend
             - name: backend-uploads
               mountPath: /app/uploads
       volumes:
