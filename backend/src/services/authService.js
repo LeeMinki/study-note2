@@ -71,6 +71,11 @@ async function login(input) {
     throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
   }
 
+  // SSO 전용 계정 (password_hash 없음) — local 로그인 차단
+  if (user.passwordHash === null && user.provider !== 'local') {
+    throw new Error("이 계정은 Google 로그인을 사용합니다. Google로 로그인해 주세요.");
+  }
+
   const isValid = await bcrypt.compare(password, user.passwordHash);
   if (!isValid) {
     throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");

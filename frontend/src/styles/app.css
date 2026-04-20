@@ -437,3 +437,70 @@ button {
     display: grid;
   }
 }
+
+/* SSO 로그인 구분선 */
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #9a8878;
+  font-size: 0.85rem;
+}
+
+.authDivider::before,
+.authDivider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(74, 49, 22, 0.12);
+}
+
+/* Google SSO 버튼 */
+.ssoButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid rgba(74, 49, 22, 0.2);
+  border-radius: 8px;
+  background: #fff;
+  color: #3c3028;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ssoButton:hover {
+  background: #fdf6ee;
+}
+
+/* Google 계정 연결 섹션 (ProfileView) */
+.googleLinkSection {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(74, 49, 22, 0.1);
+}
+
+.googleLinkDesc {
+  font-size: 0.85rem;
+  color: #7a6a5a;
+  margin: 0;
+}
+
+.googleLinked {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #3a7a4a;
+  font-weight: 500;
+  margin: 0;
+}
+
+.googleLinkedIcon {
+  font-size: 1rem;
+}
