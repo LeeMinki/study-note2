@@ -1,6 +1,6 @@
 # Feature Specification: SSO Login
 
-**Feature Branch**: `014-sso-login`
+**Feature Branch**: `013-sso-login`
 **Created**: 2026-04-20
 **Status**: Draft
 
