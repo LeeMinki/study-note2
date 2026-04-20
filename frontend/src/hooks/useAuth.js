@@ -5,6 +5,7 @@ import {
   loginUser,
   updateCurrentUser,
   updateCurrentUserPassword,
+  startSsoLink,
 } from "../services/authApi";
 
 const TOKEN_KEY = "study-note-token";
@@ -165,6 +166,31 @@ export default function useAuth() {
     }
   }, [clearSession]);
 
+  const loginWithToken = useCallback((newToken) => {
+    saveSession(newToken);
+  }, [saveSession]);
+
+  const refreshUser = useCallback(async () => {
+    if (!token) return;
+    try {
+      const { json } = await fetchCurrentUser();
+      if (json.success) setCurrentUser(json.data);
+    } catch {
+      // 실패 시 무시 (세션 유지)
+    }
+  }, [token]);
+
+  const linkGoogle = useCallback(async () => {
+    try {
+      const { json } = await startSsoLink("google");
+      if (json.success && json.data?.authUrl) {
+        window.location.href = json.data.authUrl;
+      }
+    } catch {
+      // 호출부에서 에러 처리
+    }
+  }, []);
+
   const updatePassword = useCallback(async (passwordInput) => {
     setIsPasswordSaving(true);
     setAuthError("");
@@ -203,6 +229,9 @@ export default function useAuth() {
     isProfileSaving,
     isPasswordSaving,
     login,
+    loginWithToken,
+    refreshUser,
+    linkGoogle,
     register,
     logout,
     updateProfile,

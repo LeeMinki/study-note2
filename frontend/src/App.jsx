@@ -23,6 +23,8 @@ export default function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [currentView, setCurrentView] = useState("notes");
+  const [ssoError, setSsoError] = useState("");
+  const [linkSuccess, setLinkSuccess] = useState(false);
   const { layoutMode, setLayout, toggleLayout } = useLayoutPreference();
   const {
     isAuthenticated,
@@ -32,11 +34,68 @@ export default function App() {
     isProfileSaving,
     isPasswordSaving,
     login,
+    loginWithToken,
+    refreshUser,
+    linkGoogle,
     register,
     logout,
     updateProfile,
     updatePassword,
   } = useAuth();
+
+  // SSO 로그인 후 URL hash/query 처리 (마운트 1회)
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes("sso-token=")) {
+      const token = new URLSearchParams(hash.slice(1)).get("sso-token");
+      if (token) {
+        loginWithToken(token);
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+        return;
+      }
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+
+    // 계정 연결 성공
+    if (searchParams.get("link_success") === "true") {
+      searchParams.delete("link_success");
+      history.replaceState(null, "", window.location.pathname + (searchParams.toString() ? `?${searchParams}` : ""));
+      setCurrentView("profile");
+      setLinkSuccess(true);
+      refreshUser();
+      return;
+    }
+
+    // 계정 연결 실패
+    const linkError = searchParams.get("link_error");
+    if (linkError) {
+      const linkErrorMessages = {
+        already_linked: "이 Google 계정은 이미 다른 계정에 연결되어 있습니다.",
+        server_error: "연결 중 오류가 발생했습니다. 다시 시도해주세요.",
+        email_not_verified: "Google 이메일이 인증되지 않아 연결할 수 없습니다.",
+      };
+      setSsoError(linkErrorMessages[linkError] || "Google 계정 연결에 실패했습니다.");
+      searchParams.delete("link_error");
+      history.replaceState(null, "", window.location.pathname + (searchParams.toString() ? `?${searchParams}` : ""));
+      setCurrentView("profile");
+      return;
+    }
+
+    // SSO 로그인 오류
+    const errorCode = searchParams.get("sso_error");
+    if (errorCode) {
+      const messages = {
+        provider_error: "Google 로그인이 취소되었거나 오류가 발생했습니다.",
+        state_mismatch: "보안 검증에 실패했습니다. 다시 시도해주세요.",
+        email_not_verified: "Google 이메일이 인증되지 않아 로그인할 수 없습니다.",
+        server_error: "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+      };
+      setSsoError(messages[errorCode] || "SSO 로그인에 실패했습니다.");
+      searchParams.delete("sso_error");
+      history.replaceState(null, "", window.location.pathname + (searchParams.toString() ? `?${searchParams}` : ""));
+    }
+  }, [loginWithToken, refreshUser]);
 
   async function loadNotes(nextFilters = { searchText, activeTag }) {
     setIsLoading(true);
@@ -140,7 +199,7 @@ export default function App() {
       <AuthForm
         onLogin={login}
         onRegister={register}
-        errorMessage={authError}
+        errorMessage={authError || ssoError}
         isLoading={isAuthLoading}
       />
     );
@@ -153,8 +212,10 @@ export default function App() {
         isLoading={isAuthLoading}
         isSaving={isProfileSaving}
         isPasswordSaving={isPasswordSaving}
-        errorMessage={authError}
-        onBack={() => setCurrentView("notes")}
+        errorMessage={authError || ssoError}
+        linkSuccess={linkSuccess}
+        onLinkGoogle={linkGoogle}
+        onBack={() => { setCurrentView("notes"); setLinkSuccess(false); setSsoError(""); }}
         onLogout={logout}
         onSave={updateProfile}
         onPasswordSave={updatePassword}

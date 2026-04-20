@@ -60,6 +60,19 @@ function createUser({ email, passwordHash, name, displayName }, now = createTime
   };
 }
 
+function createSSOUser({ email, name, displayName, provider, providerId }, now = createTimestamp()) {
+  return {
+    id: createUserId(),
+    email: email.trim().toLowerCase(),
+    name,
+    displayName,
+    passwordHash: null,
+    provider,
+    providerId,
+    createdAt: now,
+  };
+}
+
 function toPublicUser(user) {
   return {
     id: user.id,
@@ -68,11 +81,13 @@ function toPublicUser(user) {
     displayName: user.displayName || "",
     createdAt: user.createdAt,
     provider: user.provider,
+    providerId: user.providerId ?? null,
   };
 }
 
 module.exports = {
   createUser,
+  createSSOUser,
   toPublicUser,
   validateUserInput,
   validateEmail,

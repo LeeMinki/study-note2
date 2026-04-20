@@ -34,16 +34,17 @@
 
 ### User Story 2 - 기존 local 계정 사용자의 SSO 연동 (Priority: P2)
 
-이메일/비밀번호로 이미 가입한 사용자가 동일 이메일 주소로 SSO 로그인을 시도한다. 시스템은 기존 계정과 SSO 계정을 자동으로 연결하여 노트 소유권을 유지한다.
+이메일/비밀번호로 이미 가입한 사용자가 프로필 화면에서 Google 계정 연결 버튼을 클릭해 SSO를 연결한다. 연결 후 이메일/비밀번호 로그인과 Google SSO 로그인을 모두 사용할 수 있다.
 
-**Why this priority**: 기존 사용자가 SSO로 전환할 때 노트 데이터가 유실되지 않아야 한다. P1 이후 즉시 구현되어야 하는 데이터 무결성 요구사항.
+**Why this priority**: 기존 사용자가 SSO를 추가하면서 노트 데이터가 유실되지 않아야 한다. P1 이후 즉시 구현되어야 하는 데이터 무결성 요구사항.
 
-**Independent Test**: local 계정(test@example.com)을 먼저 만들고 노트를 작성한 뒤, 동일 이메일의 SSO로 로그인 → 동일 노트 목록이 표시되는지 확인.
+**Independent Test**: local 계정(test@example.com) 생성 + 노트 작성 → 프로필 화면 "Google 계정 연결" 클릭 → Google 인증 → "Google 계정이 연결되었습니다" 메시지 확인 → 기존 노트 100% 표시.
 
 **Acceptance Scenarios**:
 
-1. **Given** 이메일 A로 local 계정과 노트가 존재할 때, **When** 이메일 A로 연결된 SSO 계정으로 로그인하면, **Then** 기존 local 계정의 노트가 그대로 표시된다.
-2. **Given** 이메일 B로만 SSO 계정이 존재할 때, **When** 이메일/비밀번호로 같은 이메일 B로 회원가입을 시도하면, **Then** 이미 계정이 존재한다는 안내가 표시된다.
+1. **Given** local 계정으로 로그인된 사용자가 프로필 화면에서 "Google 계정 연결" 버튼을 클릭하고 Google 인증을 완료하면, **Then** 프로필 화면에 "Google 계정이 연결되어 있습니다"가 표시되고 기존 노트가 그대로 유지된다.
+2. **Given** Google 계정이 이미 연결된 상태에서, **When** 이메일/비밀번호로도 로그인하면, **Then** 동일한 계정으로 로그인되고 노트 목록이 표시된다.
+3. **Given** 이메일 B로만 SSO 계정이 존재할 때, **When** 이메일/비밀번호로 같은 이메일 B로 회원가입을 시도하면, **Then** 이미 계정이 존재한다는 안내가 표시된다.
 
 ---
 
@@ -79,7 +80,8 @@ SSO로 로그인한 사용자가 로그아웃한다. 이후 동일 세션에서 
 - **FR-002**: 사용자가 SSO 로그인 버튼을 클릭하면 SSO 제공자의 인증 페이지로 이동해야 한다.
 - **FR-003**: SSO 인증 완료 후 콜백을 수신하고 사용자 정보를 추출하여 계정 조회/생성을 수행해야 한다.
 - **FR-004**: SSO로 최초 로그인하는 사용자는 자동으로 계정이 생성되어야 한다. `name`과 `displayName`은 SSO 제공자가 전달하는 이름으로 설정하며, 이름이 제공되지 않으면 이메일 주소의 앞부분(@앞)을 사용한다.
-- **FR-005**: 동일 이메일 주소의 기존 local 계정이 존재하면 SSO 계정과 자동 연결되어야 한다. 연결 후에도 이메일/비밀번호 로그인과 SSO 로그인 모두 허용된다.
+- **FR-005**: 로그인된 사용자는 프로필 화면에서 Google 계정 연결 버튼을 통해 SSO를 추가 연결할 수 있다. 연결 후 이메일/비밀번호 로그인과 SSO 로그인 모두 허용된다.
+- **FR-005b**: 연결 시 해당 Google 계정이 이미 다른 계정에 연결되어 있으면 오류를 표시하고 연결을 거부한다.
 - **FR-006**: SSO 로그인 성공 후 기존 local 로그인과 동일한 방식으로 인증 토큰이 발급되어야 한다.
 - **FR-007**: SSO 콜백 실패(사용자 취소, 오류)는 로그인 화면으로 복귀하며 적절한 오류 메시지를 표시해야 한다.
 - **FR-008**: SSO로 생성된 계정의 사용자도 기존 local 계정과 동일하게 노트 CRUD를 사용할 수 있어야 한다.
@@ -90,13 +92,13 @@ SSO로 로그인한 사용자가 로그아웃한다. 이후 동일 세션에서 
 
 - **CA-001**: SSO 인증 콜백 처리와 토큰 발급은 모두 백엔드에서 처리한다. 프론트엔드는 로그인 버튼 표시, SSO 제공자 리다이렉트 시작, 콜백 후 JWT 수신 역할만 담당한다.
 - **CA-002**: 신규 엔드포인트: `GET /api/auth/sso/:provider` (SSO 리다이렉트 시작), `GET /api/auth/sso/:provider/callback` (콜백 처리, JWT 발급 후 프론트엔드로 리다이렉트). Google 등록 callback URL: `https://study-note.yuna-pa.com/api/auth/sso/google/callback`. 모든 JSON 응답은 `{ success, data, error }` envelope를 따른다.
-- **CA-003**: SSO 연동을 위한 OAuth2 클라이언트 패키지(예: `passport` + `passport-google-oauth20`, 또는 경량 대안)가 필요하다. **NEEDS USER APPROVAL** 설치 전 승인 필요.
+- **CA-003**: SSO OAuth2 흐름은 Node.js 22 내장 `fetch`로 직접 구현한다. 신규 npm 패키지 없음 (plan.md 결정).
 - **CA-004**: 로그인 화면 내 SSO 버튼 추가는 기존 AuthForm 컴포넌트 내 인라인 확장으로 구현한다. 별도 모달 불필요.
-- **CA-005**: 사용자 엔티티에 SSO 제공자 식별자(`sso_provider`, `sso_id`) 필드를 추가한다. 저장은 기존 SQLite 데이터베이스를 사용하며, 백엔드 레포지터리 계층을 통해 접근한다.
+- **CA-005**: 사용자 엔티티의 `provider` (local/google), `provider_id` (Google sub) 컬럼을 활용한다. 두 컬럼은 012-db-migration에서 이미 존재하며 스키마 변경 없음. 저장은 기존 SQLite DB, 백엔드 레포지터리 계층을 통해 접근한다.
 
 ### Key Entities *(include if feature involves data)*
 
-- **User (확장)**: 기존 사용자 엔티티에 `auth_type` (local/sso), `sso_provider` (google 등), `sso_id` (제공자 고유 식별자) 필드 추가. `password_hash`는 SSO 전용 계정에서 null 허용.
+- **User (기존 컬럼 활용)**: `provider` (local/google), `provider_id` (Google sub, local이면 NULL), `password_hash` (SSO 전용 계정은 NULL). 012-db-migration에서 이미 존재하는 컬럼이며 스키마 변경 없음.
 - **SSOIdentity**: SSO 제공자로부터 수신하는 프로필 데이터 (제공자명, 제공자 내 사용자 ID, 이메일, 이름). 사용자 조회/생성에 사용되고 별도 저장하지 않음.
 
 ## Success Criteria *(mandatory)*

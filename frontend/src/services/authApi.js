@@ -63,3 +63,10 @@ export async function updateCurrentUserPassword(passwordInput) {
     body: passwordInput,
   });
 }
+
+export async function startSsoLink(provider) {
+  return requestAuth(`/api/auth/sso/${provider}/link-start`, {
+    method: "POST",
+    includeAuth: true,
+  });
+}

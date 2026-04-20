@@ -14,10 +14,10 @@
 
 **Purpose**: 환경변수 구조 및 provider 설정 기반 마련
 
-- [ ] T001 backend `.env.example`에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, `APP_BASE_URL` 항목 추가 (`backend/.env.example`)
-- [ ] T002 [P] `infra/kubernetes/study-note/base/secret-template.yaml`에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 항목 추가
-- [ ] T003 [P] `infra/kubernetes/study-note/base/configmap.yaml`에 `GOOGLE_CALLBACK_URL`, `APP_BASE_URL` 항목 추가
-- [ ] T004 [P] `infra/docs/secrets.md` MVP 시크릿 목록에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 항목 추가
+- [X] T001 backend `.env.example`에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, `APP_BASE_URL` 항목 추가 (`backend/.env.example`)
+- [X] T002 [P] `infra/kubernetes/study-note/base/secret-template.yaml`에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 항목 추가
+- [X] T003 [P] `infra/kubernetes/study-note/base/configmap.yaml`에 `GOOGLE_CALLBACK_URL`, `APP_BASE_URL` 항목 추가
+- [X] T004 [P] `infra/docs/secrets.md` MVP 시크릿 목록에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 항목 추가
 
 ---
 
@@ -27,15 +27,15 @@
 
 **⚠️ CRITICAL**: 이 Phase 완료 전 user story 작업 시작 불가
 
-- [ ] T005 `backend/src/repositories/dbUserRepository.js`에 `findUserByProviderId(provider, providerId)` 함수 추가 — `SELECT * FROM users WHERE provider = ? AND provider_id = ?` 쿼리 사용
-- [ ] T006 `backend/src/models/user.js`에 `createSSOUser({ email, name, displayName, provider, providerId })` 팩토리 함수 추가 — `password_hash` null, `provider`/`provider_id` 설정
-- [ ] T007 `backend/src/services/ssoService.js` 신규 생성 — `generateState()`, `storeState()`, `validateAndConsumeState()` in-memory Map 구현 (TTL 10분)
-- [ ] T008 `backend/src/services/ssoService.js`에 `buildGoogleAuthUrl(state)` 구현 — `https://accounts.google.com/o/oauth2/v2/auth` URL 생성, scope: `openid email profile`
-- [ ] T009 `backend/src/services/ssoService.js`에 `exchangeCodeForToken(code)` 구현 — Node.js 22 내장 `fetch`로 `https://oauth2.googleapis.com/token` POST 호출
-- [ ] T010 `backend/src/services/ssoService.js`에 `getGoogleUserInfo(accessToken)` 구현 — `https://www.googleapis.com/oauth2/v3/userinfo` GET 호출, `{ sub, email, email_verified, name }` 반환
-- [ ] T011 `backend/src/controllers/ssoController.js` 신규 생성 — `ssoRedirectHandler`, `ssoCallbackHandler` 핸들러 스텁
-- [ ] T012 `backend/src/routes/ssoRoutes.js` 신규 생성 — `GET /sso/:provider`, `GET /sso/:provider/callback` 라우트 등록
-- [ ] T013 `backend/src/app.js`에 ssoRoutes 마운트 — `app.use('/api/auth', ssoRouter)`
+- [X] T005 `backend/src/repositories/dbUserRepository.js`에 `findUserByProviderId(provider, providerId)` 함수 추가 — `SELECT * FROM users WHERE provider = ? AND provider_id = ?` 쿼리 사용
+- [X] T006 `backend/src/models/user.js`에 `createSSOUser({ email, name, displayName, provider, providerId })` 팩토리 함수 추가 — `password_hash` null, `provider`/`provider_id` 설정
+- [X] T007 `backend/src/services/ssoService.js` 신규 생성 — `generateState()`, `storeState()`, `validateAndConsumeState()` in-memory Map 구현 (TTL 10분)
+- [X] T008 `backend/src/services/ssoService.js`에 `buildGoogleAuthUrl(state)` 구현 — `https://accounts.google.com/o/oauth2/v2/auth` URL 생성, scope: `openid email profile`
+- [X] T009 `backend/src/services/ssoService.js`에 `exchangeCodeForToken(code)` 구현 — Node.js 22 내장 `fetch`로 `https://oauth2.googleapis.com/token` POST 호출
+- [X] T010 `backend/src/services/ssoService.js`에 `getGoogleUserInfo(accessToken)` 구현 — `https://www.googleapis.com/oauth2/v3/userinfo` GET 호출, `{ sub, email, email_verified, name }` 반환
+- [X] T011 `backend/src/controllers/ssoController.js` 신규 생성 — `ssoRedirectHandler`, `ssoCallbackHandler` 핸들러 스텁
+- [X] T012 `backend/src/routes/ssoRoutes.js` 신규 생성 — `GET /sso/:provider`, `GET /sso/:provider/callback` 라우트 등록
+- [X] T013 `backend/src/app.js`에 ssoRoutes 마운트 — `app.use('/api/auth', ssoRouter)`
 
 **Checkpoint**: `curl http://localhost:3001/api/auth/sso/google` → 302 redirect to Google 확인
 
@@ -49,14 +49,14 @@
 
 ### Implementation
 
-- [ ] T014 [US1] `backend/src/services/ssoService.js`에 `findOrCreateUser(googleProfile)` 구현 — `findUserByProviderId`로 기존 SSO 계정 조회, 없으면 `createSSOUser` + `saveUser` 실행
-- [ ] T015 [US1] `backend/src/controllers/ssoController.js` `ssoRedirectHandler` 구현 — provider 검증, state 생성·저장, `buildGoogleAuthUrl`로 302 redirect
-- [ ] T016 [US1] `backend/src/controllers/ssoController.js` `ssoCallbackHandler` 구현 — state 검증, code→token 교환, userinfo 조회, `findOrCreateUser`, JWT 발급
-- [ ] T017 [US1] `ssoCallbackHandler` 성공 시 프론트엔드로 리다이렉트 — `${APP_BASE_URL}/#sso-token=<jwt>`
-- [ ] T018 [US1] `ssoCallbackHandler` 실패 시 처리 — provider 오류·취소 시 `${APP_BASE_URL}/?sso_error=<message>` redirect
-- [ ] T019 [US1] `frontend/src/App.jsx` 초기화 시 `window.location.hash`에서 `sso-token` 추출 → localStorage 저장 → `history.replaceState`로 hash 제거
-- [ ] T020 [US1] `frontend/src/App.jsx` `sso_error` query param 감지 → authError 상태로 전달
-- [ ] T021 [P] [US1] `frontend/src/components/AuthForm.jsx`에 "Google로 로그인" 버튼 추가 — `/api/auth/sso/google`로 이동하는 링크/버튼, 기존 폼과 시각적으로 구분되는 구분선 추가
+- [X] T014 [US1] `backend/src/services/ssoService.js`에 `findOrCreateUser(googleProfile)` 구현 — `findUserByProviderId`로 기존 SSO 계정 조회, 없으면 `createSSOUser` + `saveUser` 실행
+- [X] T015 [US1] `backend/src/controllers/ssoController.js` `ssoRedirectHandler` 구현 — provider 검증, state 생성·저장, `buildGoogleAuthUrl`로 302 redirect
+- [X] T016 [US1] `backend/src/controllers/ssoController.js` `ssoCallbackHandler` 구현 — state 검증, code→token 교환, userinfo 조회, `findOrCreateUser`, JWT 발급
+- [X] T017 [US1] `ssoCallbackHandler` 성공 시 프론트엔드로 리다이렉트 — `${APP_BASE_URL}/#sso-token=<jwt>`
+- [X] T018 [US1] `ssoCallbackHandler` 실패 시 처리 — provider 오류·취소 시 `${APP_BASE_URL}/?sso_error=<message>` redirect
+- [X] T019 [US1] `frontend/src/App.jsx` 초기화 시 `window.location.hash`에서 `sso-token` 추출 → localStorage 저장 → `history.replaceState`로 hash 제거
+- [X] T020 [US1] `frontend/src/App.jsx` `sso_error` query param 감지 → authError 상태로 전달
+- [X] T021 [P] [US1] `frontend/src/components/AuthForm.jsx`에 "Google로 로그인" 버튼 추가 — `/api/auth/sso/google`로 이동하는 링크/버튼, 기존 폼과 시각적으로 구분되는 구분선 추가
 
 **Checkpoint**: Google 로그인 → 메인 화면 진입, DB에 `provider='google'` 계정 생성 확인
 
@@ -70,10 +70,10 @@
 
 ### Implementation
 
-- [ ] T022 [US2] `backend/src/services/ssoService.js` `findOrCreateUser` 확장 — 이메일로 local 계정 발견 시 `email_verified` 검증, `updateUser`로 `provider='google'`, `provider_id=sub` 업데이트 (password_hash 유지)
-- [ ] T023 [US2] `backend/src/services/ssoService.js`에서 `email_verified: false` 케이스 처리 — 연결 거부, `email_not_verified` 오류 발생
-- [ ] T024 [US2] `backend/src/services/authService.js` `login` 함수 수정 — `user.passwordHash === null`이고 `user.provider !== 'local'`인 경우 "이 계정은 Google 로그인을 사용합니다." 오류 반환
-- [ ] T025 [US2] `backend/src/services/authService.js` `register` 함수 수정 — SSO로 이미 연결된 이메일 가입 시도 시 "이미 사용 중인 이메일입니다." 오류 (기존 로직 그대로)
+- [X] T022 [US2] `backend/src/services/ssoService.js` `findOrCreateUser` 확장 — 이메일로 local 계정 발견 시 `email_verified` 검증, `updateUser`로 `provider='google'`, `provider_id=sub` 업데이트 (password_hash 유지)
+- [X] T023 [US2] `backend/src/services/ssoService.js`에서 `email_verified: false` 케이스 처리 — 연결 거부, `email_not_verified` 오류 발생
+- [X] T024 [US2] `backend/src/services/authService.js` `login` 함수 수정 — `user.passwordHash === null`이고 `user.provider !== 'local'`인 경우 "이 계정은 Google 로그인을 사용합니다." 오류 반환
+- [X] T025 [US2] `backend/src/services/authService.js` `register` 함수 수정 — SSO로 이미 연결된 이메일 가입 시도 시 "이미 사용 중인 이메일입니다." 오류 (기존 로직 그대로)
 
 **Checkpoint**: local 계정 노트 작성 → 동일 이메일 Google 로그인 → 기존 노트 표시 + local 로그인도 가능
 
@@ -87,8 +87,8 @@
 
 ### Implementation
 
-- [ ] T026 [US3] `frontend/src/App.jsx` 및 `useAuth` hook 확인 — 기존 로그아웃 로직(localStorage JWT 삭제)이 SSO 사용자에게도 동일하게 적용되는지 검증. SSO provider 로그아웃 호출 없음 확인.
-- [ ] T027 [US3] `frontend/src/components/AuthForm.jsx` SSO 오류 메시지 표시 — `sso_error` query param 값을 사용자 친화적 메시지로 변환하여 오류 배너에 표시
+- [X] T026 [US3] `frontend/src/App.jsx` 및 `useAuth` hook 확인 — 기존 로그아웃 로직(localStorage JWT 삭제)이 SSO 사용자에게도 동일하게 적용되는지 검증. SSO provider 로그아웃 호출 없음 확인.
+- [X] T027 [US3] `frontend/src/components/AuthForm.jsx` SSO 오류 메시지 표시 — `sso_error` query param 값을 사용자 친화적 메시지로 변환하여 오류 배너에 표시
 
 **Checkpoint**: SSO 로그인 → 로그아웃 → localStorage 토큰 삭제 확인, Google 계정 세션 유지 확인
 
@@ -98,11 +98,11 @@
 
 **Purpose**: 운영 문서, 보안 강화, 회귀 검증
 
-- [ ] T028 `infra/docs/secrets.md`에 Google OAuth2 앱 등록 절차 및 운영 체크리스트 추가 (quickstart.md의 k8s 배포 섹션 연동)
-- [ ] T029 [P] `backend/src/services/ssoService.js` state store TTL 만료 정리 로직 추가 — 10분 초과 state 자동 삭제 (setInterval 또는 조회 시 lazy 정리)
-- [ ] T030 [P] `backend/.env.example` 로컬 테스트용 callback URL 주석 설명 추가
-- [ ] T031 quickstart.md 시나리오 4개로 수동 회귀 검증 실행 — SSO 신규 로그인, 계정 연결, 취소 흐름, SSO 전용 계정 local 로그인 차단
-- [ ] T032 [P] `README.md` 현재 상태 섹션에 SSO 기능 추가 및 013 스펙 링크
+- [X] T028 `infra/docs/secrets.md`에 Google OAuth2 앱 등록 절차 및 운영 체크리스트 추가 (quickstart.md의 k8s 배포 섹션 연동)
+- [X] T029 [P] `backend/src/services/ssoService.js` state store TTL 만료 정리 로직 추가 — 10분 초과 state 자동 삭제 (setInterval 또는 조회 시 lazy 정리)
+- [X] T030 [P] `backend/.env.example` 로컬 테스트용 callback URL 주석 설명 추가
+- [ ] T031 quickstart.md 시나리오 4개로 수동 회귀 검증 실행 — SSO 신규 로그인, 계정 연결(두 방법 모두 허용 확인), 취소 흐름, SSO 전용 계정(password_hash=NULL)으로 local 로그인 시도 시 오류 메시지 확인
+- [X] T032 [P] `README.md` 현재 상태 섹션에 SSO 기능 추가 및 013 스펙 링크
 
 ---
 

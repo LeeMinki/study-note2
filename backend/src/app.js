@@ -3,6 +3,7 @@ const express = require("express");
 const notesRoutes = require("./routes/notesRoutes");
 const imageRoutes = require("./routes/imageRoutes");
 const authRoutes = require("./routes/authRoutes");
+const ssoRoutes = require("./routes/ssoRoutes");
 const { requireAuth } = require("./middleware/authMiddleware");
 const { createErrorResponse } = require("./utils/responseEnvelope");
 
@@ -35,6 +36,7 @@ function createApp() {
 
   // 인증 라우트 (인증 불필요)
   app.use("/api/auth", authRoutes);
+  app.use("/api/auth/sso", ssoRoutes);
 
   // 노트/이미지 라우트 (JWT 인증 필요)
   app.use("/api/notes", requireAuth, notesRoutes);

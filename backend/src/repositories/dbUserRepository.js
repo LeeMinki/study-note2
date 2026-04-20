@@ -28,6 +28,13 @@ function findUserById(userId) {
   return row ? rowToUser(row) : null;
 }
 
+function findUserByProviderId(provider, providerId) {
+  const row = getDb()
+    .prepare("SELECT * FROM users WHERE provider = ? AND provider_id = ?")
+    .get(provider, providerId);
+  return row ? rowToUser(row) : null;
+}
+
 function saveUser(user) {
   getDb()
     .prepare(
@@ -77,6 +84,7 @@ function updateUser(nextUser) {
 module.exports = {
   findUserByEmail,
   findUserById,
+  findUserByProviderId,
   saveUser,
   updateUser,
 };

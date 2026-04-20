@@ -16,8 +16,46 @@
 | `AWS_DEPLOY_ROLE_ARN` | GitHub Actions variable | OIDC로 assume할 배포 role ARN |
 | `AWS_REGION` | GitHub Actions variable | 단일 AWS 리전 |
 | `JWT_SECRET` | Kubernetes Secret | 백엔드 JWT 서명 값 |
+| `GOOGLE_CLIENT_ID` | Kubernetes Secret | Google OAuth2 클라이언트 ID |
+| `GOOGLE_CLIENT_SECRET` | Kubernetes Secret | Google OAuth2 클라이언트 시크릿 |
 | `STUDY_NOTE_DB_FILE` | Kubernetes ConfigMap | SQLite DB 파일 경로 (`/var/lib/study-note/backend/study-note.db`) |
+| `GOOGLE_CALLBACK_URL` | Kubernetes ConfigMap | Google OAuth2 콜백 URL (`https://study-note.yuna-pa.com/api/auth/sso/google/callback`) |
+| `APP_BASE_URL` | Kubernetes ConfigMap | 프론트엔드 기준 URL (`https://study-note.yuna-pa.com`) |
 | `server.secretkey` | Kubernetes Secret `argocd-secret` | Argo CD core server secret key |
+
+## Google OAuth2 앱 등록 절차 (013-sso-login)
+
+### 1. Google Cloud Console 앱 생성
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → 프로젝트 선택 또는 생성
+2. API 및 서비스 → 사용자 인증 정보 → OAuth 클라이언트 ID 만들기
+3. 애플리케이션 유형: 웹 애플리케이션
+4. 승인된 리다이렉트 URI 등록:
+   - 운영: `https://study-note.yuna-pa.com/api/auth/sso/google/callback`
+   - 로컬 테스트: `http://localhost:3001/api/auth/sso/google/callback`
+5. Client ID, Client Secret 발급 후 아래 절차로 k8s Secret에 등록
+
+### 2. Kubernetes Secret 등록
+
+```bash
+# 기존 study-note-secret에 Google OAuth2 값 추가 (재생성)
+kubectl create secret generic study-note-secret \
+  --namespace study-note \
+  --from-literal=JWT_SECRET='<기존값>' \
+  --from-literal=GOOGLE_CLIENT_ID='<Google Console에서 복사>' \
+  --from-literal=GOOGLE_CLIENT_SECRET='<Google Console에서 복사>' \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+### 3. 배포 후 동작 확인 체크리스트
+
+- [ ] `curl -I https://study-note.yuna-pa.com/api/auth/sso/google` → `HTTP/1.1 302 Found` + `Location: https://accounts.google.com/...` 확인
+- [ ] Google 로그인 완료 후 `https://study-note.yuna-pa.com/#sso-token=...` 리다이렉트 확인
+- [ ] 신규 SSO 사용자 DB 생성 확인: `provider='google'`, `provider_id=<sub>`, `password_hash=NULL`
+- [ ] 기존 local 계정 이메일로 SSO 로그인 시 계정 연결 확인 (password_hash 유지)
+- [ ] SSO 전용 계정으로 local 로그인 시도 → "이 계정은 Google 로그인을 사용합니다" 오류 확인
+
+---
 
 ## GitHub OIDC 신뢰 정책 (T036)
 
