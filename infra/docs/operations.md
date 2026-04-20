@@ -374,9 +374,11 @@ terraform output route53_nameservers         # NS 레코드 4개 확인
 dig A <DOMAIN>                               # EC2 IP 반환 확인
 dig CNAME www.<DOMAIN>                       # DOMAIN 반환 확인
 
-# Step 4: Traefik HTTP→HTTPS 리디렉션 적용
-kubectl apply -f infra/kubernetes/kube-system/traefik-config.yaml
-kubectl rollout status deployment/traefik -n kube-system
+# Step 4: 도메인 전용 HTTP→HTTPS 리디렉션 확인
+# IP fallback을 유지하기 위해 전역 Traefik redirect 대신 Ingress Middleware를 사용한다.
+kubectl get middleware https-redirect -n study-note
+kubectl get ingress study-note -n study-note \
+  -o jsonpath='{.metadata.annotations.traefik\.ingress\.kubernetes\.io/router\.middlewares}'
 
 # Step 5: cert-manager 설치
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
@@ -390,6 +392,32 @@ kubectl apply -f infra/kubernetes/cert-manager/cluster-issuer-prod.yaml
 # Step 7: ingress TLS 적용 (Argo CD sync 또는 직접 apply)
 kubectl apply -k infra/kubernetes/study-note/overlays/mvp
 ```
+
+현재 운영 값:
+
+| 항목 | 값 |
+|------|-----|
+| 운영 도메인 | `study-note.yuna-pa.com` |
+| www 도메인 | `www.study-note.yuna-pa.com` |
+| Route 53 hosted zone | `Z06364843I0SKGHVHRUIH` |
+| EC2 공인 IP | `3.38.149.233` |
+| TLS Secret | `study-note-tls-secret` |
+
+### EC2 SSH 접속
+
+운영 편의를 위해 root가 아닌 `studynote` 계정을 사용한다. 로컬 WSL 환경에는 전용 SSH 키가 생성되어 있다.
+
+```bash
+ssh -i ~/.ssh/study-note-yuna-pa studynote@study-note.yuna-pa.com
+```
+
+`studynote` 계정은 운영 명령 실행을 위해 sudo 권한을 가진다. k3s 상태 확인은 아래처럼 실행한다.
+
+```bash
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get pods -A
+```
+
+현재 EC2 보안그룹은 운영자 출발지 IP만 SSH 인바운드를 허용한다. 접속 위치가 바뀌면 보안그룹의 SSH CIDR을 새 공인 IP로 갱신해야 한다.
 
 ### DNS 전파 확인
 
