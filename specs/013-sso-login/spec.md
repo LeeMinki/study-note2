@@ -4,6 +4,16 @@
 **Created**: 2026-04-20
 **Status**: Draft
 
+## Clarifications
+
+### Session 2026-04-20
+
+- Q: SSO 제공자 확정 및 확장 구조 수준 → A: Google OAuth2 확정. provider 이름을 URL/코드에서 파라미터로 처리해 두 번째 제공자 추가 시 설정값 변경만으로 가능하도록 구조화한다.
+- Q: local ↔ SSO 계정 연결 후 허용 로그인 방법 → A: SSO 연결 후 local 비밀번호 로그인 차단. 연결된 계정은 SSO 방식만 허용한다.
+- Q: 로그아웃 시 SSO 제공자 세션 종료 여부 → A: Study Note JWT만 삭제. Google 등 제공자 세션은 그대로 유지한다.
+- Q: Google OAuth2 앱에 등록할 callback URL 형식 → A: `https://study-note.yuna-pa.com/api/auth/sso/google/callback` (백엔드 직접 수신 후 프론트로 리다이렉트).
+- Q: SSO 자동 계정 생성 시 name/displayName 결정 방식 → A: Google 제공 이름을 name/displayName으로 자동 설정. 미제공 시 이메일 앞부분(@앞)으로 fallback.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - SSO로 로그인 (Priority: P1)
@@ -59,6 +69,7 @@ SSO로 로그인한 사용자가 로그아웃한다. 이후 동일 세션에서 
 - SSO 콜백 처리 중 네트워크 오류 발생 시 사용자 경험은?
 - SSO 제공자 측에서 사용자가 앱 접근 권한을 취소하면?
 - 로컬 계정 이메일과 SSO 이메일이 대소문자만 다른 경우?
+- SSO 연결로 local 로그인이 차단된 사용자가 SSO 제공자 계정을 잃으면 접근 불가 상태가 되는데, 이 복구 경로는?
 
 ## Requirements *(mandatory)*
 
@@ -67,18 +78,18 @@ SSO로 로그인한 사용자가 로그아웃한다. 이후 동일 세션에서 
 - **FR-001**: 로그인 화면에는 기존 이메일/비밀번호 입력 양식과 함께 SSO 로그인 버튼이 표시되어야 한다.
 - **FR-002**: 사용자가 SSO 로그인 버튼을 클릭하면 SSO 제공자의 인증 페이지로 이동해야 한다.
 - **FR-003**: SSO 인증 완료 후 콜백을 수신하고 사용자 정보를 추출하여 계정 조회/생성을 수행해야 한다.
-- **FR-004**: SSO로 최초 로그인하는 사용자는 자동으로 계정이 생성되어야 한다.
-- **FR-005**: 동일 이메일 주소의 기존 local 계정이 존재하면 SSO 계정과 자동 연결되어야 한다.
+- **FR-004**: SSO로 최초 로그인하는 사용자는 자동으로 계정이 생성되어야 한다. `name`과 `displayName`은 SSO 제공자가 전달하는 이름으로 설정하며, 이름이 제공되지 않으면 이메일 주소의 앞부분(@앞)을 사용한다.
+- **FR-005**: 동일 이메일 주소의 기존 local 계정이 존재하면 SSO 계정과 자동 연결되어야 한다. 연결 완료 후 해당 계정은 SSO 방식으로만 로그인 가능하며, 기존 이메일/비밀번호 로그인은 차단된다.
 - **FR-006**: SSO 로그인 성공 후 기존 local 로그인과 동일한 방식으로 인증 토큰이 발급되어야 한다.
 - **FR-007**: SSO 콜백 실패(사용자 취소, 오류)는 로그인 화면으로 복귀하며 적절한 오류 메시지를 표시해야 한다.
 - **FR-008**: SSO로 생성된 계정의 사용자도 기존 local 계정과 동일하게 노트 CRUD를 사용할 수 있어야 한다.
 - **FR-009**: 사용자 계정은 인증 방식(local/SSO)과 무관하게 고유하게 식별되어야 한다.
-- **FR-010**: SSO 사용자도 기존 local 사용자와 동일한 로그아웃 흐름을 사용한다.
+- **FR-010**: SSO 사용자 로그아웃은 Study Note JWT 삭제로만 처리한다. SSO 제공자(Google 등) 세션은 종료하지 않는다.
 
 ### Constitution Alignment *(mandatory)*
 
 - **CA-001**: SSO 인증 콜백 처리와 토큰 발급은 모두 백엔드에서 처리한다. 프론트엔드는 로그인 버튼 표시, SSO 제공자 리다이렉트 시작, 콜백 후 JWT 수신 역할만 담당한다.
-- **CA-002**: 신규 엔드포인트: `GET /api/auth/sso/:provider` (SSO 리다이렉트 시작), `GET /api/auth/sso/:provider/callback` (콜백 처리 및 JWT 발급). 모든 응답은 `{ success, data, error }` envelope를 따른다.
+- **CA-002**: 신규 엔드포인트: `GET /api/auth/sso/:provider` (SSO 리다이렉트 시작), `GET /api/auth/sso/:provider/callback` (콜백 처리, JWT 발급 후 프론트엔드로 리다이렉트). Google 등록 callback URL: `https://study-note.yuna-pa.com/api/auth/sso/google/callback`. 모든 JSON 응답은 `{ success, data, error }` envelope를 따른다.
 - **CA-003**: SSO 연동을 위한 OAuth2 클라이언트 패키지(예: `passport` + `passport-google-oauth20`, 또는 경량 대안)가 필요하다. **NEEDS USER APPROVAL** 설치 전 승인 필요.
 - **CA-004**: 로그인 화면 내 SSO 버튼 추가는 기존 AuthForm 컴포넌트 내 인라인 확장으로 구현한다. 별도 모달 불필요.
 - **CA-005**: 사용자 엔티티에 SSO 제공자 식별자(`sso_provider`, `sso_id`) 필드를 추가한다. 저장은 기존 SQLite 데이터베이스를 사용하며, 백엔드 레포지터리 계층을 통해 접근한다.
@@ -100,9 +111,9 @@ SSO로 로그인한 사용자가 로그아웃한다. 이후 동일 세션에서 
 
 ## Assumptions
 
-- SSO 제공자는 Google OAuth2를 첫 번째 대상으로 한다. 구조는 추가 제공자 확장이 가능하도록 설계하되 이번 spec에서는 1개 제공자만 구현한다.
+- SSO 제공자는 **Google OAuth2**를 첫 번째 대상으로 확정한다. provider 이름을 URL 및 내부 로직에서 파라미터로 처리하여, 두 번째 제공자 추가 시 설정값(Client ID/Secret, scope, callback URL) 변경만으로 가능하도록 설계한다. 이번 spec에서는 Google 1개만 구현한다.
 - 사용자 식별 기준은 이메일 주소다. SSO 제공자가 이메일을 제공하지 않는 경우는 이번 spec 범위 밖이다.
 - 기존 local 계정과 SSO 계정의 이메일이 일치하면 자동 연결한다. 사용자에게 별도 연결 확인 UI를 제공하지 않는다.
-- SSO 제공자 OAuth2 앱 등록(Client ID/Secret) 및 콜백 URL 설정은 배포 환경 기준으로 수행한다.
+- SSO 제공자 OAuth2 앱 등록(Client ID/Secret) 및 콜백 URL 설정은 도메인 `https://study-note.yuna-pa.com` 기준으로 수행한다. Google callback URL: `https://study-note.yuna-pa.com/api/auth/sso/google/callback`.
 - 계정 병합 UI나 수동 계정 연결 화면은 이번 spec 범위 밖이다.
 - 주 개발 및 검증 환경은 WSL Ubuntu다.
