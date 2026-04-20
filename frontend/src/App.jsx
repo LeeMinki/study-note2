@@ -63,9 +63,18 @@ export default function App() {
     }
   }
 
+  // 로그아웃 시 이전 계정 노트를 즉시 초기화한다
   useEffect(() => {
+    if (!isAuthenticated) {
+      setNotes([]);
+      setHasAnyNotes(false);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     loadNotes();
-  }, [searchText, activeTag]);
+  }, [searchText, activeTag, isAuthenticated]);
 
   async function handleCreate(noteInput) {
     setIsSaving(true);
