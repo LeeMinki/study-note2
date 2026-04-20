@@ -108,7 +108,7 @@
 
 - [x] T030 `infra/docs/operations.md` 수정 — "장애 시 임시 우회" 섹션 추가:
   - IP 직접 접속 경로 유지 확인 (`http://<EC2-IP>`)
-  - Traefik 리디렉션 일시 해제 절차 (HelmChartConfig `redirectTo` 제거)
+  - Traefik 리디렉션 일시 해제 절차 (도메인 Ingress Middleware 어노테이션 제거 — HelmChartConfig 아님)
   - cert-manager 비활성화 없이 HTTP-only 운영하는 임시 방법
 - [x] T031 [P] `infra/docs/operations.md` 수정 — "DNS 전파 지연 대응" 절차 추가:
   - `dig` + `nslookup` 전파 확인 명령

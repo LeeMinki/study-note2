@@ -492,16 +492,24 @@ kubectl get certificate -n study-note -w   # production 인증서 발급 대기
 | 장애 유형 | 우회 방법 |
 |----------|---------|
 | DNS 전파 미완료 | `http://3.38.149.233` IP 직접 접속 |
-| cert-manager 인증서 발급 실패 | HelmChartConfig 리디렉션 일시 해제 후 HTTP 운영 |
-| Traefik TLS 오류 | `kubectl delete helmchartconfig traefik -n kube-system` → HTTP-only로 복귀 |
+| cert-manager 인증서 발급 실패 | 도메인 Ingress Middleware 어노테이션 제거 후 HTTP 운영 |
+| Traefik TLS 오류 | Ingress에서 https-redirect Middleware 어노테이션 제거 → HTTP-only로 복귀 |
 | 인증서 만료 임박 | 강제 재발급 절차 실행 |
 
 **Traefik 리디렉션 일시 해제**:
 
+HTTP→HTTPS 리디렉션은 전역 HelmChartConfig 대신 도메인 Ingress 전용 Middleware로 구현되어 있다. IP fallback(`http://3.38.149.233`)은 영향을 받지 않는다.
+
 ```bash
-# HelmChartConfig 삭제 → HTTP-only로 즉시 복귀
-kubectl delete helmchartconfig traefik -n kube-system
-# 재활성화: kubectl apply -f infra/kubernetes/kube-system/traefik-config.yaml
+# study-note Ingress에서 https-redirect Middleware 어노테이션 제거 → HTTP-only로 복귀
+kubectl annotate ingress study-note -n study-note \
+  traefik.ingress.kubernetes.io/router.middlewares- --overwrite
+kubectl annotate ingress study-note-www -n study-note \
+  traefik.ingress.kubernetes.io/router.middlewares- --overwrite
+
+# 재활성화: Argo CD sync 또는 아래 명령으로 어노테이션 복원
+kubectl annotate ingress study-note -n study-note \
+  traefik.ingress.kubernetes.io/router.middlewares=study-note-https-redirect@kubernetescrd --overwrite
 ```
 
 ### EC2 IP 변경 시 DNS 갱신
