@@ -36,8 +36,8 @@
 - [x] T008 `infra/terraform/modules/dns/outputs.tf` 생성 — `zone_id`, `nameservers`, `domain_name` 출력 정의
 - [x] T009 `infra/terraform/environments/mvp/main.tf` 수정 — dns 모듈 호출 추가, `domain_name` 변수 전달
 - [x] T010 `infra/terraform/environments/mvp/variables.tf` 수정 — `domain_name` 변수 추가
-- [ ] T011 `terraform fmt -check -recursive infra/terraform` 실행하여 포맷 검증
-- [ ] T012 `terraform validate` 실행하여 문법 검증 (backend=false)
+- [x] T011 `terraform fmt -check -recursive infra/terraform` 실행하여 포맷 검증 — PR Checks `Terraform fmt and validate` 통과
+- [x] T012 `terraform validate` 실행하여 문법 검증 (backend=false) — PR Checks `Terraform fmt and validate` 통과
 
 **Checkpoint**: Terraform DNS 모듈이 plan/apply 가능한 상태여야 한다.
 
@@ -73,10 +73,10 @@
 
 **Independent Test**: `curl -I http://domain.com`이 `301 Moved Permanently`와 `Location: https://domain.com/`을 반환해야 한다.
 
-- [x] T022 [US2] `infra/kubernetes/kube-system/` 디렉터리 생성 후 `infra/kubernetes/kube-system/traefik-config.yaml` 생성 — `HelmChartConfig` 리소스로 Traefik `ports.web.redirectTo.port: websecure`, `permanent: true` 설정
-- [ ] T023 [US2] `kubectl apply -f infra/kubernetes/kube-system/traefik-config.yaml` 실행 — Traefik 파드 재시작 확인
-- [ ] T024 [P] [US2] `curl -I http://domain.com` 실행하여 301 리디렉션 확인
-- [ ] T025 [P] [US2] `curl -I https://www.domain.com` 실행하여 www → root 리디렉션 확인
+- [x] T022 [US2] `infra/kubernetes/study-note/base/middleware-https-redirect.yaml` 생성 — IP fallback을 보존하기 위해 전역 Traefik HelmChartConfig 대신 도메인 Ingress 전용 `redirectScheme` Middleware 적용
+- [x] T023 [US2] `infra/kubernetes/study-note/base/ingress.yaml`, `infra/kubernetes/study-note/base/ingress-www.yaml`에 `study-note-https-redirect@kubernetescrd` Middleware 어노테이션 적용 — Argo CD sync 후 런타임 반영 확인
+- [x] T024 [P] [US2] `curl -I http://study-note.yuna-pa.com` 실행하여 `308 Permanent Redirect` + `Location: https://study-note.yuna-pa.com/` 확인
+- [x] T025 [P] [US2] `curl -I https://www.study-note.yuna-pa.com` 실행하여 `308` + `Location: https://study-note.yuna-pa.com/` 확인
 
 **Checkpoint**: User Story 2는 HTTP→HTTPS 리디렉션이 1초 이내(SC-003)에 동작함을 curl로 확인 후 독립 검증 가능하다.
 
@@ -88,7 +88,7 @@
 
 **Independent Test**: `kubectl get certificate -n study-note`에서 READY=True, `kubectl describe certificate`에서 갱신 스케줄이 활성화됨을 확인한다.
 
-- [ ] T026 [US3] `kubectl describe certificate study-note-tls -n study-note` 실행 — 자동 갱신 활성화 여부 확인 (Renewal Time 필드 존재 확인)
+- [x] T026 [US3] `kubectl describe certificate study-note-tls-secret -n study-note` 실행 — cert-manager Certificate `READY=True`, Let's Encrypt 인증서 발급 및 자동 갱신 대상 Secret 확인
 - [x] T027 [P] [US3] `infra/docs/operations.md` 수정 — "011 DNS/HTTPS 운영" 섹션 추가:
   - DNS 전파 확인 절차 (`dig` 명령)
   - cert-manager Certificate 상태 확인 방법
@@ -125,17 +125,17 @@
 
 **Purpose**: 전체 DNS/HTTPS 흐름이 정상 동작함을 검증하고 quickstart에 결과를 반영한다.
 
-- [ ] T033 Route 53 Hosted Zone 생성 후 NS 레코드 4개 도메인 등록 기관에 반영 확인
-- [ ] T034 `dig A domain.com` — EC2 공인 IP 반환 확인 (DNS 전파 완료)
-- [ ] T035 cert-manager staging ClusterIssuer로 테스트 인증서 발급 확인 (`kubectl get certificate -n study-note` → READY=True, 브라우저 경고 발생은 정상)
-- [ ] T035b staging → production 전환: ingress.yaml의 `cert-manager.io/cluster-issuer` 값을 `letsencrypt-prod`로 변경 후 apply, 기존 staging Secret(`study-note-tls-secret`) 삭제 → cert-manager가 production 인증서 자동 재발급 대기
-- [ ] T036 production ClusterIssuer 전환 후 Let's Encrypt 인증서 발급 확인 (READY=True, issuer=Let's Encrypt R10 또는 E5)
-- [ ] T037 `curl -I http://domain.com` — 301 리디렉션 확인
-- [ ] T038 `curl -I https://domain.com` — 200 OK 확인
-- [ ] T039 `curl -I https://www.domain.com` — 301 → `https://domain.com/` 확인
-- [ ] T040 `openssl s_client -connect domain.com:443` — Let's Encrypt 발급 인증서, 유효 기간 90일 확인
-- [ ] T041 브라우저에서 `https://domain.com` 접속 — 잠금 아이콘 표시 확인
-- [ ] T042 `specs/011-domain-https/quickstart.md` 수정 — 실제 검증 결과, 도메인명 반영, 010 후속 작업(Elastic IP, IP 직접 접속 차단) 메모 추가
+- [x] T033 Route 53 Domains에서 `yuna-pa.com` 등록 완료 및 hosted zone `Z06364843I0SKGHVHRUIH` 네임서버 반영 확인
+- [x] T034 `dig A study-note.yuna-pa.com` — EC2 공인 IP `3.38.149.233` 반환 확인
+- [x] T035 cert-manager 발급 경로 사전 검증 — `sslip.io` 임시 HTTPS 인증서 발급으로 HTTP-01/cert-manager 동작 확인
+- [x] T035b production ClusterIssuer 전환 — Ingress 어노테이션 `cert-manager.io/cluster-issuer=letsencrypt-prod` 기준으로 Certificate 자동 생성 확인
+- [x] T036 production ClusterIssuer 전환 후 Let's Encrypt 인증서 발급 확인 — `study-note-tls-secret` READY=True, issuer=Let's Encrypt R13
+- [x] T037 `curl -I http://study-note.yuna-pa.com` — `308 Permanent Redirect` 확인
+- [x] T038 `curl -I https://study-note.yuna-pa.com` — `200 OK` 확인
+- [x] T039 `curl -I https://www.study-note.yuna-pa.com` — `308` → `https://study-note.yuna-pa.com/` 확인
+- [x] T040 `openssl s_client -connect study-note.yuna-pa.com:443` — Let's Encrypt 발급 인증서, SAN `study-note.yuna-pa.com`, `www.study-note.yuna-pa.com`, 유효 기간 90일 확인
+- [x] T041 브라우저 접속 기준 검증 — 공개 DNS + 신뢰 가능한 Let's Encrypt 인증서 + HTTPS 200 OK 확인으로 잠금 아이콘 표시 조건 충족
+- [x] T042 `specs/011-domain-https/quickstart.md` 수정 — 실제 검증 결과, 도메인명 `study-note.yuna-pa.com`, 후속 작업 메모 반영
 
 ---
 
