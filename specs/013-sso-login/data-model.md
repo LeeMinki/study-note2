@@ -50,15 +50,23 @@ findUserByProviderId(provider, providerId) → User | null
 ```js
 // SSO 최초 로그인 사용자 계정 생성용
 createSSOUser({ email, name, displayName, provider, providerId }) → User
+
+// 공개 사용자 객체 변환 (기존 함수에 providerId 추가)
+toPublicUser(user) → {
+  userId, email, name, displayName,
+  provider, providerId  // ← 추가됨: 프론트엔드 연결 상태 표시에 사용
+}
 ```
 
 ## SSOState (in-memory, DB 미저장)
 
-OAuth2 CSRF 방지용 state 파라미터를 임시 관리:
+OAuth2 CSRF 방지용 state 파라미터를 임시 관리. `userId`를 함께 저장해 로그인 흐름과 계정 연결 흐름을 구분한다:
 
 ```js
-// Map<state: string, { createdAt: number }>
-// TTL: 10분, 사용 후 즉시 삭제
+// Map<state: string, { createdAt: number, userId: string | null }>
+// userId === null: 로그인 흐름
+// userId === string: 계정 연결 흐름 (POST link-start 요청자의 userId)
+// TTL: 10분, 사용 후 즉시 삭제 (replay 방지)
 const ssoStateStore = new Map();
 ```
 
