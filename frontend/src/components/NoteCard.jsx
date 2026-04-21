@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useKeyboardSave from "../hooks/useKeyboardSave";
 import formatDisplayDate from "../utils/formatDisplayDate";
 import previewText from "../utils/previewText";
 import renderMarkdown from "../utils/renderMarkdown";
+import { useAuthenticatedImages } from "../hooks/useAuthenticatedImages";
 
 function createEditState(note) {
   return {
@@ -23,6 +24,8 @@ export default function NoteCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editState, setEditState] = useState(() => createEditState(note));
   const [errorMessage, setErrorMessage] = useState("");
+  const markdownRef = useRef(null);
+  useAuthenticatedImages(markdownRef);
 
   useEffect(() => {
     setEditState(createEditState(note));
@@ -117,6 +120,7 @@ export default function NoteCard({
         </div>
       ) : (
         <div
+          ref={markdownRef}
           className="markdownBody"
           dangerouslySetInnerHTML={{ __html: renderMarkdown(note.content) }}
         />
