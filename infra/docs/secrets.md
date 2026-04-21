@@ -93,13 +93,17 @@ kubectl create secret generic study-note-secret \
 ## Kubernetes Secret 처리
 
 `infra/kubernetes/study-note/base/secret-template.yaml`은 템플릿이다. 실제 값은 커밋하지 않는다.
+이 파일은 GitOps 적용 대상이 아니며, `infra/kubernetes/study-note/base/kustomization.yaml`의 `resources`에 포함하면 안 된다.
+포함할 경우 Argo CD가 placeholder 값을 운영 Secret에 다시 적용해 Google SSO와 JWT 검증이 실패할 수 있다.
 
 수동 생성 예시:
 
 ```bash
 kubectl create secret generic study-note-secret \
   --namespace study-note \
-  --from-literal=JWT_SECRET='REPLACE_WITH_SECURE_VALUE'
+  --from-literal=JWT_SECRET='REPLACE_WITH_SECURE_VALUE' \
+  --from-literal=GOOGLE_CLIENT_ID='Google OAuth 클라이언트 ID' \
+  --from-literal=GOOGLE_CLIENT_SECRET='Google OAuth 클라이언트 시크릿'
 ```
 
 주의:
