@@ -2,7 +2,7 @@
 
 **Feature Branch**: `013-sso-login`
 **Created**: 2026-04-20
-**Status**: Draft
+**Status**: Implemented
 
 ## Clarifications
 
@@ -91,7 +91,7 @@ SSO로 로그인한 사용자가 로그아웃한다. 이후 동일 세션에서 
 ### Constitution Alignment *(mandatory)*
 
 - **CA-001**: SSO 인증 콜백 처리와 토큰 발급은 모두 백엔드에서 처리한다. 프론트엔드는 로그인 버튼 표시, SSO 제공자 리다이렉트 시작, 콜백 후 JWT 수신 역할만 담당한다.
-- **CA-002**: 신규 엔드포인트: `GET /api/auth/sso/:provider` (SSO 리다이렉트 시작), `GET /api/auth/sso/:provider/callback` (콜백 처리, JWT 발급 후 프론트엔드로 리다이렉트). Google 등록 callback URL: `https://study-note.yuna-pa.com/api/auth/sso/google/callback`. 모든 JSON 응답은 `{ success, data, error }` envelope를 따른다.
+- **CA-002**: 신규 엔드포인트: `GET /api/auth/sso/:provider` (SSO 리다이렉트 시작), `POST /api/auth/sso/:provider/link-start` (로그인된 사용자의 계정 연결 시작, JWT 필요), `GET /api/auth/sso/:provider/callback` (콜백 처리, JWT 발급 또는 계정 연결 후 프론트엔드로 리다이렉트). Google 등록 callback URL: `https://study-note.yuna-pa.com/api/auth/sso/google/callback`. 모든 JSON 응답은 `{ success, data, error }` envelope를 따른다.
 - **CA-003**: SSO OAuth2 흐름은 Node.js 22 내장 `fetch`로 직접 구현한다. 신규 npm 패키지 없음 (plan.md 결정).
 - **CA-004**: 로그인 화면 내 SSO 버튼 추가는 기존 AuthForm 컴포넌트 내 인라인 확장으로 구현한다. 별도 모달 불필요.
 - **CA-005**: 사용자 엔티티의 `provider` (local/google), `provider_id` (Google sub) 컬럼을 활용한다. 두 컬럼은 012-db-migration에서 이미 존재하며 스키마 변경 없음. 저장은 기존 SQLite DB, 백엔드 레포지터리 계층을 통해 접근한다.
@@ -115,7 +115,7 @@ SSO로 로그인한 사용자가 로그아웃한다. 이후 동일 세션에서 
 
 - SSO 제공자는 **Google OAuth2**를 첫 번째 대상으로 확정한다. provider 이름을 URL 및 내부 로직에서 파라미터로 처리하여, 두 번째 제공자 추가 시 설정값(Client ID/Secret, scope, callback URL) 변경만으로 가능하도록 설계한다. 이번 spec에서는 Google 1개만 구현한다.
 - 사용자 식별 기준은 이메일 주소다. SSO 제공자가 이메일을 제공하지 않는 경우는 이번 spec 범위 밖이다.
-- 기존 local 계정과 SSO 계정의 이메일이 일치하면 자동 연결한다. 사용자에게 별도 연결 확인 UI를 제공하지 않는다.
+- 계정 연결 경로는 두 가지다. (1) 로그인 시 자동 연결: SSO 로그인 중 동일 이메일의 local 계정이 발견되면 자동으로 연결한다. (2) 프로필 화면 수동 연결: 이미 로그인된 local 사용자가 프로필 화면의 "Google 계정 연결" 버튼으로 명시적으로 연결한다.
 - SSO 제공자 OAuth2 앱 등록(Client ID/Secret) 및 콜백 URL 설정은 도메인 `https://study-note.yuna-pa.com` 기준으로 수행한다. Google callback URL: `https://study-note.yuna-pa.com/api/auth/sso/google/callback`.
-- 계정 병합 UI나 수동 계정 연결 화면은 이번 spec 범위 밖이다.
+- 복잡한 계정 병합 UI(연결 확인 모달 등)는 이번 spec 범위 밖이다. 연결은 버튼 클릭 후 Google 인증으로 즉시 완료된다.
 - 주 개발 및 검증 환경은 WSL Ubuntu다.

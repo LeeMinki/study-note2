@@ -31,6 +31,6 @@
 
 ## Notes
 
-- CA-003에 신규 패키지(SSO OAuth2 클라이언트) NEEDS USER APPROVAL 명시 — Constitution 요구사항 준수
-- SSO 제공자는 Google을 첫 번째 대상으로 가정, Assumptions에 명시됨
-- 계정 자동 연결(이메일 일치) 정책이 Assumptions에 문서화됨
+- SSO 제공자는 Google OAuth2 확정. Node.js 22 내장 `fetch` 직접 구현, 신규 패키지 없음
+- 계정 연결 경로: (1) SSO 로그인 시 동일 이메일 자동 연결, (2) 프로필 화면 "Google 계정 연결" 버튼
+- 구현 완료 (PR #44, branch 013-sso-login)
