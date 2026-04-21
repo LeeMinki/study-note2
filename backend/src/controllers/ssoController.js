@@ -18,7 +18,7 @@ const {
 } = require('../repositories/dbUserRepository');
 const { createSuccessResponse, createErrorResponse } = require('../utils/responseEnvelope');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'study-note-dev-secret-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '7d';
 const SUPPORTED_PROVIDERS = ['google'];
 

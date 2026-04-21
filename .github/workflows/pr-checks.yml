@@ -68,11 +68,21 @@ jobs:
 
       - name: Test backend
         working-directory: backend
+        env:
+          JWT_SECRET: test-secret-for-ci-min-32-chars-long
         run: npm test
 
       - name: Check backend startup
         working-directory: backend
         run: node -e "const { createApp } = require('./src/app'); const app = createApp(); const server = app.listen(0, () => server.close());"
+
+      - name: Audit frontend dependencies
+        working-directory: frontend
+        run: npm audit --audit-level=high
+
+      - name: Audit backend dependencies
+        working-directory: backend
+        run: npm audit --audit-level=high
 
       - name: Build backend image
         run: docker build -t study-note-backend:pr -f backend/Dockerfile backend

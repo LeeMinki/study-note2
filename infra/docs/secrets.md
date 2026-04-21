@@ -15,12 +15,15 @@
 |------|------|------|
 | `AWS_DEPLOY_ROLE_ARN` | GitHub Actions variable | OIDC로 assume할 배포 role ARN |
 | `AWS_REGION` | GitHub Actions variable | 단일 AWS 리전 |
-| `JWT_SECRET` | Kubernetes Secret | 백엔드 JWT 서명 값 |
+| `JWT_SECRET` | Kubernetes Secret | 백엔드 JWT 서명 값 — **필수**. 미설정 시 서버 시작 즉시 중단 |
 | `GOOGLE_CLIENT_ID` | Kubernetes Secret | Google OAuth2 클라이언트 ID |
 | `GOOGLE_CLIENT_SECRET` | Kubernetes Secret | Google OAuth2 클라이언트 시크릿 |
 | `STUDY_NOTE_DB_FILE` | Kubernetes ConfigMap | SQLite DB 파일 경로 (`/var/lib/study-note/backend/study-note.db`) |
 | `GOOGLE_CALLBACK_URL` | Kubernetes ConfigMap | Google OAuth2 콜백 URL (`https://study-note.yuna-pa.com/api/auth/sso/google/callback`) |
 | `APP_BASE_URL` | Kubernetes ConfigMap | 프론트엔드 기준 URL (`https://study-note.yuna-pa.com`) |
+| `ALLOWED_ORIGINS` | Kubernetes ConfigMap | CORS 허용 출처 (쉼표 구분). 기본값: `https://study-note.yuna-pa.com,http://localhost:5173` |
+| `RATE_LIMIT_WINDOW_MS` | Kubernetes ConfigMap (선택) | 속도 제한 창 크기(ms). 기본값: 900000 (15분) |
+| `RATE_LIMIT_MAX` | Kubernetes ConfigMap (선택) | 창당 최대 요청 수. 기본값: 20 |
 | `server.secretkey` | Kubernetes Secret `argocd-secret` | Argo CD core server secret key |
 
 ## Google OAuth2 앱 등록 절차 (013-sso-login)
@@ -126,6 +129,13 @@ kubectl create secret generic study-note-secret \
 - AWS 장기 access key를 GitHub secrets에 기본 배포 인증으로 저장하지 않는다.
 - Kubernetes Secret 값을 Git 추적 manifest에 실제 값으로 커밋하지 않는다.
 - `.env`, `*.secret.yaml`, `terraform.tfvars`는 Git에 올리지 않는다.
+
+## 014 보안 강화 정책 (014-security-hardening)
+
+- `JWT_SECRET`은 서버 시작 필수 조건이다. 미설정 시 서버는 즉시 종료된다.
+- `ALLOWED_ORIGINS`로 CORS 허용 출처를 명시적으로 관리한다. 미설정 시 `https://study-note.yuna-pa.com,http://localhost:5173`이 기본값이다.
+- 속도 제한(`RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_MAX`)은 선택 항목으로, 기본값 적용으로 충분하다.
+- 레거시 `migrate.js`(data.json/users.json → DB 마이그레이션)는 제거되었다. DB가 단일 진실원이다.
 
 ## 회전 원칙
 

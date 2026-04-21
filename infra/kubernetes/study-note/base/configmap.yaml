@@ -9,3 +9,4 @@ data:
   STUDY_NOTE_DB_FILE: /var/lib/study-note/backend/study-note.db
   GOOGLE_CALLBACK_URL: https://study-note.yuna-pa.com/api/auth/sso/google/callback
   APP_BASE_URL: https://study-note.yuna-pa.com
+  ALLOWED_ORIGINS: https://study-note.yuna-pa.com

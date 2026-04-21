@@ -15,8 +15,8 @@ const storage = multer.diskStorage({
     callback(null, UPLOADS_DIR);
   },
   filename(_request, file, callback) {
-    // 고유 파일명: 타임스탬프-원본파일명
-    const uniqueName = `${Date.now()}-${file.originalname}`;
+    const sanitizedName = path.basename(file.originalname).replace(/[^a-zA-Z0-9._-]/g, '_');
+    const uniqueName = `${Date.now()}-${sanitizedName}`;
     callback(null, uniqueName);
   },
 });
