@@ -68,6 +68,8 @@ jobs:
 
       - name: Test backend
         working-directory: backend
+        env:
+          JWT_SECRET: test-secret-for-ci-min-32-chars-long
         run: npm test
 
       - name: Check backend startup
