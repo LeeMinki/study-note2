@@ -28,8 +28,8 @@ When working on changes:
 - Node.js 22 (backend), React 18 (frontend) + Express 5, better-sqlite3, jsonwebtoken, bcryptjs (기존 유지, 신규 패키지 없음) (013-sso-login)
 - SQLite — `users` 테이블 `provider`/`provider_id` 컬럼 기존 활용 (013-sso-login)
 - SQLite — 스키마 변경 없음 (docs/013-sso-spec-sync)
-- React 18 + Vite (frontend only) + 기존 유지 — React, Vite. 신규 패키지 없음 (015-ui-polish)
-- N/A (프론트엔드 전용 변경) (015-ui-polish)
+- React 18 + Vite + TipTap v3 (`@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-image`, `@tiptap/extension-underline`, `@tiptap/extension-text-align`, `@tiptap/extension-font-family`, `@tiptap/extension-text-style`) (015-ui-polish)
+- JWT sessionStorage 전환, `isRichContent()` 이중 포맷 감지 (015-ui-polish)
 
 ## Spec Kit Agent Switching
 
@@ -38,6 +38,6 @@ When working on changes:
 - To switch between Codex and Claude Code, follow `docs/agent-switching-guide.md` and preserve `.specify/memory/constitution.md`.
 
 ## Recent Changes
-- 015-ui-polish: Added React 18 + Vite (frontend only) + 기존 유지 — React, Vite. 신규 패키지 없음
+- 015-ui-polish: TipTap v3 WYSIWYG 에디터 도입, CSS 디자인 토큰, 전 UI 한국어화, JWT sessionStorage 전환, 이미지 인증 셀렉터 버그 수정
 - docs/013-sso-spec-sync: Added Node.js 22 (backend), React 18 (frontend) + Express 5, better-sqlite3, jsonwebtoken, bcryptjs (기존 유지, 신규 패키지 없음)
 - 013-sso-login: Added Node.js 22 (backend), React 18 (frontend) + Express 5, better-sqlite3, jsonwebtoken, bcryptjs (기존 유지, 신규 패키지 없음)
