@@ -9,7 +9,7 @@ export async function uploadImage(file) {
   formData.append("image", file);
 
   const headers = {};
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = sessionStorage.getItem(TOKEN_KEY);
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }

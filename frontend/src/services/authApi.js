@@ -8,7 +8,7 @@ async function requestAuth(path, { method = "GET", body, includeAuth = false } =
   };
 
   if (includeAuth) {
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = sessionStorage.getItem(TOKEN_KEY);
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }

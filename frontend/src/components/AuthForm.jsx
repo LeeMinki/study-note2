@@ -83,9 +83,9 @@ export default function AuthForm({ onLogin, onRegister, errorMessage, isLoading 
       <section className="hero">
         <div>
           <p className="eyebrow">Study Note</p>
-          <h1>Capture fast. Find faster.</h1>
+          <h1>Study Note</h1>
           <p className="heroText">
-            Keep development notes lightweight, searchable, and easy to edit in place.
+            빠르게 기록하고, 빠르게 찾는 개인 노트 공간
           </p>
         </div>
       </section>

@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 export function useAuthenticatedImages(containerRef) {
   useEffect(() => {
     if (!containerRef.current) return;
-    const token = localStorage.getItem('study-note-token');
-    const imgs = containerRef.current.querySelectorAll('img[src^="/uploads/"]');
+    const token = sessionStorage.getItem('study-note-token');
+    const imgs = containerRef.current.querySelectorAll('img[src*="/uploads/"]');
     const objectUrls = [];
 
     imgs.forEach((img) => {

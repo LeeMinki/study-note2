@@ -27,6 +27,9 @@ When working on changes:
 - CI/CD: GitHub Actions, GitHub OIDC to AWS, Amazon ECR, GitOps image tag updates.
 - Node.js 22 (backend), React 18 (frontend) + Express 5, better-sqlite3, jsonwebtoken, bcryptjs (기존 유지, 신규 패키지 없음) (013-sso-login)
 - SQLite — `users` 테이블 `provider`/`provider_id` 컬럼 기존 활용 (013-sso-login)
+- SQLite — 스키마 변경 없음 (docs/013-sso-spec-sync)
+- React 18 + Vite (frontend only) + 기존 유지 — React, Vite. 신규 패키지 없음 (015-ui-polish)
+- N/A (프론트엔드 전용 변경) (015-ui-polish)
 
 ## Spec Kit Agent Switching
 
@@ -35,6 +38,6 @@ When working on changes:
 - To switch between Codex and Claude Code, follow `docs/agent-switching-guide.md` and preserve `.specify/memory/constitution.md`.
 
 ## Recent Changes
+- 015-ui-polish: Added React 18 + Vite (frontend only) + 기존 유지 — React, Vite. 신규 패키지 없음
+- docs/013-sso-spec-sync: Added Node.js 22 (backend), React 18 (frontend) + Express 5, better-sqlite3, jsonwebtoken, bcryptjs (기존 유지, 신규 패키지 없음)
 - 013-sso-login: Added Node.js 22 (backend), React 18 (frontend) + Express 5, better-sqlite3, jsonwebtoken, bcryptjs (기존 유지, 신규 패키지 없음)
-- 012-db-migration: 파일 기반 JSON 저장소를 SQLite(`better-sqlite3`)로 전환; dbUserRepository/dbNoteRepository, 스타트업 마이그레이션, PVC 설정, ECR pull secret 자동 갱신 CronJob 추가.
-- 011-domain-https: 커스텀 도메인 `study-note.yuna-pa.com` + Let's Encrypt TLS + Elastic IP `3.39.3.103` 적용.

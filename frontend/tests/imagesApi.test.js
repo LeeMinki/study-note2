@@ -1,20 +1,20 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 import { uploadImage } from "../src/services/imagesApi.js";
-import { installFetchMock, installLocalStorageMock } from "./helpers/testEnvironment.js";
+import { installFetchMock, installSessionStorageMock } from "./helpers/testEnvironment.js";
 
 let cleanupFetch;
-let cleanupLocalStorage;
+let cleanupSessionStorage;
 
 afterEach(() => {
   cleanupFetch?.();
-  cleanupLocalStorage?.();
+  cleanupSessionStorage?.();
   cleanupFetch = null;
-  cleanupLocalStorage = null;
+  cleanupSessionStorage = null;
 });
 
 test("uploadImage sends Authorization header when token exists", async () => {
-  cleanupLocalStorage = installLocalStorageMock({
+  cleanupSessionStorage = installSessionStorageMock({
     "study-note-token": "token-123",
   });
 
@@ -46,7 +46,7 @@ test("uploadImage sends Authorization header when token exists", async () => {
 });
 
 test("uploadImage omits Authorization header when token is absent", async () => {
-  cleanupLocalStorage = installLocalStorageMock();
+  cleanupSessionStorage = installSessionStorageMock();
 
   let capturedOptions = {};
 

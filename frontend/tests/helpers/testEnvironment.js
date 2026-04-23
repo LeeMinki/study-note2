@@ -39,6 +39,28 @@ export function installLocalStorageMock(initialEntries = {}) {
   };
 }
 
+export function installSessionStorageMock(initialEntries = {}) {
+  const previousSessionStorage = globalThis.sessionStorage;
+  const sessionStorage = createLocalStorageMock(initialEntries);
+
+  Object.defineProperty(globalThis, "sessionStorage", {
+    configurable: true,
+    value: sessionStorage,
+  });
+
+  return () => {
+    if (previousSessionStorage === undefined) {
+      delete globalThis.sessionStorage;
+      return;
+    }
+
+    Object.defineProperty(globalThis, "sessionStorage", {
+      configurable: true,
+      value: previousSessionStorage,
+    });
+  };
+}
+
 export function installFetchMock(handler) {
   const previousFetch = globalThis.fetch;
   globalThis.fetch = handler;
