@@ -1,10 +1,10 @@
 # study-note2 Development Guidelines
 
-Auto-generated from feature plans and curated for this repository. Last updated: 2026-04-17
+Auto-generated from feature plans and curated for this repository. Last updated: 2026-04-23
 
 ## Active Technologies
 
-- Frontend: React SPA with Vite, Axios-based HTTP integration, Docker image build.
+- Frontend: React SPA with Vite, Axios-based HTTP integration, Docker image build; TipTap v3 WYSIWYG editor (`@tiptap/react`, `@tiptap/starter-kit` and extensions) for rich text editing.
 - Backend: Node.js 22, Express, SQLite (`better-sqlite3`) persistence owned by the backend.
 - Infrastructure: Terraform for AWS MVP infrastructure, k3s on a single EC2 instance, Argo CD core for GitOps reconciliation.
 - CI/CD: GitHub Actions, GitHub OIDC to AWS, Amazon ECR images `study-note-backend` and `study-note-frontend`.
@@ -46,6 +46,8 @@ specs/
   010-test-quality-checks/
   011-domain-https/
   012-db-migration/
+  013-sso-login/
+  015-ui-polish/
 ```
 
 ## Commands
@@ -96,6 +98,8 @@ kubectl kustomize infra/kubernetes/study-note/overlays/mvp
 - Terraform state, tfvars, MCP config, and local credentials must never be committed.
 
 ## Recent Changes
+- 015-ui-polish: Introduced CSS design tokens (zinc/slate + violet palette), full Korean UI text, TipTap v3 WYSIWYG editor with dual-mode (rich/"텍스트 편집기" and markdown), note fullscreen view, JWT sessionStorage migration, and authenticated image rendering fixes.
+- 013-sso-login: Added Google OAuth2 SSO login (Authorization Code Flow via Node.js 22 built-in fetch), auto account creation/linking, JWT URL fragment delivery.
 - 012-db-migration: Migrated from JSON-file storage to SQLite (`better-sqlite3`); added `dbUserRepository`/`dbNoteRepository`, startup migration script, Kubernetes PVC config, and ECR pull secret auto-refresh CronJob.
 - 011-domain-https: Applied custom domain `study-note.yuna-pa.com` with Let's Encrypt TLS, Traefik HTTPS/www redirect middleware, and Elastic IP `3.39.3.103`.
 - 010-test-quality-checks: Implemented Node built-in MVP tests, frontend/backend `npm test` scripts, existing 009 PR workflow test steps, and required checks documentation.
