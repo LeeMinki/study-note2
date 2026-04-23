@@ -23,12 +23,21 @@ export default function ProfileView({
   const [passwordError, setPasswordError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [passwordSuccessMessage, setPasswordSuccessMessage] = useState("");
+  const [showLinkSuccess, setShowLinkSuccess] = useState(false);
 
   useEffect(() => {
     setName(currentUser?.name || "");
     setDisplayName(currentUser?.displayName || "");
     setLocalError("");
   }, [currentUser]);
+
+  // linkSuccess 메시지 4초 후 자동 숨김
+  useEffect(() => {
+    if (!linkSuccess) return;
+    setShowLinkSuccess(true);
+    const t = setTimeout(() => setShowLinkSuccess(false), 4000);
+    return () => clearTimeout(t);
+  }, [linkSuccess]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -108,7 +117,7 @@ export default function ProfileView({
             <button className="ghostButton" type="button" onClick={onBack}>
               메인으로
             </button>
-            <button className="ghostButton" type="button" onClick={onLogout}>
+            <button className="dangerButton" type="button" onClick={onLogout}>
               로그아웃
             </button>
           </div>
@@ -160,7 +169,7 @@ export default function ProfileView({
                   </button>
                 </>
               )}
-              {linkSuccess ? (
+              {showLinkSuccess ? (
                 <p className="successText">Google 계정이 연결되었습니다.</p>
               ) : null}
               {!linkSuccess && errorMessage && currentUser?.provider !== "google" ? (

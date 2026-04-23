@@ -10,9 +10,22 @@ import {
 
 const TOKEN_KEY = "study-note-token";
 
-// 저장된 토큰을 읽어 기본 유효성(존재 여부)을 확인한다
+// 저장된 토큰을 읽어 JWT 만료 여부까지 검증한다. 만료 시 세션 스토리지에서 제거 후 null 반환.
 function loadStoredToken() {
-  return localStorage.getItem(TOKEN_KEY) || null;
+  const token = sessionStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      sessionStorage.removeItem(TOKEN_KEY);
+      return null;
+    }
+  } catch {
+    // 파싱 실패 시 서버 검증에 위임
+  }
+
+  return token;
 }
 
 export default function useAuth() {
@@ -26,13 +39,13 @@ export default function useAuth() {
   const isAuthenticated = Boolean(token);
 
   const saveSession = useCallback((newToken, user = null) => {
-    localStorage.setItem(TOKEN_KEY, newToken);
+    sessionStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
     setCurrentUser(user);
   }, []);
 
   const clearSession = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setCurrentUser(null);
   }, []);

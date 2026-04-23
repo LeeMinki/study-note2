@@ -228,19 +228,17 @@ export default function App() {
       <section className="hero">
         <div>
           <p className="eyebrow">Study Note</p>
-          <h1>Capture fast. Find faster.</h1>
-          <p className="heroText">
-            Keep development notes lightweight, searchable, and easy to edit in place.
-          </p>
+          <h1>안녕하세요, {currentUser?.displayName || currentUser?.name}님</h1>
+          <p className="heroText">노트를 작성하고 검색하세요.</p>
         </div>
         <div className="heroControls">
           <SearchBar value={searchText} onChange={setSearchText} />
           <TagFilterBar activeTag={activeTag} onClear={handleClearFilters} />
           <div className="heroActionRow">
             <button className="ghostButton" type="button" onClick={() => setCurrentView("profile")}>
-              {currentUser?.displayName ? `${currentUser.displayName} 프로필` : "프로필"}
+              프로필
             </button>
-            <button className="ghostButton" type="button" onClick={logout}>
+            <button className="dangerButton" type="button" onClick={logout}>
               로그아웃
             </button>
           </div>

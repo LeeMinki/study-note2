@@ -12,14 +12,19 @@ export default function NoteList({
   onClearFilters,
 }) {
   if (isLoading) {
-    return <section className="panel emptyState">Loading notes...</section>;
+    return (
+      <section className="panel loadingState">
+        <span className="spinner" aria-hidden="true" />
+        노트 불러오는 중…
+      </section>
+    );
   }
 
   if (!hasAnyNotes) {
     return (
       <section className="panel emptyState">
-        <h3>No notes yet</h3>
-        <p>Create your first study note to get started.</p>
+        <h3>아직 노트가 없습니다</h3>
+        <p>첫 번째 노트를 작성해보세요.</p>
       </section>
     );
   }
@@ -27,10 +32,10 @@ export default function NoteList({
   if (notes.length === 0) {
     return (
       <section className="panel emptyState">
-        <h3>No matching notes</h3>
-        <p>Try clearing the current search or tag filter.</p>
+        <h3>일치하는 노트가 없습니다</h3>
+        <p>검색어나 태그 필터를 초기화해보세요.</p>
         <button className="ghostButton" type="button" onClick={onClearFilters}>
-          Clear filters
+          필터 초기화
         </button>
       </section>
     );
