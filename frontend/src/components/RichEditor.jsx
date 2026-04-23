@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Image } from "@tiptap/extension-image";
 import { TextStyle, FontSize } from "@tiptap/extension-text-style";
@@ -72,6 +72,41 @@ const FONT_SIZES = [
   { label: "32px", value: "32px" },
 ];
 
+// TipTap 편집 중 인증 이미지를 표시하는 NodeView
+// getHTML()은 node.attrs.src(원본 URL)를 사용하므로 저장에는 영향 없음
+function AuthenticatedImageView({ node }) {
+  const [blobUrl, setBlobUrl] = useState(null);
+  const src = node.attrs.src;
+
+  useEffect(() => {
+    if (!src || !src.includes("/uploads/")) return;
+    const token = sessionStorage.getItem("study-note-token");
+    let objectUrl = null;
+    fetch(src, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        objectUrl = URL.createObjectURL(blob);
+        setBlobUrl(objectUrl);
+      })
+      .catch(() => {});
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [src]);
+
+  return (
+    <NodeViewWrapper>
+      <img src={blobUrl || src} alt={node.attrs.alt || ""} style={{ maxWidth: "100%", height: "auto" }} />
+    </NodeViewWrapper>
+  );
+}
+
+const AuthenticatedImage = Image.configure({ inline: false, allowBase64: false }).extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(AuthenticatedImageView);
+  },
+});
+
 function ToolbarBtn({ onClick, active, title, children }) {
   return (
     <button
@@ -116,7 +151,7 @@ export default function RichEditor({ value, onChange, disabled, placeholder, min
       FontFamily,
       FontSize,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Image.configure({ inline: false, allowBase64: false }),
+      AuthenticatedImage,
     ],
     content: parseInitialContent(value),
     editable: !disabled && mode === "rich",
