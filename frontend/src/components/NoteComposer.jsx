@@ -30,6 +30,7 @@ export default function NoteComposer({
   const [errorMessage, setErrorMessage] = useState("");
   const [draftBanner, setDraftBanner] = useState(false);
   const [draftEnabled, setDraftEnabled] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
     const draft = loadDraft();
@@ -90,83 +91,95 @@ export default function NoteComposer({
   return (
     <section className={`panel composerPanel${layoutMode === "wide" ? " composerPanel--wide" : ""}`}>
       <div className="sectionHeading">
-        <div>
-          <h2>새 노트</h2>
-          <p>Ctrl/Cmd + Enter로 빠르게 저장</p>
+        <h2>새 노트</h2>
+        <div className="composerHeadingActions">
+          {onSetLayout && isOpen ? (
+            <div className="layoutSelector" role="group" aria-label="레이아웃 선택">
+              {["narrow", "default", "wide"].map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  className={`layoutToggleButton${layoutMode === mode ? " layoutToggleButton--active" : ""}`}
+                  onClick={() => onSetLayout(mode)}
+                  aria-pressed={layoutMode === mode}
+                  aria-label={`${LAYOUT_LABELS[mode]} 레이아웃`}
+                >
+                  {LAYOUT_LABELS[mode]}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <button
+            type="button"
+            className="composerToggleButton"
+            onClick={() => setIsOpen((v) => !v)}
+            aria-expanded={isOpen}
+            aria-label={isOpen ? "접기" : "펼치기"}
+          >
+            {isOpen ? "▴" : "▾"}
+          </button>
         </div>
-        {onSetLayout ? (
-          <div className="layoutSelector" role="group" aria-label="레이아웃 선택">
-            {["narrow", "default", "wide"].map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                className={`layoutToggleButton${layoutMode === mode ? " layoutToggleButton--active" : ""}`}
-                onClick={() => onSetLayout(mode)}
-                aria-pressed={layoutMode === mode}
-                aria-label={`${LAYOUT_LABELS[mode]} 레이아웃`}
-              >
-                {LAYOUT_LABELS[mode]}
-              </button>
-            ))}
-          </div>
-        ) : null}
       </div>
 
-      {draftBanner ? (
-        <div className="draftBanner">
-          <span>이전에 작성 중이던 내용이 있습니다.</span>
-          <div className="draftBannerActions">
-            <button type="button" className="ghostButton" onClick={handleRestoreDraft}>
-              복원
-            </button>
-            <button type="button" className="dangerButton" onClick={handleDiscardDraft}>
-              삭제
+      {isOpen ? (
+        <>
+          {draftBanner ? (
+            <div className="draftBanner">
+              <span>이전에 작성 중이던 내용이 있습니다.</span>
+              <div className="draftBannerActions">
+                <button type="button" className="ghostButton" onClick={handleRestoreDraft}>
+                  복원
+                </button>
+                <button type="button" className="dangerButton" onClick={handleDiscardDraft}>
+                  삭제
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          <GroupSelect
+            groups={groups}
+            value={formState.groupId}
+            onChange={(value) => updateField("groupId", value)}
+            onCreateGroup={onCreateGroup}
+            disabled={disabled}
+          />
+
+          <input
+            className="textInput"
+            value={formState.title}
+            onChange={(e) => updateField("title", e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="제목"
+            disabled={disabled}
+          />
+
+          <RichEditor
+            value={formState.content}
+            onChange={(html) => updateField("content", html)}
+            disabled={disabled}
+            placeholder="내용을 입력하세요"
+            minHeight="260px"
+          />
+
+          <input
+            className="textInput"
+            value={formState.tags}
+            onChange={(e) => updateField("tags", e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="태그 (쉼표로 구분)"
+            disabled={disabled}
+          />
+
+          {errorMessage ? <p className="errorText">{errorMessage}</p> : null}
+
+          <div className="composerActions">
+            <button className="primaryButton" type="button" onClick={handleSubmit} disabled={disabled}>
+              저장
             </button>
           </div>
-        </div>
+        </>
       ) : null}
-
-      <GroupSelect
-        groups={groups}
-        value={formState.groupId}
-        onChange={(value) => updateField("groupId", value)}
-        onCreateGroup={onCreateGroup}
-        disabled={disabled}
-      />
-
-      <input
-        className="textInput"
-        value={formState.title}
-        onChange={(e) => updateField("title", e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="제목"
-        disabled={disabled}
-      />
-
-      <RichEditor
-        value={formState.content}
-        onChange={(html) => updateField("content", html)}
-        disabled={disabled}
-        placeholder="내용을 입력하세요"
-        minHeight="260px"
-      />
-
-      <input
-        className="textInput"
-        value={formState.tags}
-        onChange={(e) => updateField("tags", e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="태그 (쉼표로 구분)"
-        disabled={disabled}
-      />
-
-      {errorMessage ? <p className="errorText">{errorMessage}</p> : null}
-
-      <div className="composerActions">
-        <button className="primaryButton" type="button" onClick={handleSubmit} disabled={disabled}>
-          저장
-        </button>
-      </div>
     </section>
   );
 }

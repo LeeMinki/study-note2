@@ -1,5 +1,18 @@
-import { useState } from "react";
-import previewText from "../utils/previewText";
+import { useRef, useState } from "react";
+import { renderContent } from "../utils/contentUtils";
+import { useAuthenticatedImages } from "../hooks/useAuthenticatedImages";
+
+function GroupNotePreview({ content }) {
+  const ref = useRef(null);
+  useAuthenticatedImages(ref);
+  return (
+    <div
+      ref={ref}
+      className="groupNotePreview"
+      dangerouslySetInnerHTML={{ __html: renderContent(content) || "<p>본문 내용이 없습니다.</p>" }}
+    />
+  );
+}
 
 export default function GroupManager({
   groups,
@@ -164,7 +177,7 @@ export default function GroupManager({
                             {note.title}
                           </button>
                           {expandedNoteId === note.id ? (
-                            <p className="groupNotePreview">{previewText(note.content, 220) || "본문 내용이 없습니다."}</p>
+                            <GroupNotePreview content={note.content} />
                           ) : null}
                         </li>
                       ))}

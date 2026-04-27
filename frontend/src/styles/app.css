@@ -163,10 +163,6 @@ button {
   grid-template-columns: minmax(280px, 280px) minmax(0, 1fr);
 }
 
-.contentGrid--listOnly {
-  grid-template-columns: 1fr;
-}
-
 /* ── 컴포넌트 ────────────────────────────────────────────────── */
 
 .panel {
@@ -434,6 +430,28 @@ button {
   gap: var(--space-xs);
 }
 
+.composerHeadingActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.composerToggleButton {
+  border: none;
+  background: none;
+  padding: 2px 6px;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+}
+
+.composerToggleButton:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
 /* 임시저장 복원 배너 */
 .draftBanner {
   display: flex;
@@ -557,6 +575,16 @@ button {
   color: var(--color-text-muted);
   font-size: 0.875rem;
   line-height: 1.5;
+}
+
+.groupNotePreview img {
+  max-width: 100%;
+  max-height: 240px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin-top: var(--space-xs);
+  border-radius: var(--radius-sm);
 }
 
 .groupSelectBlock {
