@@ -2,7 +2,7 @@
 
 **Feature Branch**: `016-note-groups`
 **Created**: 2026-04-27
-**Status**: Draft
+**Status**: Implemented
 **Input**: User description: "Study Note에 노트를 그룹으로 관리하는 기능을 추가하고 싶다. 사용자가 노트를 그룹 단위로 정리할 수 있어야 한다. 태그와 별개로 더 구조적인 분류 단위를 제공해야 한다. 그룹별로 노트를 모아보고 관리할 수 있어야 한다. 현재 인증, 계정별 노트 분리, DB 기반 저장 구조를 유지해야 한다. 범위는 그룹 생성/목록/수정/삭제, 노트 그룹 할당/변경/해제, 그룹 기준 노트 필터링, 그룹 관련 UI, 저장 구조 및 서비스 경계 변경, 운영 및 개발 문서 반영이다. 범위 밖은 그룹 중첩, 다중 그룹 할당, 공유/협업, 그룹별 권한 분리, 그룹 색상/아이콘 등 고급 커스터마이징이다."
 
 ## Clarifications
@@ -109,6 +109,8 @@
 - **FR-022**: The system MUST allow users to create a new group from the note composition group selector and immediately select it for the draft note.
 - **FR-023**: The system MUST show friendly Korean validation messages for duplicate group names instead of exposing raw backend error strings.
 - **FR-024**: The group management view MUST allow expanding a group to see note titles in that group and opening a note preview inline when practical.
+- **FR-025**: The system SHOULD expose group filtering as a compact select control rather than a long horizontal list of group buttons.
+- **FR-026**: The system SHOULD allow collapsing and reopening the new-note composer so users can focus on the note list.
 
 ### Constitution Alignment *(mandatory)*
 

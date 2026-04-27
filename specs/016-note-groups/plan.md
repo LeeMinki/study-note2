@@ -5,7 +5,7 @@
 
 ## Summary
 
-노트를 태그와 별개의 단일 계층 그룹으로 정리할 수 있게 한다. 백엔드에 `Group` 도메인과 SQLite 스키마를 추가하고, 기존 `Note`에 nullable `groupId`를 연결한다. 그룹 CRUD, 노트 생성/수정 시 그룹 할당, 그룹/검색/태그 AND 필터링을 모두 계정별 소유권 검증 아래에서 처리한다. 프론트엔드는 현재 노트 관리 화면 안에 그룹 관리/필터/선택 컨트롤을 추가하며, 모달 중심 흐름이나 새 의존성은 도입하지 않는다.
+노트를 태그와 별개의 단일 계층 그룹으로 정리할 수 있게 한다. 백엔드에 `Group` 도메인과 SQLite 스키마를 추가하고, 기존 `Note`에 nullable `groupId`를 연결한다. 그룹 CRUD, 노트 생성/수정 시 그룹 할당, 그룹/검색/태그 AND 필터링을 모두 계정별 소유권 검증 아래에서 처리한다. 프론트엔드는 노트 화면의 그룹 필터 select, 작성 폼의 그룹 선택/생성 컨트롤, 별도 페이지형 그룹 관리 화면을 추가하며, 모달 중심 흐름이나 새 의존성은 도입하지 않는다.
 
 ## Technical Context
 
@@ -226,11 +226,11 @@ No modal-first flow. Keep layout consistent with existing panels and controls, b
 
 ### Group 필터 UI
 
-Add `GroupFilterBar` alongside existing search/tag controls:
+Add `GroupFilterBar` alongside existing search/tag controls as a compact select:
 
 - `전체`
 - `그룹 없음`
-- One button/select item per group
+- One select option per group
 - Active group filter can combine with search and tag.
 - Clear filters resets search, tag, and group filter together.
 
@@ -244,6 +244,7 @@ Add `GroupSelect` to `NoteComposer` and `NoteCard` edit mode:
 - In `NoteComposer`, allow creating a new group from the selector area and immediately selecting the created group.
 - Selected value is stored as `groupId` in form/edit state.
 - Ctrl/Cmd + Enter save behavior remains unchanged.
+- The new-note composer can be collapsed/reopened in narrow/default layouts so the note list can occupy the main width.
 
 ### State flow
 
