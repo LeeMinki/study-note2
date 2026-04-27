@@ -332,7 +332,7 @@ export default function App() {
       <main className="appShell">
         <section className="profileHero">
           <div>
-            <p className="eyebrow">Study Note</p>
+            <button className="eyebrowButton" type="button" onClick={() => setCurrentView("notes")}>Study Note</button>
             <h1>그룹 관리</h1>
             <p className="heroText">노트를 묶는 상위 분류를 만들고 정리하세요.</p>
           </div>
@@ -361,7 +361,7 @@ export default function App() {
     <main className="appShell">
       <section className="hero">
         <div>
-          <p className="eyebrow">Study Note</p>
+          <button className="eyebrowButton" type="button" onClick={handleClearFilters}>Study Note</button>
           <h1>안녕하세요, {currentUser?.displayName || currentUser?.name}님</h1>
           <p className="heroText">노트를 작성하고 검색하세요.</p>
         </div>
