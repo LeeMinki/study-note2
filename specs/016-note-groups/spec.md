@@ -16,7 +16,7 @@
 - Q: 그룹 이름 중복은 허용하는가? → A: 같은 사용자 계정 안에서는 trim 후 대소문자를 무시한 이름 중복을 허용하지 않는다.
 - Q: 그룹 정렬 기준은 무엇인가? → A: 그룹 선택/관리 목록은 이름 오름차순으로 정렬하고, 필터 UI에서는 그룹 없음 항목을 별도 고정 항목으로 제공한다.
 - Q: 그룹 필터와 기존 검색/태그 필터는 어떻게 결합되는가? → A: 모든 활성 조건을 AND로 적용해 그룹, 검색어, 태그 조건을 모두 만족하는 노트만 표시한다.
-- Q: UI 복잡도 기준은 무엇인가? → A: 현재 화면 구조 안에서 인라인 또는 페이지 내 컨트롤을 우선하고, 과도한 새 화면이나 모달 중심 흐름은 피한다.
+- Q: UI 복잡도 기준은 무엇인가? → A: 그룹 관리는 프로필 버튼 옆의 `그룹 관리` 버튼으로 접근하는 별도 페이지 내 화면에 배치하고, 노트 작성의 그룹 선택 위치에서도 새 그룹을 바로 만들 수 있게 한다. 모달 중심 흐름은 피한다.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -30,7 +30,7 @@
 
 **Acceptance Scenarios**:
 
-1. **Given** 로그인한 사용자가 그룹 관리 영역을 보고 있을 때, **When** 새 그룹 이름을 입력해 저장하면, **Then** 해당 그룹이 즉시 이름 오름차순 그룹 목록에 표시된다.
+1. **Given** 로그인한 사용자가 프로필 버튼 옆의 `그룹 관리`를 눌러 그룹 관리 화면을 보고 있을 때, **When** 새 그룹 이름을 입력해 저장하면, **Then** 해당 그룹이 즉시 이름 오름차순 그룹 목록에 표시된다.
 2. **Given** 사용자가 본인이 만든 그룹을 보고 있을 때, **When** 그룹 이름을 변경하면, **Then** 변경된 이름이 그룹 목록과 노트 작성/수정 화면의 선택 항목에 반영된다.
 3. **Given** 사용자가 본인이 만든 그룹을 보고 있을 때, **When** 그룹을 삭제하면, **Then** 해당 그룹은 목록에서 사라지고 그 그룹에 속했던 노트는 삭제되지 않으며 그룹 없음 상태가 된다.
 4. **Given** 한 사용자가 만든 그룹이 있을 때, **When** 다른 사용자가 자신의 계정으로 접속하면, **Then** 다른 사용자는 해당 그룹을 볼 수 없다.
@@ -105,7 +105,10 @@
 - **FR-018**: The system MUST keep tags and groups as separate classification concepts; adding or changing a group MUST NOT alter note tags.
 - **FR-019**: The system MUST update relevant development and operating documentation so future work understands the group feature, data ownership, and expected user flows.
 - **FR-020**: The system MUST present groups in name ascending order in group selection and management contexts.
-- **FR-021**: The system MUST keep group UI within the current note management structure using inline or page-embedded controls rather than adding modal-first or deeply nested navigation flows.
+- **FR-021**: The system MUST expose group management from a `그룹 관리` action next to the profile action and show it as a separate page-level view, without using modal-first or deeply nested navigation flows.
+- **FR-022**: The system MUST allow users to create a new group from the note composition group selector and immediately select it for the draft note.
+- **FR-023**: The system MUST show friendly Korean validation messages for duplicate group names instead of exposing raw backend error strings.
+- **FR-024**: The group management view MUST allow expanding a group to see note titles in that group and opening a note preview inline when practical.
 
 ### Constitution Alignment *(mandatory)*
 

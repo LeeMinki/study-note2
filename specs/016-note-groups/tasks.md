@@ -93,7 +93,7 @@
 - [X] T023 [US2] Map group-related validation errors to envelope responses in `backend/src/controllers/notesController.js`: malformed `groupId` returns `400`, and not-found/not-owned valid-looking `groupId` returns `404`
 - [X] T024 [US2] Extend `createNote` and `updateNote` client calls to pass `groupId` in `frontend/src/services/notesApi.js`
 - [X] T025 [P] [US2] Create reusable group selector component in `frontend/src/components/GroupSelect.jsx`
-- [X] T026 [US2] Add `groupId` state, draft persistence compatibility, and group selector to note creation in `frontend/src/components/NoteComposer.jsx`
+- [X] T026 [US2] Add `groupId` state, draft persistence compatibility, top-positioned group selector, and inline group creation to note creation in `frontend/src/components/NoteComposer.jsx`
 - [X] T027 [US2] Add `groupId` edit state, group display, and group selector to inline editing in `frontend/src/components/NoteCard.jsx`
 - [X] T028 [US2] Pass groups into composer/cards from `frontend/src/App.jsx`
 - [ ] T029 [US2] Verify User Story 2 manually using quickstart S3 and S4 in `specs/016-note-groups/quickstart.md`
@@ -119,9 +119,9 @@
 - [X] T033 [US3] Validate group filter ownership before note listing in `backend/src/services/notesService.js`
 - [X] T034 [US3] Extend `fetchNotes` query parameter builder for group filters in `frontend/src/services/notesApi.js`
 - [X] T035 [P] [US3] Create group filter UI with `전체`, `그룹 없음`, and group options in `frontend/src/components/GroupFilterBar.jsx`
-- [X] T036 [P] [US3] Create inline group management UI for create/rename/delete in `frontend/src/components/GroupManager.jsx`
+- [X] T036 [P] [US3] Create group management UI for create/rename/delete, friendly duplicate errors, expandable group notes, and inline note preview in `frontend/src/components/GroupManager.jsx`
 - [X] T037 [US3] Add `groupsApi` client functions for group CRUD in `frontend/src/services/groupsApi.js`
-- [X] T038 [US3] Integrate `groups`, `activeGroupFilter`, group CRUD handlers, and reload sequencing in `frontend/src/App.jsx`
+- [X] T038 [US3] Integrate `groups`, `activeGroupFilter`, group CRUD handlers, page-level group management view, and reload sequencing in `frontend/src/App.jsx`
 - [X] T039 [US3] Update clear-filter behavior to reset search, tag, and group filter together in `frontend/src/App.jsx`
 - [X] T040 [US3] Update empty-state copy for combined group/search/tag results in `frontend/src/components/NoteList.jsx`
 - [X] T041 [US3] Add group UI styles using existing tokens in `frontend/src/styles/app.css`

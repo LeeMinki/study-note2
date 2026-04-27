@@ -3,12 +3,44 @@ import { useEffect, useRef } from "react";
 const STORAGE_KEY = "study-note-draft";
 const DEBOUNCE_MS = 3000;
 
+function stripHtml(value) {
+  return String(value || "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+}
+
+export function hasMeaningfulDraft(draft) {
+  if (!draft || typeof draft !== "object") {
+    return false;
+  }
+
+  return Boolean(
+    String(draft.title || "").trim() ||
+      stripHtml(draft.content) ||
+      String(draft.tags || "").trim()
+  );
+}
+
 // localStorage에서 임시저장 데이터를 읽어 반환한다. 없으면 null 반환.
 export function loadDraft() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) {
+      return null;
+    }
+
+    const draft = JSON.parse(raw);
+    if (!hasMeaningfulDraft(draft)) {
+      clearDraft();
+      return null;
+    }
+
+    return draft;
   } catch {
+    clearDraft();
     return null;
   }
 }
@@ -26,21 +58,25 @@ export default function useDraftNote({ title, content, tags, groupId, enabled })
   useEffect(() => {
     if (!enabled) return;
 
-    // 빈 폼이면 저장하지 않는다
-    if (!title.trim() && !content.trim() && !tags.trim()) return;
+    const draft = {
+      title,
+      content,
+      tags,
+      groupId: groupId || null,
+      savedAt: new Date().toISOString(),
+    };
+
+    // 빈 폼이면 이전 임시저장도 제거해 잘못된 복원 배너를 막는다
+    if (!hasMeaningfulDraft(draft)) {
+      clearDraft();
+      return;
+    }
 
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
 
     timerRef.current = setTimeout(() => {
-      const draft = {
-        title,
-        content,
-        tags,
-        groupId: groupId || null,
-        savedAt: new Date().toISOString(),
-      };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
     }, DEBOUNCE_MS);
 

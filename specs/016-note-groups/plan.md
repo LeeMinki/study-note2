@@ -212,15 +212,17 @@ Backend filtering avoids loading all notes on the client and keeps ownership val
 
 ### Group 관리 UI
 
-Add `GroupManager` near the composer or note controls:
+Add `GroupManager` as a page-level view opened from a `그룹 관리` button next to the profile button:
 
 - Inline text input for new group.
 - List existing groups sorted by name.
 - Inline rename mode per group.
 - Delete button with a lightweight confirmation pattern using existing button styles.
 - Empty state when no groups exist.
+- Friendly Korean validation messages for duplicate names and common validation failures.
+- Expandable group rows that show note titles for the group and an inline text preview when a note title is clicked.
 
-No modal-first flow. Keep layout consistent with existing panels and controls.
+No modal-first flow. Keep layout consistent with existing panels and controls, but do not keep the management panel on the main notes screen.
 
 ### Group 필터 UI
 
@@ -238,6 +240,8 @@ Add `GroupSelect` to `NoteComposer` and `NoteCard` edit mode:
 
 - First option: `그룹 없음`
 - Group options sorted by name.
+- In `NoteComposer`, place the group selector before the title input so users can classify the note before writing the title.
+- In `NoteComposer`, allow creating a new group from the selector area and immediately selecting the created group.
 - Selected value is stored as `groupId` in form/edit state.
 - Ctrl/Cmd + Enter save behavior remains unchanged.
 

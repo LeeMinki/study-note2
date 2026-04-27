@@ -29,6 +29,7 @@ export default function App() {
   const [activeTag, setActiveTag] = useState("");
   const [activeGroupFilter, setActiveGroupFilter] = useState("all");
   const [groups, setGroups] = useState([]);
+  const [groupNotes, setGroupNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -139,9 +140,16 @@ export default function App() {
       const nextGroups = await fetchGroups();
       setGroups(nextGroups);
       setErrorMessage("");
+      return nextGroups;
     } catch (error) {
       setErrorMessage(error.message);
     }
+  }
+
+  async function loadGroupNotes() {
+    const nextNotes = await fetchNotes({ searchText: "", activeTag: "", activeGroupFilter: "all" });
+    setGroupNotes(nextNotes);
+    return nextNotes;
   }
 
   // 로그아웃 시 이전 계정 노트를 즉시 초기화한다
@@ -149,6 +157,7 @@ export default function App() {
     if (!isAuthenticated) {
       setNotes([]);
       setGroups([]);
+      setGroupNotes([]);
       setHasAnyNotes(false);
       setActiveGroupFilter("all");
     }
@@ -221,11 +230,13 @@ export default function App() {
     setIsSaving(true);
 
     try {
-      await createGroup(groupInput);
+      const createdGroup = await createGroup(groupInput);
       await loadGroups();
       setErrorMessage("");
+      return createdGroup;
     } catch (error) {
       setErrorMessage(error.message);
+      throw error;
     } finally {
       setIsSaving(false);
     }
@@ -240,6 +251,7 @@ export default function App() {
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.message);
+      throw error;
     } finally {
       setIsSaving(false);
     }
@@ -254,11 +266,28 @@ export default function App() {
       const nextGroupFilter = activeGroupFilter === groupId ? "none" : activeGroupFilter;
       setActiveGroupFilter(nextGroupFilter);
       await loadNotes({ searchText, activeTag, activeGroupFilter: nextGroupFilter });
+      await loadGroupNotes();
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleOpenGroups() {
+    setIsLoading(true);
+
+    try {
+      await loadGroups();
+      await loadGroupNotes();
+      setCurrentView("groups");
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
-      setIsSaving(false);
+      setIsLoading(false);
     }
   }
 
@@ -298,6 +327,36 @@ export default function App() {
     );
   }
 
+  if (currentView === "groups") {
+    return (
+      <main className="appShell">
+        <section className="profileHero">
+          <div>
+            <p className="eyebrow">Study Note</p>
+            <h1>그룹 관리</h1>
+            <p className="heroText">노트를 묶는 상위 분류를 만들고 정리하세요.</p>
+          </div>
+          <div className="profileHeroActions">
+            <button className="ghostButton" type="button" onClick={() => setCurrentView("notes")}>
+              노트로 돌아가기
+            </button>
+          </div>
+        </section>
+
+        {errorMessage ? <p className="errorBanner">{errorMessage}</p> : null}
+
+        <GroupManager
+          groups={groups}
+          notes={groupNotes}
+          disabled={isSaving}
+          onCreate={handleCreateGroup}
+          onRename={handleRenameGroup}
+          onDelete={handleDeleteGroup}
+        />
+      </main>
+    );
+  }
+
   return (
     <main className="appShell">
       <section className="hero">
@@ -315,6 +374,9 @@ export default function App() {
             onChange={setActiveGroupFilter}
           />
           <div className="heroActionRow">
+            <button className="ghostButton" type="button" onClick={handleOpenGroups}>
+              그룹 관리
+            </button>
             <button className="ghostButton" type="button" onClick={() => setCurrentView("profile")}>
               프로필
             </button>
@@ -328,23 +390,15 @@ export default function App() {
       {errorMessage ? <p className="errorBanner">{errorMessage}</p> : null}
 
       <div className={`contentGrid${layoutMode === "wide" ? " contentGrid--wide" : ""}${layoutMode === "narrow" ? " contentGrid--narrow" : ""}`}>
-        <aside className="sideStack">
-          <NoteComposer
-            onCreate={handleCreate}
-            disabled={isSaving}
-            groups={groups}
-            layoutMode={layoutMode}
-            onToggleLayout={toggleLayout}
-            onSetLayout={setLayout}
-          />
-          <GroupManager
-            groups={groups}
-            disabled={isSaving}
-            onCreate={handleCreateGroup}
-            onRename={handleRenameGroup}
-            onDelete={handleDeleteGroup}
-          />
-        </aside>
+        <NoteComposer
+          onCreate={handleCreate}
+          disabled={isSaving}
+          groups={groups}
+          onCreateGroup={handleCreateGroup}
+          layoutMode={layoutMode}
+          onToggleLayout={toggleLayout}
+          onSetLayout={setLayout}
+        />
         <NoteList
           notes={notes}
           hasAnyNotes={hasAnyNotes}

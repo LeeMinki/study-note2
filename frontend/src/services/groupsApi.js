@@ -26,22 +26,45 @@ function unwrapResponse(response) {
   return response.data.data;
 }
 
+function toFriendlyGroupError(error) {
+  const status = error.response?.status;
+  const serverMessage = error.response?.data?.error || error.message;
+
+  if (status === 409 || serverMessage === "Group already exists.") {
+    return new Error("이미 같은 이름의 그룹이 있습니다. 다른 이름을 입력해주세요.");
+  }
+
+  if (serverMessage === "Group name is required.") {
+    return new Error("그룹 이름을 입력해주세요.");
+  }
+
+  if (serverMessage === "Group name is too long.") {
+    return new Error("그룹 이름은 40자 이하로 입력해주세요.");
+  }
+
+  return new Error(serverMessage || "그룹 작업 중 문제가 발생했습니다.");
+}
+
+async function requestGroup(action) {
+  try {
+    return unwrapResponse(await action());
+  } catch (error) {
+    throw toFriendlyGroupError(error);
+  }
+}
+
 export async function fetchGroups() {
-  const response = await apiClient.get("/api/groups");
-  return unwrapResponse(response);
+  return requestGroup(() => apiClient.get("/api/groups"));
 }
 
 export async function createGroup(groupInput) {
-  const response = await apiClient.post("/api/groups", groupInput);
-  return unwrapResponse(response);
+  return requestGroup(() => apiClient.post("/api/groups", groupInput));
 }
 
 export async function updateGroup(groupId, groupInput) {
-  const response = await apiClient.patch(`/api/groups/${groupId}`, groupInput);
-  return unwrapResponse(response);
+  return requestGroup(() => apiClient.patch(`/api/groups/${groupId}`, groupInput));
 }
 
 export async function deleteGroup(groupId) {
-  const response = await apiClient.delete(`/api/groups/${groupId}`);
-  return unwrapResponse(response);
+  return requestGroup(() => apiClient.delete(`/api/groups/${groupId}`));
 }

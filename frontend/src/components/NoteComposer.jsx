@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useKeyboardSave from "../hooks/useKeyboardSave";
-import useDraftNote, { loadDraft, clearDraft } from "../hooks/useDraftNote";
+import useDraftNote, { loadDraft, clearDraft, hasMeaningfulDraft } from "../hooks/useDraftNote";
 import RichEditor from "./RichEditor";
 import GroupSelect from "./GroupSelect";
 
@@ -21,6 +21,7 @@ export default function NoteComposer({
   onCreate,
   disabled,
   groups = [],
+  onCreateGroup,
   layoutMode = "default",
   onToggleLayout,
   onSetLayout,
@@ -32,7 +33,7 @@ export default function NoteComposer({
 
   useEffect(() => {
     const draft = loadDraft();
-    if (draft && (draft.title || draft.content || draft.tags)) {
+    if (hasMeaningfulDraft(draft)) {
       setDraftBanner(true);
     }
   }, []);
@@ -67,7 +68,7 @@ export default function NoteComposer({
 
   function handleRestoreDraft() {
     const draft = loadDraft();
-    if (draft) {
+    if (hasMeaningfulDraft(draft)) {
       setFormState({
         title: draft.title || "",
         content: draft.content || "",
@@ -80,7 +81,10 @@ export default function NoteComposer({
 
   function handleDiscardDraft() {
     clearDraft();
+    setDraftEnabled(false);
+    setFormState(initialFormState);
     setDraftBanner(false);
+    setTimeout(() => setDraftEnabled(true), 0);
   }
 
   return (
@@ -122,6 +126,14 @@ export default function NoteComposer({
         </div>
       ) : null}
 
+      <GroupSelect
+        groups={groups}
+        value={formState.groupId}
+        onChange={(value) => updateField("groupId", value)}
+        onCreateGroup={onCreateGroup}
+        disabled={disabled}
+      />
+
       <input
         className="textInput"
         value={formState.title}
@@ -145,13 +157,6 @@ export default function NoteComposer({
         onChange={(e) => updateField("tags", e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="태그 (쉼표로 구분)"
-        disabled={disabled}
-      />
-
-      <GroupSelect
-        groups={groups}
-        value={formState.groupId}
-        onChange={(value) => updateField("groupId", value)}
         disabled={disabled}
       />
 
