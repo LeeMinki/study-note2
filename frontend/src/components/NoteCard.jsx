@@ -6,12 +6,14 @@ import { renderContent } from "../utils/contentUtils";
 import { useAuthenticatedImages } from "../hooks/useAuthenticatedImages";
 import NoteFullscreen from "./NoteFullscreen";
 import RichEditor from "./RichEditor";
+import GroupSelect from "./GroupSelect";
 
 function createEditState(note) {
   return {
     title: note.title,
     content: note.content,
     tags: note.tags.join(", "),
+    groupId: note.groupId || null,
   };
 }
 
@@ -22,6 +24,7 @@ export default function NoteCard({
   onDelete,
   onTagSelect,
   activeTag,
+  groups = [],
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -75,7 +78,11 @@ export default function NoteCard({
           ) : (
             <div>
               <h3>{note.title}</h3>
-              <p className="noteMeta">{formatDisplayDate(note.createdAt)}</p>
+              <p className="noteMeta">
+                {formatDisplayDate(note.createdAt)}
+                {" · "}
+                {groups.find((group) => group.id === note.groupId)?.name || "그룹 없음"}
+              </p>
             </div>
           )}
           <div className="cardActions">
@@ -144,6 +151,12 @@ export default function NoteCard({
               onKeyDown={handleKeyDown}
               disabled={isSaving}
               placeholder="태그 (쉼표로 구분)"
+            />
+            <GroupSelect
+              groups={groups}
+              value={editState.groupId}
+              onChange={(value) => updateField("groupId", value)}
+              disabled={isSaving}
             />
             {errorMessage ? <p className="errorText">{errorMessage}</p> : null}
           </div>

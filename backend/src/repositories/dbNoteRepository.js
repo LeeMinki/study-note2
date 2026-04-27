@@ -9,6 +9,7 @@ function rowToNote(row) {
     title: row.title,
     content: row.content,
     tags: JSON.parse(row.tags),
+    groupId: row.group_id ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -33,6 +34,13 @@ function findNotesByUserId(userId, query = {}) {
     params.push(`%${normalizedSearch}%`, `%${normalizedSearch}%`);
   }
 
+  if (query.group === "none") {
+    sql += " AND group_id IS NULL";
+  } else if (query.groupId) {
+    sql += " AND group_id = ?";
+    params.push(query.groupId);
+  }
+
   sql += " ORDER BY created_at DESC";
 
   return getDb()
@@ -51,8 +59,8 @@ function findNoteById(noteId) {
 function insertNote(note) {
   getDb()
     .prepare(
-      `INSERT INTO notes (id, user_id, title, content, tags, created_at, updated_at)
-       VALUES (@id, @userId, @title, @content, @tags, @createdAt, @updatedAt)`
+      `INSERT INTO notes (id, user_id, title, content, tags, group_id, created_at, updated_at)
+       VALUES (@id, @userId, @title, @content, @tags, @groupId, @createdAt, @updatedAt)`
     )
     .run({
       id: note.id,
@@ -60,6 +68,7 @@ function insertNote(note) {
       title: note.title,
       content: note.content,
       tags: JSON.stringify(note.tags ?? []),
+      groupId: note.groupId ?? null,
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
     });
@@ -73,6 +82,7 @@ function updateNote(note) {
          SET title = @title,
              content = @content,
              tags = @tags,
+             group_id = @groupId,
              updated_at = @updatedAt
        WHERE id = @id`
     )
@@ -81,6 +91,7 @@ function updateNote(note) {
       title: note.title,
       content: note.content,
       tags: JSON.stringify(note.tags ?? []),
+      groupId: note.groupId ?? null,
       updatedAt: note.updatedAt,
     });
 

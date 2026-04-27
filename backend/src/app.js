@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const notesRoutes = require("./routes/notesRoutes");
+const groupsRoutes = require("./routes/groupsRoutes");
 const imageRoutes = require("./routes/imageRoutes");
 const authRoutes = require("./routes/authRoutes");
 const ssoRoutes = require("./routes/ssoRoutes");
@@ -49,8 +50,9 @@ function createApp() {
   app.use("/api/auth", authRoutes);
   app.use("/api/auth/sso", ssoRoutes);
 
-  // 노트/이미지 라우트 (JWT 인증 필요)
+  // 노트/그룹/이미지 라우트 (JWT 인증 필요)
   app.use("/api/notes", requireAuth, notesRoutes);
+  app.use("/api/groups", requireAuth, groupsRoutes);
   app.use("/api/images", requireAuth, imageRoutes);
 
   // 업로드된 이미지 — requireAuth 통과 후 파일 서빙

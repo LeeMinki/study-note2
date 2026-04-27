@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import useKeyboardSave from "../hooks/useKeyboardSave";
-import useDraftNote, { loadDraft, clearDraft } from "../hooks/useDraftNote";
+import useDraftNote, { loadDraft, clearDraft, hasMeaningfulDraft } from "../hooks/useDraftNote";
 import RichEditor from "./RichEditor";
+import GroupSelect from "./GroupSelect";
 
 const initialFormState = {
   title: "",
   content: "",
   tags: "",
+  groupId: null,
 };
 
 const LAYOUT_LABELS = {
@@ -15,7 +17,15 @@ const LAYOUT_LABELS = {
   wide: "넓게",
 };
 
-export default function NoteComposer({ onCreate, disabled, layoutMode = "default", onToggleLayout, onSetLayout }) {
+export default function NoteComposer({
+  onCreate,
+  disabled,
+  groups = [],
+  onCreateGroup,
+  layoutMode = "default",
+  onToggleLayout,
+  onSetLayout,
+}) {
   const [formState, setFormState] = useState(initialFormState);
   const [errorMessage, setErrorMessage] = useState("");
   const [draftBanner, setDraftBanner] = useState(false);
@@ -23,7 +33,7 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
 
   useEffect(() => {
     const draft = loadDraft();
-    if (draft && (draft.title || draft.content || draft.tags)) {
+    if (hasMeaningfulDraft(draft)) {
       setDraftBanner(true);
     }
   }, []);
@@ -32,6 +42,7 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
     title: formState.title,
     content: formState.content,
     tags: formState.tags,
+    groupId: formState.groupId,
     enabled: draftEnabled,
   });
 
@@ -57,11 +68,12 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
 
   function handleRestoreDraft() {
     const draft = loadDraft();
-    if (draft) {
+    if (hasMeaningfulDraft(draft)) {
       setFormState({
         title: draft.title || "",
         content: draft.content || "",
         tags: draft.tags || "",
+        groupId: draft.groupId || null,
       });
     }
     setDraftBanner(false);
@@ -69,7 +81,10 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
 
   function handleDiscardDraft() {
     clearDraft();
+    setDraftEnabled(false);
+    setFormState(initialFormState);
     setDraftBanner(false);
+    setTimeout(() => setDraftEnabled(true), 0);
   }
 
   return (
@@ -110,6 +125,14 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
           </div>
         </div>
       ) : null}
+
+      <GroupSelect
+        groups={groups}
+        value={formState.groupId}
+        onChange={(value) => updateField("groupId", value)}
+        onCreateGroup={onCreateGroup}
+        disabled={disabled}
+      />
 
       <input
         className="textInput"

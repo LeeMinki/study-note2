@@ -10,11 +10,16 @@ const {
 } = require("../services/notesService");
 
 function getStatusCode(error) {
-  if (error.message === "Note not found.") {
+  if (error.message === "Note not found." || error.message === "Group not found.") {
     return 404;
   }
 
-  if (error.message === "Title is required." || error.message === "Invalid notes data file.") {
+  if (
+    error.message === "Title is required." ||
+    error.message === "Invalid notes data file." ||
+    error.message === "Invalid group id." ||
+    error.message === "Group filter conflict."
+  ) {
     return 400;
   }
 

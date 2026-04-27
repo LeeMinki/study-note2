@@ -154,6 +154,8 @@ button {
 .composerPanel {
   position: sticky;
   top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
 }
 
 .composerPanel--wide {
@@ -246,6 +248,7 @@ button {
 .composerActions,
 .tagList,
 .tagFilterBar,
+.groupFilterBar,
 .profileHeroActions {
   display: flex;
   gap: var(--space-sm);
@@ -424,6 +427,174 @@ button {
 .draftBannerActions {
   display: flex;
   gap: 6px;
+}
+
+/* ── 그룹 관리 및 필터 ──────────────────────────────────────── */
+
+.groupManager {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.groupCreateRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-sm);
+}
+
+.groupList {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groupListItem {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+
+.groupListHeader {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.groupNameButton {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border: 0;
+  padding: 6px 0;
+  background: transparent;
+  color: var(--color-text);
+  font-weight: 600;
+  text-align: left;
+}
+
+.groupNoteCount {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.groupEmptyText {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.groupNotesPanel {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.groupNoteList {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.groupNoteItem {
+  display: grid;
+  gap: var(--space-xs);
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+
+.groupNoteButton {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-weight: 600;
+  text-align: left;
+}
+
+.groupNotePreview {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.groupSelectBlock {
+  display: grid;
+  gap: var(--space-sm);
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+
+.groupSelectLabel {
+  display: grid;
+  gap: var(--space-xs);
+  color: var(--color-ui-fg);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.groupSelect {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  padding: 10px 12px;
+  color: var(--color-text);
+}
+
+.groupSelect:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+  background: var(--color-surface);
+}
+
+.groupSelectCreateRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-sm);
+}
+
+.groupFilterBar {
+  justify-content: flex-end;
+}
+
+.groupFilterButton {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  background: var(--color-surface);
+  color: var(--color-ui-fg);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.groupFilterButton:hover {
+  background: var(--color-surface-2);
+}
+
+.groupFilterButton--active {
+  color: #ffffff;
+  background: var(--color-brand);
+  border-color: var(--color-brand);
 }
 
 /* ── 상태 ────────────────────────────────────────────────────── */
@@ -1004,6 +1175,11 @@ button {
 @media (max-width: 880px) {
   .contentGrid,
   .profileGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .groupCreateRow,
+  .groupSelectCreateRow {
     grid-template-columns: 1fr;
   }
 

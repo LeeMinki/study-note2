@@ -3,6 +3,8 @@ import NoteComposer from "./components/NoteComposer";
 import NoteList from "./components/NoteList";
 import SearchBar from "./components/SearchBar";
 import TagFilterBar from "./components/TagFilterBar";
+import GroupFilterBar from "./components/GroupFilterBar";
+import GroupManager from "./components/GroupManager";
 import AuthForm from "./components/AuthForm";
 import ProfileView from "./components/ProfileView";
 import {
@@ -11,6 +13,12 @@ import {
   fetchNotes,
   updateNote,
 } from "./services/notesApi";
+import {
+  createGroup,
+  deleteGroup,
+  fetchGroups,
+  updateGroup,
+} from "./services/groupsApi";
 import useLayoutPreference from "./hooks/useLayoutPreference";
 import useAuth from "./hooks/useAuth";
 
@@ -19,6 +27,9 @@ export default function App() {
   const [hasAnyNotes, setHasAnyNotes] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTag, setActiveTag] = useState("");
+  const [activeGroupFilter, setActiveGroupFilter] = useState("all");
+  const [groups, setGroups] = useState([]);
+  const [groupNotes, setGroupNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -97,14 +108,16 @@ export default function App() {
     }
   }, [loginWithToken, refreshUser]);
 
-  async function loadNotes(nextFilters = { searchText, activeTag }) {
+  async function loadNotes(nextFilters = { searchText, activeTag, activeGroupFilter }) {
     setIsLoading(true);
 
     try {
       const nextNotes = await fetchNotes(nextFilters);
       setNotes(nextNotes);
       const isFilteredView = Boolean(
-        nextFilters.searchText?.trim() || nextFilters.activeTag?.trim(),
+        nextFilters.searchText?.trim() ||
+          nextFilters.activeTag?.trim() ||
+          (nextFilters.activeGroupFilter && nextFilters.activeGroupFilter !== "all"),
       );
 
       setHasAnyNotes((currentValue) => {
@@ -122,25 +135,50 @@ export default function App() {
     }
   }
 
+  async function loadGroups() {
+    try {
+      const nextGroups = await fetchGroups();
+      setGroups(nextGroups);
+      setErrorMessage("");
+      return nextGroups;
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }
+
+  async function loadGroupNotes() {
+    const nextNotes = await fetchNotes({ searchText: "", activeTag: "", activeGroupFilter: "all" });
+    setGroupNotes(nextNotes);
+    return nextNotes;
+  }
+
   // 로그아웃 시 이전 계정 노트를 즉시 초기화한다
   useEffect(() => {
     if (!isAuthenticated) {
       setNotes([]);
+      setGroups([]);
+      setGroupNotes([]);
       setHasAnyNotes(false);
+      setActiveGroupFilter("all");
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
     loadNotes();
-  }, [searchText, activeTag, isAuthenticated]);
+  }, [searchText, activeTag, activeGroupFilter, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    loadGroups();
+  }, [isAuthenticated]);
 
   async function handleCreate(noteInput) {
     setIsSaving(true);
 
     try {
       await createNote(noteInput);
-      await loadNotes({ searchText, activeTag });
+      await loadNotes({ searchText, activeTag, activeGroupFilter });
       setHasAnyNotes(true);
       setErrorMessage("");
     } catch (error) {
@@ -155,7 +193,7 @@ export default function App() {
 
     try {
       await updateNote(noteId, noteInput);
-      await loadNotes({ searchText, activeTag });
+      await loadNotes({ searchText, activeTag, activeGroupFilter });
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.message);
@@ -169,7 +207,7 @@ export default function App() {
 
     try {
       await deleteNote(noteId);
-      await loadNotes({ searchText, activeTag });
+      await loadNotes({ searchText, activeTag, activeGroupFilter });
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.message);
@@ -185,6 +223,72 @@ export default function App() {
   function handleClearFilters() {
     setSearchText("");
     setActiveTag("");
+    setActiveGroupFilter("all");
+  }
+
+  async function handleCreateGroup(groupInput) {
+    setIsSaving(true);
+
+    try {
+      const createdGroup = await createGroup(groupInput);
+      await loadGroups();
+      setErrorMessage("");
+      return createdGroup;
+    } catch (error) {
+      setErrorMessage(error.message);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleRenameGroup(groupId, groupInput) {
+    setIsSaving(true);
+
+    try {
+      await updateGroup(groupId, groupInput);
+      await loadGroups();
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleDeleteGroup(groupId) {
+    setIsSaving(true);
+
+    try {
+      await deleteGroup(groupId);
+      await loadGroups();
+      const nextGroupFilter = activeGroupFilter === groupId ? "none" : activeGroupFilter;
+      setActiveGroupFilter(nextGroupFilter);
+      await loadNotes({ searchText, activeTag, activeGroupFilter: nextGroupFilter });
+      await loadGroupNotes();
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleOpenGroups() {
+    setIsLoading(true);
+
+    try {
+      await loadGroups();
+      await loadGroupNotes();
+      setCurrentView("groups");
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -223,6 +327,36 @@ export default function App() {
     );
   }
 
+  if (currentView === "groups") {
+    return (
+      <main className="appShell">
+        <section className="profileHero">
+          <div>
+            <p className="eyebrow">Study Note</p>
+            <h1>그룹 관리</h1>
+            <p className="heroText">노트를 묶는 상위 분류를 만들고 정리하세요.</p>
+          </div>
+          <div className="profileHeroActions">
+            <button className="ghostButton" type="button" onClick={() => setCurrentView("notes")}>
+              노트로 돌아가기
+            </button>
+          </div>
+        </section>
+
+        {errorMessage ? <p className="errorBanner">{errorMessage}</p> : null}
+
+        <GroupManager
+          groups={groups}
+          notes={groupNotes}
+          disabled={isSaving}
+          onCreate={handleCreateGroup}
+          onRename={handleRenameGroup}
+          onDelete={handleDeleteGroup}
+        />
+      </main>
+    );
+  }
+
   return (
     <main className="appShell">
       <section className="hero">
@@ -234,7 +368,15 @@ export default function App() {
         <div className="heroControls">
           <SearchBar value={searchText} onChange={setSearchText} />
           <TagFilterBar activeTag={activeTag} onClear={handleClearFilters} />
+          <GroupFilterBar
+            groups={groups}
+            activeGroupFilter={activeGroupFilter}
+            onChange={setActiveGroupFilter}
+          />
           <div className="heroActionRow">
+            <button className="ghostButton" type="button" onClick={handleOpenGroups}>
+              그룹 관리
+            </button>
             <button className="ghostButton" type="button" onClick={() => setCurrentView("profile")}>
               프로필
             </button>
@@ -251,6 +393,8 @@ export default function App() {
         <NoteComposer
           onCreate={handleCreate}
           disabled={isSaving}
+          groups={groups}
+          onCreateGroup={handleCreateGroup}
           layoutMode={layoutMode}
           onToggleLayout={toggleLayout}
           onSetLayout={setLayout}
@@ -261,6 +405,7 @@ export default function App() {
           isLoading={isLoading}
           isSaving={isSaving}
           activeTag={activeTag}
+          groups={groups}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
           onTagSelect={handleTagSelect}

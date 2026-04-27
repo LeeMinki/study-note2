@@ -1,5 +1,6 @@
 const { createTimestamp } = require("../utils/dateFormat");
 const { normalizeTags } = require("../utils/normalizeTags");
+const { normalizeGroupId } = require("./group");
 
 function createNoteId() {
   return `note_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -24,6 +25,7 @@ function validateNoteInput(input) {
     title,
     content: typeof input.content === "string" ? input.content : "",
     tags: normalizeTags(input.tags),
+    groupId: normalizeGroupId(input.groupId),
   };
 }
 
@@ -36,6 +38,7 @@ function createNote(input, userId, now = createTimestamp()) {
     title: sanitizedInput.title,
     content: sanitizedInput.content,
     tags: sanitizedInput.tags,
+    groupId: sanitizedInput.groupId,
     createdAt: now,
     updatedAt: now,
   };
@@ -49,6 +52,7 @@ function updateNote(currentNote, input, now = createTimestamp()) {
     title: sanitizedInput.title,
     content: sanitizedInput.content,
     tags: sanitizedInput.tags,
+    groupId: sanitizedInput.groupId,
     updatedAt: now,
   };
 }

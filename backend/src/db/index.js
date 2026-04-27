@@ -39,11 +39,26 @@ function initialize() {
       updated_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS groups (
+      id              TEXT PRIMARY KEY,
+      user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name            TEXT NOT NULL,
+      normalized_name TEXT NOT NULL,
+      created_at      TEXT NOT NULL,
+      updated_at      TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_notes_user_id
       ON notes(user_id);
 
     CREATE INDEX IF NOT EXISTS idx_notes_user_id_created_at
       ON notes(user_id, created_at DESC);
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_groups_user_normalized_name
+      ON groups(user_id, normalized_name);
+
+    CREATE INDEX IF NOT EXISTS idx_groups_user_name
+      ON groups(user_id, name COLLATE NOCASE ASC);
 
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email
       ON users(email);
@@ -51,6 +66,17 @@ function initialize() {
     CREATE INDEX IF NOT EXISTS idx_users_provider_provider_id
       ON users(provider, provider_id)
       WHERE provider_id IS NOT NULL;
+  `);
+
+  const noteColumns = db.prepare("PRAGMA table_info(notes)").all();
+  const hasGroupId = noteColumns.some((column) => column.name === "group_id");
+  if (!hasGroupId) {
+    db.exec("ALTER TABLE notes ADD COLUMN group_id TEXT REFERENCES groups(id) ON DELETE SET NULL");
+  }
+
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_notes_user_group_created_at
+      ON notes(user_id, group_id, created_at DESC);
   `);
 
   console.log("[DB] 데이터베이스 초기화 완료");

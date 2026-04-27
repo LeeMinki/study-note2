@@ -6,6 +6,7 @@ export default function NoteList({
   isLoading,
   isSaving,
   activeTag,
+  groups,
   onUpdate,
   onDelete,
   onTagSelect,
@@ -33,7 +34,7 @@ export default function NoteList({
     return (
       <section className="panel emptyState">
         <h3>일치하는 노트가 없습니다</h3>
-        <p>검색어나 태그 필터를 초기화해보세요.</p>
+        <p>검색어, 태그, 그룹 필터를 초기화해보세요.</p>
         <button className="ghostButton" type="button" onClick={onClearFilters}>
           필터 초기화
         </button>
@@ -49,6 +50,7 @@ export default function NoteList({
           note={note}
           isSaving={isSaving}
           activeTag={activeTag}
+          groups={groups}
           onUpdate={onUpdate}
           onDelete={onDelete}
           onTagSelect={onTagSelect}
