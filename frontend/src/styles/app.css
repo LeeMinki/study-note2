@@ -163,6 +163,10 @@ button {
   grid-template-columns: minmax(280px, 280px) minmax(0, 1fr);
 }
 
+.contentGrid--listOnly {
+  grid-template-columns: 1fr;
+}
+
 /* ── 컴포넌트 ────────────────────────────────────────────────── */
 
 .panel {
@@ -270,7 +274,6 @@ button {
 .composerActions,
 .tagList,
 .tagFilterBar,
-.groupFilterBar,
 .profileHeroActions {
   display: flex;
   gap: var(--space-sm);
@@ -596,27 +599,44 @@ button {
 }
 
 .groupFilterBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   justify-content: flex-end;
 }
 
-.groupFilterButton {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  padding: 6px 12px;
-  background: var(--color-surface);
-  color: var(--color-ui-fg);
-  font-size: 0.82rem;
+.groupFilterLabel {
+  font-size: 0.8125rem;
   font-weight: 500;
+  color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
-.groupFilterButton:hover {
-  background: var(--color-surface-2);
+.groupFilterSelect {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 6px 10px;
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  min-width: 100px;
 }
 
-.groupFilterButton--active {
-  color: #ffffff;
-  background: var(--color-brand);
-  border-color: var(--color-brand);
+.groupFilterSelect:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.groupSelectCreateRow .textInput {
+  padding: 6px 10px;
+  font-size: 0.8125rem;
+}
+
+.groupSelectCreateRow .ghostButton {
+  padding: 6px 10px;
+  font-size: 0.8125rem;
 }
 
 /* ── 상태 ────────────────────────────────────────────────────── */

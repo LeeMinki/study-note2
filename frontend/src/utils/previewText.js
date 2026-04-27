@@ -19,8 +19,13 @@ function stripMarkdownSyntax(markdown) {
 
 export default function previewText(content, maxLength = 160) {
   if (!content) return "";
-  const html = /<[a-z][a-z0-9]*[\s>]/i.test(content);
-  const plain = html ? stripHtml(content) : stripMarkdownSyntax(content);
-  if (!plain) return "";
+  const isHtml = /<[a-z][a-z0-9]*[\s>]/i.test(content);
+  const plain = isHtml ? stripHtml(content) : stripMarkdownSyntax(content);
+  if (!plain) {
+    // 텍스트가 없어도 이미지가 있으면 표시
+    if (isHtml && /<img/i.test(content)) return "[이미지]";
+    if (!isHtml && /!\[/.test(content)) return "[이미지]";
+    return "";
+  }
   return plain.length <= maxLength ? plain : `${plain.slice(0, maxLength).trim()}...`;
 }

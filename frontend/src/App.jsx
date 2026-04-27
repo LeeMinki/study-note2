@@ -34,6 +34,7 @@ export default function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [currentView, setCurrentView] = useState("notes");
+  const [showComposer, setShowComposer] = useState(true);
   const [ssoError, setSsoError] = useState("");
   const [linkSuccess, setLinkSuccess] = useState(false);
   const { layoutMode, setLayout, toggleLayout } = useLayoutPreference();
@@ -374,6 +375,9 @@ export default function App() {
             onChange={setActiveGroupFilter}
           />
           <div className="heroActionRow">
+            <button className="ghostButton" type="button" onClick={() => setShowComposer((v) => !v)}>
+              {showComposer ? "작성 숨기기" : "새 노트"}
+            </button>
             <button className="ghostButton" type="button" onClick={handleOpenGroups}>
               그룹 관리
             </button>
@@ -389,16 +393,18 @@ export default function App() {
 
       {errorMessage ? <p className="errorBanner">{errorMessage}</p> : null}
 
-      <div className={`contentGrid${layoutMode === "wide" ? " contentGrid--wide" : ""}${layoutMode === "narrow" ? " contentGrid--narrow" : ""}`}>
-        <NoteComposer
-          onCreate={handleCreate}
-          disabled={isSaving}
-          groups={groups}
-          onCreateGroup={handleCreateGroup}
-          layoutMode={layoutMode}
-          onToggleLayout={toggleLayout}
-          onSetLayout={setLayout}
-        />
+      <div className={`contentGrid${layoutMode === "wide" ? " contentGrid--wide" : ""}${layoutMode === "narrow" ? " contentGrid--narrow" : ""}${!showComposer ? " contentGrid--listOnly" : ""}`}>
+        {showComposer ? (
+          <NoteComposer
+            onCreate={handleCreate}
+            disabled={isSaving}
+            groups={groups}
+            onCreateGroup={handleCreateGroup}
+            layoutMode={layoutMode}
+            onToggleLayout={toggleLayout}
+            onSetLayout={setLayout}
+          />
+        ) : null}
         <NoteList
           notes={notes}
           hasAnyNotes={hasAnyNotes}
