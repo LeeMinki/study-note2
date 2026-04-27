@@ -109,7 +109,7 @@ export default function ProfileView({
       <section className="profileShell">
         <header className="profileHero panel">
           <div>
-            <p className="eyebrow">Account Profile</p>
+            <button className="eyebrowButton" type="button" onClick={onBack}>Study Note</button>
             <h1>{currentUser?.displayName || "프로필"}</h1>
             <p className="heroText">계정 기본 정보와 표시 이름을 관리합니다.</p>
           </div>
