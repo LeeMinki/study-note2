@@ -13,15 +13,23 @@
 - **[Story]**: Which user story this task belongs to (US1, US2, US3)
 - Every task includes exact file paths
 
+## Implementation Assumptions Recorded
+
+- No new dependencies were installed for 016.
+- Backend-owned SQLite persistence remains the source of truth for groups and note group assignment.
+- Missing, empty, or null `groupId` means group 없음 for note create/update.
+- Malformed `groupId` returns `400`; not-found or cross-account valid-looking `groupId` returns `404`.
+- Browser-only manual checks remain separate from automated verification results.
+
 ---
 
 ## Phase 1: Setup (Shared Infrastructure)
 
 **Purpose**: Prepare the 016 feature surface without changing runtime behavior.
 
-- [ ] T001 Review 016 plan/data model/API contract and record implementation assumptions in `specs/016-note-groups/tasks.md`
-- [ ] T002 [P] Confirm no new dependency is needed and do not edit `frontend/package.json` or `backend/package.json`
-- [ ] T003 [P] Inspect existing note/auth test helper patterns in `backend/tests/helpers/testData.js`
+- [X] T001 Review 016 plan/data model/API contract and record implementation assumptions in `specs/016-note-groups/tasks.md`
+- [X] T002 [P] Confirm no new dependency is needed and do not edit `frontend/package.json` or `backend/package.json`
+- [X] T003 [P] Inspect existing note/auth test helper patterns in `backend/tests/helpers/testData.js`
 
 ---
 
@@ -31,12 +39,12 @@
 
 **CRITICAL**: Complete this phase before user story implementation.
 
-- [ ] T004 Add idempotent `groups` table, indexes, and guarded `notes.group_id` migration in `backend/src/db/index.js`
-- [ ] T005 [P] Create Group domain model with name normalization, max length 40, id generation, and validation in `backend/src/models/group.js`
-- [ ] T006 Update Note domain model to parse nullable `groupId` on create/update in `backend/src/models/note.js`
-- [ ] T007 Update note row mapping and insert/update SQL to include nullable `group_id` in `backend/src/repositories/dbNoteRepository.js`
-- [ ] T008 [P] Add backend DB persistence tests for groups schema and existing notes defaulting to `groupId: null` in `backend/tests/groups.test.js`
-- [ ] T009 Run backend tests for foundational DB/model changes with `npm test` from `backend/`
+- [X] T004 Add idempotent `groups` table, indexes, and guarded `notes.group_id` migration in `backend/src/db/index.js`
+- [X] T005 [P] Create Group domain model with name normalization, max length 40, id generation, and validation in `backend/src/models/group.js`
+- [X] T006 Update Note domain model to parse nullable `groupId` on create/update in `backend/src/models/note.js`
+- [X] T007 Update note row mapping and insert/update SQL to include nullable `group_id` in `backend/src/repositories/dbNoteRepository.js`
+- [X] T008 [P] Add backend DB persistence tests for groups schema and existing notes defaulting to `groupId: null` in `backend/tests/groups.test.js`
+- [X] T009 Run backend tests for foundational DB/model changes with `npm test` from `backend/`
 
 **Checkpoint**: DB can initialize on new and existing SQLite files; existing notes remain group 없음.
 
@@ -50,17 +58,17 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Add group create/list/update/delete service tests including duplicate name rejection in `backend/tests/groups.test.js`
-- [ ] T011 [P] [US1] Add group API envelope and auth tests for `/api/groups` in `backend/tests/groupsRoutes.test.js`
+- [X] T010 [P] [US1] Add group create/list/update/delete service tests including duplicate name rejection in `backend/tests/groups.test.js`
+- [X] T011 [P] [US1] Add group API envelope and auth tests for `/api/groups` in `backend/tests/groupsRoutes.test.js`
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Implement group row mapping and CRUD repository functions in `backend/src/repositories/dbGroupRepository.js`
-- [ ] T013 [US1] Implement group create/list/rename/delete business rules in `backend/src/services/groupsService.js`
-- [ ] T014 [US1] Implement group HTTP handlers and status mapping in `backend/src/controllers/groupsController.js`
-- [ ] T015 [US1] Add authenticated group routes in `backend/src/routes/groupsRoutes.js`
-- [ ] T016 [US1] Mount `/api/groups` behind `requireAuth` in `backend/src/app.js`
-- [ ] T017 [US1] Implement group deletion transaction that unassigns related notes before deleting the group in `backend/src/repositories/dbGroupRepository.js`
+- [X] T012 [P] [US1] Implement group row mapping and CRUD repository functions in `backend/src/repositories/dbGroupRepository.js`
+- [X] T013 [US1] Implement group create/list/rename/delete business rules in `backend/src/services/groupsService.js`
+- [X] T014 [US1] Implement group HTTP handlers and status mapping in `backend/src/controllers/groupsController.js`
+- [X] T015 [US1] Add authenticated group routes in `backend/src/routes/groupsRoutes.js`
+- [X] T016 [US1] Mount `/api/groups` behind `requireAuth` in `backend/src/app.js`
+- [X] T017 [US1] Implement group deletion transaction that unassigns related notes before deleting the group in `backend/src/repositories/dbGroupRepository.js`
 - [ ] T018 [US1] Verify User Story 1 with backend tests and manual `GET/POST/PATCH/DELETE /api/groups` checks using `specs/016-note-groups/quickstart.md`
 
 **Checkpoint**: Group CRUD is fully functional and account-scoped through backend APIs.
@@ -75,19 +83,19 @@
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Add note create/update tests for valid groupId, null groupId, and cross-account group rejection in `backend/tests/notesGroups.test.js`
-- [ ] T020 [P] [US2] Add frontend note API body tests for `groupId` create/update payloads in `frontend/tests/groupsApi.test.js`
+- [X] T019 [P] [US2] Add note create/update tests for valid groupId, null groupId, and cross-account group rejection in `backend/tests/notesGroups.test.js`
+- [X] T020 [P] [US2] Add frontend note API body tests for `groupId` create/update payloads in `frontend/tests/groupsApi.test.js`
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Add group ownership validation helper for note writes in `backend/src/services/notesService.js`
-- [ ] T022 [US2] Persist `groupId` during note create/update in `backend/src/services/notesService.js`
-- [ ] T023 [US2] Map group-related validation errors to envelope responses in `backend/src/controllers/notesController.js`
-- [ ] T024 [US2] Extend `createNote` and `updateNote` client calls to pass `groupId` in `frontend/src/services/notesApi.js`
-- [ ] T025 [P] [US2] Create reusable group selector component in `frontend/src/components/GroupSelect.jsx`
-- [ ] T026 [US2] Add `groupId` state, draft persistence compatibility, and group selector to note creation in `frontend/src/components/NoteComposer.jsx`
-- [ ] T027 [US2] Add `groupId` edit state, group display, and group selector to inline editing in `frontend/src/components/NoteCard.jsx`
-- [ ] T028 [US2] Pass groups into composer/cards from `frontend/src/App.jsx`
+- [X] T021 [US2] Add group ownership validation helper for note writes in `backend/src/services/notesService.js`
+- [X] T022 [US2] Persist `groupId` during note create/update in `backend/src/services/notesService.js`
+- [X] T023 [US2] Map group-related validation errors to envelope responses in `backend/src/controllers/notesController.js`: malformed `groupId` returns `400`, and not-found/not-owned valid-looking `groupId` returns `404`
+- [X] T024 [US2] Extend `createNote` and `updateNote` client calls to pass `groupId` in `frontend/src/services/notesApi.js`
+- [X] T025 [P] [US2] Create reusable group selector component in `frontend/src/components/GroupSelect.jsx`
+- [X] T026 [US2] Add `groupId` state, draft persistence compatibility, and group selector to note creation in `frontend/src/components/NoteComposer.jsx`
+- [X] T027 [US2] Add `groupId` edit state, group display, and group selector to inline editing in `frontend/src/components/NoteCard.jsx`
+- [X] T028 [US2] Pass groups into composer/cards from `frontend/src/App.jsx`
 - [ ] T029 [US2] Verify User Story 2 manually using quickstart S3 and S4 in `specs/016-note-groups/quickstart.md`
 
 **Checkpoint**: Notes can move between group 없음 and exactly one group without changing tags.
@@ -102,21 +110,21 @@
 
 ### Tests for User Story 3
 
-- [ ] T030 [P] [US3] Add backend note query tests for `groupId`, `group=none`, and `search+tag+group` AND behavior in `backend/tests/notesGroups.test.js`
-- [ ] T031 [P] [US3] Add frontend notes query tests for `activeGroupFilter` values `all`, `none`, and group id in `frontend/tests/groupsApi.test.js`
+- [X] T030 [P] [US3] Add backend note query tests for `groupId`, `group=none`, and `search+tag+group` AND behavior in `backend/tests/notesGroups.test.js`
+- [X] T031 [P] [US3] Add frontend notes query tests for `activeGroupFilter` values `all`, `none`, and group id in `frontend/tests/groupsApi.test.js`
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Extend note repository filters for `groupId`, `group=none`, mutual exclusion, and latest-first order in `backend/src/repositories/dbNoteRepository.js`
-- [ ] T033 [US3] Validate group filter ownership before note listing in `backend/src/services/notesService.js`
-- [ ] T034 [US3] Extend `fetchNotes` query parameter builder for group filters in `frontend/src/services/notesApi.js`
-- [ ] T035 [P] [US3] Create group filter UI with `전체`, `그룹 없음`, and group options in `frontend/src/components/GroupFilterBar.jsx`
-- [ ] T036 [P] [US3] Create inline group management UI for create/rename/delete in `frontend/src/components/GroupManager.jsx`
-- [ ] T037 [US3] Add `groupsApi` client functions for group CRUD in `frontend/src/services/groupsApi.js`
-- [ ] T038 [US3] Integrate `groups`, `activeGroupFilter`, group CRUD handlers, and reload sequencing in `frontend/src/App.jsx`
-- [ ] T039 [US3] Update clear-filter behavior to reset search, tag, and group filter together in `frontend/src/App.jsx`
-- [ ] T040 [US3] Update empty-state copy for combined group/search/tag results in `frontend/src/components/NoteList.jsx`
-- [ ] T041 [US3] Add group UI styles using existing tokens in `frontend/src/styles/app.css`
+- [X] T032 [US3] Extend note repository filters for `groupId`, `group=none`, mutual exclusion, and latest-first order in `backend/src/repositories/dbNoteRepository.js`
+- [X] T033 [US3] Validate group filter ownership before note listing in `backend/src/services/notesService.js`
+- [X] T034 [US3] Extend `fetchNotes` query parameter builder for group filters in `frontend/src/services/notesApi.js`
+- [X] T035 [P] [US3] Create group filter UI with `전체`, `그룹 없음`, and group options in `frontend/src/components/GroupFilterBar.jsx`
+- [X] T036 [P] [US3] Create inline group management UI for create/rename/delete in `frontend/src/components/GroupManager.jsx`
+- [X] T037 [US3] Add `groupsApi` client functions for group CRUD in `frontend/src/services/groupsApi.js`
+- [X] T038 [US3] Integrate `groups`, `activeGroupFilter`, group CRUD handlers, and reload sequencing in `frontend/src/App.jsx`
+- [X] T039 [US3] Update clear-filter behavior to reset search, tag, and group filter together in `frontend/src/App.jsx`
+- [X] T040 [US3] Update empty-state copy for combined group/search/tag results in `frontend/src/components/NoteList.jsx`
+- [X] T041 [US3] Add group UI styles using existing tokens in `frontend/src/styles/app.css`
 - [ ] T042 [US3] Verify User Story 3 manually using quickstart S5, S6, and S7 in `specs/016-note-groups/quickstart.md`
 
 **Checkpoint**: Group filtering works with existing search and tag filters without losing active filter state.
@@ -127,12 +135,12 @@
 
 **Purpose**: Verify account boundaries, existing auth/SSO behavior, and no regression in existing note flows.
 
-- [ ] T043 [P] Add backend cross-account group access tests for list/update/delete/filter/assignment in `backend/tests/groups.test.js`
-- [ ] T044 [P] Add backend response envelope assertions for representative group success/error paths in `backend/tests/responseEnvelope.test.js`
-- [ ] T045 Run full backend test suite with `npm test` from `backend/`
-- [ ] T046 Run full frontend test suite with `npm test` from `frontend/`
-- [ ] T047 Run frontend production build with `npm run build` from `frontend/`
-- [ ] T048 Run backend startup sanity command from `backend/` with `JWT_SECRET` set
+- [X] T043 [P] Add backend cross-account group access tests for list/update/delete/filter/assignment in `backend/tests/groups.test.js`
+- [X] T044 [P] Add backend response envelope assertions for representative group success/error paths in `backend/tests/responseEnvelope.test.js`
+- [X] T045 Run full backend test suite with `npm test` from `backend/`
+- [X] T046 Run full frontend test suite with `npm test` from `frontend/`
+- [X] T047 Run frontend production build with `npm run build` from `frontend/`
+- [X] T048 Run backend startup sanity command from `backend/` with `JWT_SECRET` set
 - [ ] T049 Manually verify existing login, Google SSO return handling, note CRUD, tag filtering, search, image rendering, and Ctrl/Cmd + Enter save flows using `specs/016-note-groups/quickstart.md`
 
 ---
@@ -141,12 +149,12 @@
 
 **Purpose**: Keep project documentation and operator guidance aligned with 016.
 
-- [ ] T050 [P] Update feature status and implemented range in `README.md`
-- [ ] T051 [P] Update active technology/recent changes notes in `AGENTS.md`
-- [ ] T052 [P] Update Claude handoff notes for 016 in `CLAUDE.md`
-- [ ] T053 Update DB migration and smoke-check notes if needed in `infra/docs/operations.md`
-- [ ] T054 Re-check generated docs and contracts for drift against implementation in `specs/016-note-groups/`
-- [ ] T055 Run `git diff --check` from repository root
+- [X] T050 [P] Update feature status and implemented range in `README.md`
+- [X] T051 [P] Update active technology/recent changes notes in `AGENTS.md`
+- [X] T052 [P] Update Claude handoff notes for 016 in `CLAUDE.md`
+- [X] T053 Update DB migration and smoke-check notes if needed in `infra/docs/operations.md`
+- [X] T054 Re-check generated docs and contracts for drift against implementation in `specs/016-note-groups/`
+- [X] T055 Run `git diff --check` from repository root
 
 ---
 

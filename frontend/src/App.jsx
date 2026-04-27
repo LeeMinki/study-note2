@@ -3,6 +3,8 @@ import NoteComposer from "./components/NoteComposer";
 import NoteList from "./components/NoteList";
 import SearchBar from "./components/SearchBar";
 import TagFilterBar from "./components/TagFilterBar";
+import GroupFilterBar from "./components/GroupFilterBar";
+import GroupManager from "./components/GroupManager";
 import AuthForm from "./components/AuthForm";
 import ProfileView from "./components/ProfileView";
 import {
@@ -11,6 +13,12 @@ import {
   fetchNotes,
   updateNote,
 } from "./services/notesApi";
+import {
+  createGroup,
+  deleteGroup,
+  fetchGroups,
+  updateGroup,
+} from "./services/groupsApi";
 import useLayoutPreference from "./hooks/useLayoutPreference";
 import useAuth from "./hooks/useAuth";
 
@@ -19,6 +27,8 @@ export default function App() {
   const [hasAnyNotes, setHasAnyNotes] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeTag, setActiveTag] = useState("");
+  const [activeGroupFilter, setActiveGroupFilter] = useState("all");
+  const [groups, setGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -97,14 +107,16 @@ export default function App() {
     }
   }, [loginWithToken, refreshUser]);
 
-  async function loadNotes(nextFilters = { searchText, activeTag }) {
+  async function loadNotes(nextFilters = { searchText, activeTag, activeGroupFilter }) {
     setIsLoading(true);
 
     try {
       const nextNotes = await fetchNotes(nextFilters);
       setNotes(nextNotes);
       const isFilteredView = Boolean(
-        nextFilters.searchText?.trim() || nextFilters.activeTag?.trim(),
+        nextFilters.searchText?.trim() ||
+          nextFilters.activeTag?.trim() ||
+          (nextFilters.activeGroupFilter && nextFilters.activeGroupFilter !== "all"),
       );
 
       setHasAnyNotes((currentValue) => {
@@ -122,25 +134,42 @@ export default function App() {
     }
   }
 
+  async function loadGroups() {
+    try {
+      const nextGroups = await fetchGroups();
+      setGroups(nextGroups);
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }
+
   // 로그아웃 시 이전 계정 노트를 즉시 초기화한다
   useEffect(() => {
     if (!isAuthenticated) {
       setNotes([]);
+      setGroups([]);
       setHasAnyNotes(false);
+      setActiveGroupFilter("all");
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
     loadNotes();
-  }, [searchText, activeTag, isAuthenticated]);
+  }, [searchText, activeTag, activeGroupFilter, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    loadGroups();
+  }, [isAuthenticated]);
 
   async function handleCreate(noteInput) {
     setIsSaving(true);
 
     try {
       await createNote(noteInput);
-      await loadNotes({ searchText, activeTag });
+      await loadNotes({ searchText, activeTag, activeGroupFilter });
       setHasAnyNotes(true);
       setErrorMessage("");
     } catch (error) {
@@ -155,7 +184,7 @@ export default function App() {
 
     try {
       await updateNote(noteId, noteInput);
-      await loadNotes({ searchText, activeTag });
+      await loadNotes({ searchText, activeTag, activeGroupFilter });
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.message);
@@ -169,7 +198,7 @@ export default function App() {
 
     try {
       await deleteNote(noteId);
-      await loadNotes({ searchText, activeTag });
+      await loadNotes({ searchText, activeTag, activeGroupFilter });
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.message);
@@ -185,6 +214,52 @@ export default function App() {
   function handleClearFilters() {
     setSearchText("");
     setActiveTag("");
+    setActiveGroupFilter("all");
+  }
+
+  async function handleCreateGroup(groupInput) {
+    setIsSaving(true);
+
+    try {
+      await createGroup(groupInput);
+      await loadGroups();
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleRenameGroup(groupId, groupInput) {
+    setIsSaving(true);
+
+    try {
+      await updateGroup(groupId, groupInput);
+      await loadGroups();
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleDeleteGroup(groupId) {
+    setIsSaving(true);
+
+    try {
+      await deleteGroup(groupId);
+      await loadGroups();
+      const nextGroupFilter = activeGroupFilter === groupId ? "none" : activeGroupFilter;
+      setActiveGroupFilter(nextGroupFilter);
+      await loadNotes({ searchText, activeTag, activeGroupFilter: nextGroupFilter });
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   useEffect(() => {
@@ -234,6 +309,11 @@ export default function App() {
         <div className="heroControls">
           <SearchBar value={searchText} onChange={setSearchText} />
           <TagFilterBar activeTag={activeTag} onClear={handleClearFilters} />
+          <GroupFilterBar
+            groups={groups}
+            activeGroupFilter={activeGroupFilter}
+            onChange={setActiveGroupFilter}
+          />
           <div className="heroActionRow">
             <button className="ghostButton" type="button" onClick={() => setCurrentView("profile")}>
               프로필
@@ -248,19 +328,30 @@ export default function App() {
       {errorMessage ? <p className="errorBanner">{errorMessage}</p> : null}
 
       <div className={`contentGrid${layoutMode === "wide" ? " contentGrid--wide" : ""}${layoutMode === "narrow" ? " contentGrid--narrow" : ""}`}>
-        <NoteComposer
-          onCreate={handleCreate}
-          disabled={isSaving}
-          layoutMode={layoutMode}
-          onToggleLayout={toggleLayout}
-          onSetLayout={setLayout}
-        />
+        <aside className="sideStack">
+          <NoteComposer
+            onCreate={handleCreate}
+            disabled={isSaving}
+            groups={groups}
+            layoutMode={layoutMode}
+            onToggleLayout={toggleLayout}
+            onSetLayout={setLayout}
+          />
+          <GroupManager
+            groups={groups}
+            disabled={isSaving}
+            onCreate={handleCreateGroup}
+            onRename={handleRenameGroup}
+            onDelete={handleDeleteGroup}
+          />
+        </aside>
         <NoteList
           notes={notes}
           hasAnyNotes={hasAnyNotes}
           isLoading={isLoading}
           isSaving={isSaving}
           activeTag={activeTag}
+          groups={groups}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
           onTagSelect={handleTagSelect}

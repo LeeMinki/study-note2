@@ -180,9 +180,10 @@ Existing note endpoints change compatibly:
 - `GET /api/notes?search=&tag=&groupId=` supports group filtering.
 - `GET /api/notes?group=none` or an equivalent contract value filters group 없음 notes.
 - `POST /api/notes` accepts optional `groupId`.
-- `PATCH /api/notes/:noteId` accepts optional `groupId`.
+- `PATCH /api/notes/:noteId` accepts optional `groupId`; missing, empty string, or `null` is treated as group 없음 to match the existing full-form inline edit flow.
 
 The contract will use `groupId` for real group ids and `group=none` for group 없음 to avoid overloading empty strings.
+Malformed group ids return `400`. Valid-looking group ids that do not exist or are not owned by the current user return `404` without exposing ownership information.
 
 ### 그룹 삭제 처리
 

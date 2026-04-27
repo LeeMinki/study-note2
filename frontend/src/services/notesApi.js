@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getApiBase } from "./apiBase";
+import { getApiBase } from "./apiBase.js";
 
 const TOKEN_KEY = "study-note-token";
 
@@ -27,7 +27,7 @@ function unwrapResponse(response) {
   return response.data.data;
 }
 
-function buildQueryParams(searchText, activeTag) {
+export function buildQueryParams(searchText, activeTag, activeGroupFilter = "all") {
   const params = {};
 
   if (searchText?.trim()) {
@@ -38,12 +38,18 @@ function buildQueryParams(searchText, activeTag) {
     params.tag = activeTag.trim().toLowerCase();
   }
 
+  if (activeGroupFilter === "none") {
+    params.group = "none";
+  } else if (activeGroupFilter && activeGroupFilter !== "all") {
+    params.groupId = activeGroupFilter;
+  }
+
   return params;
 }
 
-export async function fetchNotes({ searchText = "", activeTag = "" } = {}) {
+export async function fetchNotes({ searchText = "", activeTag = "", activeGroupFilter = "all" } = {}) {
   const response = await apiClient.get("/api/notes", {
-    params: buildQueryParams(searchText, activeTag),
+    params: buildQueryParams(searchText, activeTag, activeGroupFilter),
   });
 
   return unwrapResponse(response);

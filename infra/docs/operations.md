@@ -343,6 +343,23 @@ Argo CD는 `main` 브랜치의 `infra/kubernetes/study-note/overlays/mvp` 경로
 
 테스트 check를 branch protection required checks에 추가하는 시점은 010에서 test scope와 의존성 승인 이후로 결정한다.
 
+### 016 그룹 기능 DB 확인
+
+016 이후 backend startup 시 SQLite에 `groups` 테이블과 nullable `notes.group_id` 컬럼이 idempotent migration으로 생성된다. 기존 노트는 자동으로 `group_id = NULL` 상태가 되며, 별도 사용자 조작은 필요 없다.
+
+운영 DB에서 스키마를 확인해야 할 때:
+
+```bash
+sqlite3 /var/lib/study-note/backend/study-note.db ".schema groups"
+sqlite3 /var/lib/study-note/backend/study-note.db "PRAGMA table_info(notes);"
+```
+
+확인 기준:
+
+- `groups` 테이블이 존재해야 한다.
+- `notes` 테이블에 `group_id` 컬럼이 있어야 한다.
+- 그룹 삭제 후 노트가 삭제되지 않고 `group_id`만 `NULL`로 변경되어야 한다.
+
 ## 011 도메인/HTTPS 운영 가이드
 
 ### 적용 전 체크리스트

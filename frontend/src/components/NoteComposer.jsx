@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import useKeyboardSave from "../hooks/useKeyboardSave";
 import useDraftNote, { loadDraft, clearDraft } from "../hooks/useDraftNote";
 import RichEditor from "./RichEditor";
+import GroupSelect from "./GroupSelect";
 
 const initialFormState = {
   title: "",
   content: "",
   tags: "",
+  groupId: null,
 };
 
 const LAYOUT_LABELS = {
@@ -15,7 +17,14 @@ const LAYOUT_LABELS = {
   wide: "넓게",
 };
 
-export default function NoteComposer({ onCreate, disabled, layoutMode = "default", onToggleLayout, onSetLayout }) {
+export default function NoteComposer({
+  onCreate,
+  disabled,
+  groups = [],
+  layoutMode = "default",
+  onToggleLayout,
+  onSetLayout,
+}) {
   const [formState, setFormState] = useState(initialFormState);
   const [errorMessage, setErrorMessage] = useState("");
   const [draftBanner, setDraftBanner] = useState(false);
@@ -32,6 +41,7 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
     title: formState.title,
     content: formState.content,
     tags: formState.tags,
+    groupId: formState.groupId,
     enabled: draftEnabled,
   });
 
@@ -62,6 +72,7 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
         title: draft.title || "",
         content: draft.content || "",
         tags: draft.tags || "",
+        groupId: draft.groupId || null,
       });
     }
     setDraftBanner(false);
@@ -134,6 +145,13 @@ export default function NoteComposer({ onCreate, disabled, layoutMode = "default
         onChange={(e) => updateField("tags", e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="태그 (쉼표로 구분)"
+        disabled={disabled}
+      />
+
+      <GroupSelect
+        groups={groups}
+        value={formState.groupId}
+        onChange={(value) => updateField("groupId", value)}
         disabled={disabled}
       />
 

@@ -244,7 +244,8 @@ Group 없음 request may omit `groupId` or send `null`.
 
 Error:
 
-- `groupId` not found or not owned by user -> `400` or `404`; implementation should keep the message user-friendly and avoid leaking another user's group.
+- Malformed `groupId` -> `400` with envelope error.
+- Valid-looking `groupId` that is not found or not owned by user -> `404` with a user-friendly envelope error that does not leak another user's group ownership.
 
 ### PATCH /api/notes/:noteId
 
@@ -264,8 +265,9 @@ Existing fields remain. Optional `groupId` updates the note's group.
 Rules:
 
 - `groupId: null` unassigns the note.
-- Missing `groupId` should be treated as group 없음 only if the existing update model requires full replacement. The implementation should keep note update behavior consistent with existing full-form saves from `NoteCard`.
-- Another user's group id is rejected.
+- Missing `groupId`, empty string, or `null` means group 없음 because the existing inline edit flow saves the note as a full form.
+- Malformed `groupId` is rejected with `400`.
+- Valid-looking `groupId` that is not found or belongs to another user is rejected with `404`.
 
 ## Frontend Contract
 

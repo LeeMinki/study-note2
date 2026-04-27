@@ -20,7 +20,7 @@ export function clearDraft() {
 
 // title/content/tags 변경 후 3초 debounce로 localStorage에 임시저장한다.
 // enabled가 false이면 저장하지 않는다 (노트 저장 완료 후 빈 폼 상태에서 불필요한 저장 방지).
-export default function useDraftNote({ title, content, tags, enabled }) {
+export default function useDraftNote({ title, content, tags, groupId, enabled }) {
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -38,6 +38,7 @@ export default function useDraftNote({ title, content, tags, enabled }) {
         title,
         content,
         tags,
+        groupId: groupId || null,
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
@@ -48,5 +49,5 @@ export default function useDraftNote({ title, content, tags, enabled }) {
         clearTimeout(timerRef.current);
       }
     };
-  }, [title, content, tags, enabled]);
+  }, [title, content, tags, groupId, enabled]);
 }
