@@ -1,8 +1,10 @@
 # study-note2 Development Guidelines
 
-Auto-generated from feature plans and curated for this repository. Last updated: 2026-04-23
+Auto-generated from feature plans and curated for this repository. Last updated: 2026-04-27
 
 ## Active Technologies
+- Node.js 22 (backend), React 19 (frontend) + Express 5, better-sqlite3, jsonwebtoken, bcryptjs, axios, TipTap v3 (기존 유지, 신규 패키지 없음) (016-note-groups)
+- SQLite single-file DB via `better-sqlite3` (016-note-groups)
 
 - Frontend: React SPA with Vite, Axios-based HTTP integration, Docker image build; TipTap v3 WYSIWYG editor (`@tiptap/react`, `@tiptap/starter-kit` and extensions) for rich text editing.
 - Backend: Node.js 22, Express, SQLite (`better-sqlite3`) persistence owned by the backend.
@@ -49,6 +51,7 @@ specs/
   013-sso-login/
   014-security-hardening/
   015-ui-polish/
+  016-note-groups/
 ```
 
 ## Commands
@@ -99,6 +102,7 @@ kubectl kustomize infra/kubernetes/study-note/overlays/mvp
 - Terraform state, tfvars, MCP config, and local credentials must never be committed.
 
 ## Recent Changes
+- 016-note-groups: Planned single-level user-owned note groups, nullable note `groupId`, group CRUD, group/search/tag AND filtering, inline group UI, and SQLite schema changes with no new dependencies.
 - 015-ui-polish: Introduced CSS design tokens (zinc/slate + violet palette), full Korean UI text, TipTap v3 WYSIWYG editor with dual-mode (rich/"텍스트 편집기" and markdown), note fullscreen view, JWT sessionStorage migration, and authenticated image rendering fixes.
 - 014-security-hardening: Removed legacy JSON migration paths, enforced explicit CORS/JWT secret rules, protected uploaded images, added auth rate limiting, and added npm audit checks to PR CI.
 - 013-sso-login: Added Google OAuth2 SSO login (Authorization Code Flow via Node.js 22 built-in fetch), auto account creation/linking, JWT URL fragment delivery.
