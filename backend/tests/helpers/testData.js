@@ -1,7 +1,12 @@
 const dbModule = require("../../src/db");
 
+const TEST_JWT_SECRET = "test-secret-for-local-test-min-32-chars";
+let previousJwtSecret;
+
 // in-memory SQLite DB를 생성해 테스트 격리를 보장한다.
 function createTestDb() {
+  previousJwtSecret = process.env.JWT_SECRET;
+  process.env.JWT_SECRET = previousJwtSecret || TEST_JWT_SECRET;
   process.env.STUDY_NOTE_DB_FILE = ":memory:";
   const db = dbModule.initialize();
   return db;
@@ -10,6 +15,12 @@ function createTestDb() {
 function closeTestDb() {
   dbModule.close();
   delete process.env.STUDY_NOTE_DB_FILE;
+  if (previousJwtSecret === undefined) {
+    delete process.env.JWT_SECRET;
+  } else {
+    process.env.JWT_SECRET = previousJwtSecret;
+  }
+  previousJwtSecret = undefined;
   clearBackendRequireCache();
 }
 

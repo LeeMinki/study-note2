@@ -11,10 +11,10 @@
 
 ## Technical Context
 
-**Language/Version**: React 18 + Vite (frontend only)
+**Language/Version**: React 19 + Vite (frontend only)
 **Primary Dependencies**: TipTap (WYSIWYG 에디터) 추가 — `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-*` 7개 패키지
 **Storage**: 인증 토큰 `localStorage` → `sessionStorage` 전환
-**Testing**: Vitest (`npm test` in `/frontend`)
+**Testing**: Node.js built-in test runner (`node --test`, `npm test` in `/frontend`)
 **Target Platform**: 브라우저 (WSL Ubuntu + 로컬 브라우저 개발 환경)
 **Project Type**: Web application (frontend UI only)
 **Performance Goals**: 번들 크기 ~650KB (TipTap 포함, gzip 205KB)

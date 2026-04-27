@@ -47,6 +47,7 @@ specs/
   011-domain-https/
   012-db-migration/
   013-sso-login/
+  014-security-hardening/
   015-ui-polish/
 ```
 
@@ -99,6 +100,7 @@ kubectl kustomize infra/kubernetes/study-note/overlays/mvp
 
 ## Recent Changes
 - 015-ui-polish: Introduced CSS design tokens (zinc/slate + violet palette), full Korean UI text, TipTap v3 WYSIWYG editor with dual-mode (rich/"텍스트 편집기" and markdown), note fullscreen view, JWT sessionStorage migration, and authenticated image rendering fixes.
+- 014-security-hardening: Removed legacy JSON migration paths, enforced explicit CORS/JWT secret rules, protected uploaded images, added auth rate limiting, and added npm audit checks to PR CI.
 - 013-sso-login: Added Google OAuth2 SSO login (Authorization Code Flow via Node.js 22 built-in fetch), auto account creation/linking, JWT URL fragment delivery.
 - 012-db-migration: Migrated from JSON-file storage to SQLite (`better-sqlite3`); added `dbUserRepository`/`dbNoteRepository`, startup migration script, Kubernetes PVC config, and ECR pull secret auto-refresh CronJob.
 - 011-domain-https: Applied custom domain `study-note.yuna-pa.com` with Let's Encrypt TLS, Traefik HTTPS/www redirect middleware, and Elastic IP `3.39.3.103`.

@@ -8,7 +8,7 @@
 
 ## Technical Context
 
-**Language/Version**: Node.js 22 (backend), React 18 (frontend)
+**Language/Version**: Node.js 22 (backend), React 19 (frontend)
 **Primary Dependencies**: Express 5, better-sqlite3, jsonwebtoken, bcryptjs (기존 유지, 신규 패키지 없음)
 **Storage**: SQLite — 스키마 변경 없음
 **Testing**: Node.js 내장 test runner (`node --test`)

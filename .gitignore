@@ -31,3 +31,5 @@ secrets/
 *.db-shm
 *.db-wal
 :memory:
+backend/uploads/*
+!backend/uploads/.gitkeep
