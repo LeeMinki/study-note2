@@ -169,6 +169,14 @@ button {
   gap: 0;
 }
 
+.contentGrid--composerClosed .composerPanel {
+  overflow: hidden;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
 /* ── 컴포넌트 ────────────────────────────────────────────────── */
 
 .panel {
