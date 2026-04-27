@@ -69,7 +69,7 @@
 - [X] T015 [US1] Add authenticated group routes in `backend/src/routes/groupsRoutes.js`
 - [X] T016 [US1] Mount `/api/groups` behind `requireAuth` in `backend/src/app.js`
 - [X] T017 [US1] Implement group deletion transaction that unassigns related notes before deleting the group in `backend/src/repositories/dbGroupRepository.js`
-- [ ] T018 [US1] Verify User Story 1 with backend tests and manual `GET/POST/PATCH/DELETE /api/groups` checks using `specs/016-note-groups/quickstart.md`
+- [X] T018 [US1] Verify User Story 1 with backend tests and manual `GET/POST/PATCH/DELETE /api/groups` checks using `specs/016-note-groups/quickstart.md`
 
 **Checkpoint**: Group CRUD is fully functional and account-scoped through backend APIs.
 
@@ -96,7 +96,7 @@
 - [X] T026 [US2] Add `groupId` state, draft persistence compatibility, top-positioned group selector, and inline group creation to note creation in `frontend/src/components/NoteComposer.jsx`
 - [X] T027 [US2] Add `groupId` edit state, group display, and group selector to inline editing in `frontend/src/components/NoteCard.jsx`
 - [X] T028 [US2] Pass groups into composer/cards from `frontend/src/App.jsx`
-- [ ] T029 [US2] Verify User Story 2 manually using quickstart S3 and S4 in `specs/016-note-groups/quickstart.md`
+- [X] T029 [US2] Verify User Story 2 manually using quickstart S3 and S4 in `specs/016-note-groups/quickstart.md`
 
 **Checkpoint**: Notes can move between group 없음 and exactly one group without changing tags.
 
@@ -118,14 +118,14 @@
 - [X] T032 [US3] Extend note repository filters for `groupId`, `group=none`, mutual exclusion, and latest-first order in `backend/src/repositories/dbNoteRepository.js`
 - [X] T033 [US3] Validate group filter ownership before note listing in `backend/src/services/notesService.js`
 - [X] T034 [US3] Extend `fetchNotes` query parameter builder for group filters in `frontend/src/services/notesApi.js`
-- [X] T035 [P] [US3] Create group filter UI with `전체`, `그룹 없음`, and group options in `frontend/src/components/GroupFilterBar.jsx`
+- [X] T035 [P] [US3] Create compact group filter select with `전체`, `그룹 없음`, and group options in `frontend/src/components/GroupFilterBar.jsx`
 - [X] T036 [P] [US3] Create group management UI for create/rename/delete, friendly duplicate errors, expandable group notes, and inline note preview in `frontend/src/components/GroupManager.jsx`
 - [X] T037 [US3] Add `groupsApi` client functions for group CRUD in `frontend/src/services/groupsApi.js`
 - [X] T038 [US3] Integrate `groups`, `activeGroupFilter`, group CRUD handlers, page-level group management view, and reload sequencing in `frontend/src/App.jsx`
 - [X] T039 [US3] Update clear-filter behavior to reset search, tag, and group filter together in `frontend/src/App.jsx`
 - [X] T040 [US3] Update empty-state copy for combined group/search/tag results in `frontend/src/components/NoteList.jsx`
-- [X] T041 [US3] Add group UI styles using existing tokens in `frontend/src/styles/app.css`
-- [ ] T042 [US3] Verify User Story 3 manually using quickstart S5, S6, and S7 in `specs/016-note-groups/quickstart.md`
+- [X] T041 [US3] Add group UI styles, group filter select styles, composer collapse/expand, and internal scroll styles using existing tokens in `frontend/src/styles/app.css`
+- [X] T042 [US3] Verify User Story 3 manually using quickstart S5, S5-1, S6, and S7 in `specs/016-note-groups/quickstart.md`
 
 **Checkpoint**: Group filtering works with existing search and tag filters without losing active filter state.
 
@@ -141,7 +141,7 @@
 - [X] T046 Run full frontend test suite with `npm test` from `frontend/`
 - [X] T047 Run frontend production build with `npm run build` from `frontend/`
 - [X] T048 Run backend startup sanity command from `backend/` with `JWT_SECRET` set
-- [ ] T049 Manually verify existing login, Google SSO return handling, note CRUD, tag filtering, search, image rendering, and Ctrl/Cmd + Enter save flows using `specs/016-note-groups/quickstart.md`
+- [X] T049 Manually verify existing login, Google SSO return handling, note CRUD, tag filtering, search, image rendering, and Ctrl/Cmd + Enter save flows using `specs/016-note-groups/quickstart.md`
 
 ---
 

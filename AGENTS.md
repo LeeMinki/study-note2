@@ -11,7 +11,7 @@ Auto-generated from feature plans and curated for this repository. Last updated:
 - Infrastructure: Terraform for AWS MVP infrastructure, k3s on a single EC2 instance, Argo CD core for GitOps reconciliation.
 - CI/CD: GitHub Actions, GitHub OIDC to AWS, Amazon ECR images `study-note-backend` and `study-note-frontend`.
 - Runtime manifests: Kubernetes YAML and Kustomize overlays under `infra/kubernetes/`.
-- Quality checks: Node built-in `node --test` MVP tests for backend auth/protected routes/SQLite DB persistence/group ownership and frontend API URL/image upload/Markdown rendering/group query parameters; new test/lint dependencies require approval before installation.
+- Quality checks: Node built-in `node --test` MVP tests for backend auth/protected routes/SQLite DB persistence/group ownership and frontend API URL/image upload/Markdown rendering/group query parameters/draft cleanup; new test/lint dependencies require approval before installation.
 
 ## Project Structure
 
@@ -102,7 +102,8 @@ kubectl kustomize infra/kubernetes/study-note/overlays/mvp
 - Terraform state, tfvars, MCP config, and local credentials must never be committed.
 
 ## Recent Changes
-- 016-note-groups: Implemented single-level user-owned note groups, nullable note `groupId`, group CRUD, group/search/tag AND filtering, inline group UI, account isolation tests, and SQLite schema changes with no new dependencies.
+- SP-55~SP-58 UI follow-ups: Added favicon, clickable Study Note banner, group filter select UI, image-only group note preview handling, new-note composer collapse/slide behavior, and composer internal scroll fixes.
+- 016-note-groups: Implemented single-level user-owned note groups, nullable note `groupId`, group CRUD, group/search/tag AND filtering, page-level group management, inline group creation from composer, friendly duplicate-name errors, expandable group note previews, account isolation tests, and SQLite schema changes with no new dependencies.
 - 015-ui-polish: Introduced CSS design tokens (zinc/slate + violet palette), full Korean UI text, TipTap v3 WYSIWYG editor with dual-mode (rich/"텍스트 편집기" and markdown), note fullscreen view, JWT sessionStorage migration, and authenticated image rendering fixes.
 - 014-security-hardening: Removed legacy JSON migration paths, enforced explicit CORS/JWT secret rules, protected uploaded images, added auth rate limiting, and added npm audit checks to PR CI.
 - 013-sso-login: Added Google OAuth2 SSO login (Authorization Code Flow via Node.js 22 built-in fetch), auto account creation/linking, JWT URL fragment delivery.
