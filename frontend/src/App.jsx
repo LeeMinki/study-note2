@@ -30,6 +30,7 @@ export default function App() {
   const [activeGroupFilter, setActiveGroupFilter] = useState("all");
   const [groups, setGroups] = useState([]);
   const [groupNotes, setGroupNotes] = useState([]);
+  const [isComposerOpen, setIsComposerOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -374,6 +375,11 @@ export default function App() {
             onChange={setActiveGroupFilter}
           />
           <div className="heroActionRow">
+            {!isComposerOpen && layoutMode !== "wide" ? (
+              <button className="ghostButton" type="button" onClick={() => setIsComposerOpen(true)}>
+                새 노트
+              </button>
+            ) : null}
             <button className="ghostButton" type="button" onClick={handleOpenGroups}>
               그룹 관리
             </button>
@@ -389,7 +395,7 @@ export default function App() {
 
       {errorMessage ? <p className="errorBanner">{errorMessage}</p> : null}
 
-      <div className={`contentGrid${layoutMode === "wide" ? " contentGrid--wide" : ""}${layoutMode === "narrow" ? " contentGrid--narrow" : ""}`}>
+      <div className={`contentGrid${layoutMode === "wide" ? " contentGrid--wide" : ""}${layoutMode === "narrow" ? " contentGrid--narrow" : ""}${!isComposerOpen && layoutMode !== "wide" ? " contentGrid--composerClosed" : ""}`}>
         <NoteComposer
           onCreate={handleCreate}
           disabled={isSaving}
@@ -398,6 +404,8 @@ export default function App() {
           layoutMode={layoutMode}
           onToggleLayout={toggleLayout}
           onSetLayout={setLayout}
+          isOpen={isComposerOpen}
+          onClose={() => setIsComposerOpen(false)}
         />
         <NoteList
           notes={notes}
