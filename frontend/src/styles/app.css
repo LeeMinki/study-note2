@@ -177,6 +177,7 @@ button {
   padding: 0;
 }
 
+
 /* ── 컴포넌트 ────────────────────────────────────────────────── */
 
 .panel {
@@ -602,6 +603,7 @@ button {
   margin-top: var(--space-xs);
   border-radius: var(--radius-sm);
 }
+
 
 .groupSelectBlock {
   display: grid;
