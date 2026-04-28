@@ -55,6 +55,7 @@
 - 스크립트는 `curl`, `ca-certificates`, `jq` 같은 기본 운영 도구만 설치한다.
 - k3s는 단일 노드 server 모드로 설치한다.
 - CoreDNS upstream은 공용 resolver `1.1.1.1 8.8.8.8`을 사용하도록 보정한다.
+- EC2 재시작 후 k3s 기본 addon이 CoreDNS를 되돌릴 수 있으므로 `study-note-coredns-upstream.service`가 k3s 시작 뒤 upstream을 다시 확인한다.
 - Argo CD core 설치 후 default AppProject와 `argocd-secret` `server.secretkey`를 보장한다.
 - ECR pull을 위해 `study-note` namespace의 `ecr-registry` imagePullSecret을 생성/갱신한다.
 - kubeconfig는 `/etc/rancher/k3s/k3s.yaml`에 두며, bootstrap 확인은 `kubectl get nodes`로 수행한다.
@@ -170,6 +171,21 @@ sudo bash /var/lib/cloud/instance/scripts/part-001
 sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get pods -A
 sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl describe pod -n study-note <pod-name>
 sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl logs -n study-note <pod-name>
+```
+
+### Google SSO가 `server_error`로 돌아옴
+
+Google 로그인 콜백에서 `server_error`가 표시되면 backend pod의 외부 DNS 조회부터 확인한다. EC2 VPC DNS가 `10.42.0.2`이고 k3s Pod CIDR과 겹치면 pod 내부에서 Google API DNS 조회가 실패할 수 있다.
+
+```bash
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl exec -n study-note deploy/study-note-backend -- \
+  node -e "fetch('https://oauth2.googleapis.com/token', { method: 'POST' }).then(r => console.log(r.status)).catch(e => { console.error(e.cause || e); process.exit(1); })"
+
+sudo systemctl status study-note-coredns-upstream.service
+sudo systemctl start study-note-coredns-upstream.service
+
+sudo KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl get configmap coredns -n kube-system \
+  -o jsonpath='{.data.Corefile}' | rg 'forward \. 1\.1\.1\.1 8\.8\.8\.8'
 ```
 
 ### main 배포 workflow 실패

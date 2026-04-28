@@ -6,6 +6,8 @@ DATA_ROOT="/var/lib/study-note"
 KUBECONFIG_PATH="/etc/rancher/k3s/k3s.yaml"
 APP_NAMESPACE="study-note"
 ARGO_APP_MANIFEST_URL="https://raw.githubusercontent.com/LeeMinki/study-note2/main/infra/kubernetes/argocd/applications/study-note-mvp.yaml"
+COREDNS_UPSTREAM_SCRIPT="/usr/local/sbin/study-note-configure-coredns-upstream"
+COREDNS_UPSTREAM_SERVICE="/etc/systemd/system/study-note-coredns-upstream.service"
 
 exec > >(tee -a "$LOG_FILE") 2>&1
 
@@ -62,13 +64,60 @@ wait_for_k3s() {
 }
 
 configure_coredns_upstream() {
-  export KUBECONFIG="$KUBECONFIG_PATH"
+  cat > "$COREDNS_UPSTREAM_SCRIPT" <<'SCRIPT'
+#!/usr/bin/env bash
+set -euo pipefail
 
-  kubectl get configmap coredns -n kube-system -o yaml \
-    | sed 's#forward \. .*#forward . 1.1.1.1 8.8.8.8#' \
-    | kubectl apply -f -
-  kubectl rollout restart deployment/coredns -n kube-system
-  kubectl rollout status deployment/coredns -n kube-system --timeout=180s
+export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
+
+for attempt in $(seq 1 30); do
+  if kubectl get configmap coredns -n kube-system >/dev/null 2>&1; then
+    break
+  fi
+
+  echo "[study-note] waiting for coredns configmap ($attempt/30)"
+  sleep 10
+done
+
+if ! kubectl get configmap coredns -n kube-system >/dev/null 2>&1; then
+  echo "[study-note] coredns configmap is not available" >&2
+  exit 1
+fi
+
+if kubectl get configmap coredns -n kube-system -o jsonpath='{.data.Corefile}' \
+  | grep -q 'forward . 1.1.1.1 8.8.8.8'; then
+  echo "[study-note] CoreDNS upstream already configured"
+  exit 0
+fi
+
+kubectl get configmap coredns -n kube-system -o json \
+  | jq '.data.Corefile |= sub("forward \\. [^\\n]+"; "forward . 1.1.1.1 8.8.8.8")' \
+  | kubectl apply -f -
+
+kubectl rollout restart deployment/coredns -n kube-system
+kubectl rollout status deployment/coredns -n kube-system --timeout=180s
+SCRIPT
+
+  chmod 755 "$COREDNS_UPSTREAM_SCRIPT"
+
+  cat > "$COREDNS_UPSTREAM_SERVICE" <<UNIT
+[Unit]
+Description=Study Note CoreDNS upstream guard
+Requires=k3s.service
+After=k3s.service
+
+[Service]
+Type=oneshot
+ExecStart=$COREDNS_UPSTREAM_SCRIPT
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+  systemctl daemon-reload
+  systemctl enable study-note-coredns-upstream.service
+  systemctl start study-note-coredns-upstream.service
 }
 
 install_argocd_core() {
